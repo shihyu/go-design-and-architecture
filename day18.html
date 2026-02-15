@@ -1,0 +1,393 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Day18 - Go語言的基本性能分析 - Go語言設計與架構之美</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Go語言設計與架構之美</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://ithelp.ithome.com.tw/users/20130271/ironman/7195" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="day18---go語言的基本性能分析"><a class="header" href="#day18---go語言的基本性能分析">Day18 - Go語言的基本性能分析</a></h1>
+<p>在現代程式開發中，性能分析是提升程式效率和可靠性的重要一環。對於 Go 語言來說，它以其卓越的性能和簡單的語法受到眾多開發者的青睞。然而，要充分發揮 Go 的性能潛力，我們需要深入了解如何進行性能分析，找出潛在的性能瓶頸並加以優化。本篇文章將介紹 Go 語言中進行性能分析的基本方法和工具，幫助你寫出高效的 Go 程式。</p>
+<h2 id="什麼是性能分析"><a class="header" href="#什麼是性能分析">什麼是性能分析？</a></h2>
+<p>性能分析是通過各種工具和技術，測量程式在不同條件下的表現，以找出性能瓶頸並加以改善的過程。它包括兩個基本概念：<strong>Profile</strong> 和 <strong>Trace</strong>。</p>
+<h3 id="profile"><a class="header" href="#profile">Profile</a></h3>
+<p>Profile 是性能分析中一種測量和記錄應用程式各個部分資源使用狀況的方法。它主要集中在以下方面：</p>
+<ul>
+<li><strong>CPU Profile：</strong> 記錄 CPU 的使用情況，分析各個函式的 CPU 耗時。</li>
+<li><strong>Memory Profile：</strong> 記錄記憶體分配和釋放的狀況，分析記憶體使用的瓶頸。</li>
+<li><strong>Block Profile：</strong> 監控 Go 的 goroutines 由於通道和互斥鎖而阻塞的情況。</li>
+</ul>
+<p>透過這些 Profile，我們可以找到哪些部分的程式碼最耗時、最耗資源，並進行優化。</p>
+<h3 id="trace"><a class="header" href="#trace">Trace</a></h3>
+<p>Trace 是對程式運行狀態進行更詳細的跟蹤和分析。它提供了程式的時間線視圖，幫助我們了解：</p>
+<ul>
+<li>程式執行過程中的事件序列。</li>
+<li>goroutine 的創建和切換。</li>
+<li>系統調用和網絡、檔案 I/O 操作的耗時。</li>
+</ul>
+<p>Trace 更加適合分析併行程式中 goroutine 的調度情況，找出潛在的race-condition問題和執行瓶頸。</p>
+<h2 id="為什麼需要性能分析"><a class="header" href="#為什麼需要性能分析">為什麼需要性能分析？</a></h2>
+<p>在開發過程中，我們常常會遇到以下問題：</p>
+<ol>
+<li><strong>程式執行速度變慢：</strong> 程式隨著功能增多，可能出現速度下降的情況。</li>
+<li><strong>資源消耗過高：</strong> CPU 和記憶體使用率超標，可能導致系統負載增加。</li>
+<li><strong>性能瓶頸：</strong> 某些程式碼區塊可能是性能瓶頸，拖慢整體應用。</li>
+</ol>
+<p>性能分析可以幫助我們解決這些問題，找出問題的根本原因，從而進行針對性的優化。</p>
+<h2 id="go-語言的性能分析工具"><a class="header" href="#go-語言的性能分析工具">Go 語言的性能分析工具</a></h2>
+<p>Go 提供了多種工具來進行性能分析，其中最常用的包括 <code>pprof</code>、<code>trace</code> 和 <code>race detector</code>。下面我們來詳細介紹這些工具的使用方法。</p>
+<h3 id="1-pprof"><a class="header" href="#1-pprof">1. pprof</a></h3>
+<p><code>pprof</code> 是 Go 內建的性能分析工具，用於收集和分析 CPU 和記憶體的使用狀況。以下是使用 <code>pprof</code> 進行性能分析的步驟：</p>
+<h4 id="cpu-分析"><a class="header" href="#cpu-分析">CPU 分析</a></h4>
+<ol>
+<li>
+<p><strong>添加分析程式碼：</strong></p>
+<p>在你的 Go 程式中，加入以下程式碼來啟動 CPU 分析：</p>
+<pre><code class="language-go">import (
+    "os"
+    "runtime/pprof"
+)
+
+func main() {
+    f, _ := os.Create("cpu.prof")
+    pprof.StartCPUProfile(f)
+    defer pprof.StopCPUProfile()
+
+    // 你的程式碼
+}
+</code></pre>
+</li>
+<li>
+<p><strong>運行應用：</strong></p>
+<p>使用 <code>go run</code> 命令運行你的應用，這將生成 <code>cpu.prof</code> 檔案。</p>
+</li>
+<li>
+<p><strong>分析檔案：</strong></p>
+<p>使用 <code>go tool pprof</code> 命令查看分析結果：</p>
+<pre><code class="language-go">go tool pprof cpu.prof
+</code></pre>
+<p>這會打開互動式界面，你可以使用 <code>top</code>、<code>list</code> 等命令查看最耗時的函式。</p>
+</li>
+</ol>
+<h4 id="記憶體分析"><a class="header" href="#記憶體分析">記憶體分析</a></h4>
+<ol>
+<li>
+<p><strong>添加記憶體分析程式碼：</strong></p>
+<p>同樣，在你的程式中加入程式碼以啟動記憶體分析：</p>
+<pre><code class="language-go">import "runtime/pprof"
+
+func main() {
+    f, _ := os.Create("mem.prof")
+    pprof.WriteHeapProfile(f)
+    f.Close()
+
+    // 你的程式碼...
+}
+</code></pre>
+</li>
+<li>
+<p><strong>運行程式並分析：</strong></p>
+<p>跟 CPU 分析類似，生成 <code>mem.prof</code> 檔案後，使用 <code>go tool pprof</code> 進行分析。</p>
+</li>
+</ol>
+<h3 id="2-trace"><a class="header" href="#2-trace">2. Trace</a></h3>
+<p><code>trace</code> 是 Go 的另一個強大工具，用於生成程式執行的詳細時間軸，適合分析race-condition狀況和性能瓶頸。</p>
+<h4 id="使用方法"><a class="header" href="#使用方法">使用方法</a></h4>
+<ol>
+<li>
+<p><strong>生成 trace 檔案：</strong></p>
+<p>在程式中添加以下程式碼：</p>
+<pre><code class="language-go">import (
+    "runtime/trace"
+    "os"
+)
+
+func main() {
+    f, _ := os.Create("trace.out")
+    trace.Start(f)
+    defer trace.Stop()
+
+    // 你的程式碼
+}
+</code></pre>
+</li>
+<li>
+<p><strong>運行並分析：</strong></p>
+<p>使用 <code>go tool trace</code> 命令來分析 trace 檔案：</p>
+<pre><code class="language-go">go run your_program.go
+go tool trace trace.out
+</code></pre>
+<p>這會在瀏覽器中打開一個圖形界面，顯示程式的執行流程和race-condition狀況。</p>
+</li>
+</ol>
+<h3 id="3-race-detector"><a class="header" href="#3-race-detector">3. Race Detector</a></h3>
+<p><code>race detector</code> 用於檢測程式中的變數race-condition問題，這在多執行緒應用中尤為重要。</p>
+<h4 id="使用方法-1"><a class="header" href="#使用方法-1">使用方法</a></h4>
+<ol>
+<li>
+<p><strong>啟用 race 檢測：</strong></p>
+<p>在運行應用時加上 <code>-race</code> 標誌：</p>
+<pre><code class="language-go">go run -race your_program.go
+</code></pre>
+</li>
+<li>
+<p><strong>查看輸出：</strong></p>
+<p>如果檢測到race-condition狀況，控制台將輸出相關警告和race-condition發生的位置。</p>
+</li>
+</ol>
+<h2 id="性能優化建議"><a class="header" href="#性能優化建議">性能優化建議</a></h2>
+<ul>
+<li><strong>減少記憶體分配：</strong> 使用pool技術（如 <code>sync.Pool</code>）減少頻繁的記憶體分配和釋放。</li>
+<li><strong>優化算法：</strong> 使用更有效率的算法和資料結構，減少計算量。</li>
+<li><strong>並行處理：</strong> 利用 Go 的 <code>goroutine</code> 和 <code>channel</code> 執行併行處理，提升多核 CPU 的利用率。</li>
+<li><strong>避免不必要的鎖：</strong> 在多執行緒環境中，過多的鎖會降低性能，應避免不必要的鎖定操作。</li>
+</ul>
+<h2 id="總結"><a class="header" href="#總結">總結</a></h2>
+<ol>
+<li>Profile 和 Trace 基本概念：</li>
+</ol>
+<ul>
+<li>Profile 用於測量和記錄應用程式各部分的資源使用情況，包括 CPU 和記憶體使用狀況，以幫助找出性能瓶頸。</li>
+<li>Trace 提供詳細的程式執行時間線和事件序列，適合分析併行程式中的race-condition問題和調度情況。</li>
+</ul>
+<ol start="2">
+<li>性能分析工具：</li>
+</ol>
+<ul>
+<li>pprof： 用於收集和分析 CPU 和記憶體的使用狀況，找出程式中最耗時的部分。</li>
+<li>trace： 用於生成程式執行的詳細時間軸，幫助分析race-condition狀況。</li>
+<li>race detector： 檢測程式中的變數race-condition問題，確保多執行緒應用的正確性。</li>
+</ul>
+<ol start="3">
+<li>性能優化建議：</li>
+</ol>
+<ul>
+<li>減少不必要的記憶體分配，優化算法和資料結構，提高並行處理效率，並避免不必要的鎖，從而提升程式的整體性能。</li>
+</ul>
+<p>這些工具和方法能夠幫助開發者更好地理解和優化 Go 程式的性能，確保應用高效穩定地運行。</p>
+<p>更多Go語言相關的文章，歡迎參考我的部落格: <a href="https://kaichiachen.github.io/2024/05/03/golang/go_performance_analysis/">https://kaichiachen.github.io/2024/05/03/golang/go_performance_analysis/</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="day17.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="day19.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="day17.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="day19.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

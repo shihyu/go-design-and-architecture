@@ -1,0 +1,260 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Day12 - goroutine是怎麼工作的？ - Go語言設計與架構之美</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Go語言設計與架構之美</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://ithelp.ithome.com.tw/users/20130271/ironman/7195" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="day12---goroutine是怎麼工作的"><a class="header" href="#day12---goroutine是怎麼工作的">Day12 - goroutine是怎麼工作的？</a></h1>
+<p>在這篇Go中最強的魔法: 併發程式執行的文章中，我們探討了併發的基本概念以及Go語言中實現併發的機制—Goroutine。這些內容對於剛接觸Go的Gopher來說，可以說是入門級的學習資料。</p>
+<p>但是，你可能會好奇，既然Go不是採用傳統的基於執行緒的併發模型，那Go的運行時是如何管理和調度(Schedule)眾多Goroutine的呢？實際上，這些是Go語言核心開發團隊的關注點，普通開發者通常不需要深入了解。不過深入理解Goroutine的調度原理對於寫出高效能的Go程式碼是非常有幫助的。</p>
+<p>接下來，讓我們一起簡要探索一下Goroutine調度器的工作原理。</p>
+<h3 id="goroutine調度器"><a class="header" href="#goroutine調度器">Goroutine調度器</a></h3>
+<p>談到「調度」，我們首先會想到作業系統如何管理進程和執行緒。作業系統的調度器會把多個執行緒分配到物理CPU上運行。與此相對應，Goroutine的資源消耗非常小。我們之前提到過，每個Goroutine只需2KB的stack空間。並且，Goroutine的調度切換並不需要陷入作業系統核心，因此成本非常低。這使得一個Go程式可以創建成千上萬的Goroutine來實現併發。</p>
+<p>這些Goroutine是如何被調度到CPU上運行的呢？實際上，它們是由一個稱為Goroutine調度器（Goroutine Scheduler）的機制來管理的。但要注意，這裡提到的「CPU」是在引號中，因為從Go程式的視角來看，它與作業系統的交互是有限的。</p>
+<p>實際上，對於作業系統而言，一個Go程式只是一個普通的用戶空間(user space)應用程式。作業系統並不直接識別Goroutine，因此所有的Goroutine調度都由Go自己來完成。這就導致了Go runtime必須在其自身內部管理Goroutine之間對「CPU」資源的競爭。</p>
+<p>那麼，在Go程式中，Goroutine實際上是在競爭什麼資源呢？答案是作業系統執行緒。因此，Goroutine調度器的工作就是把Goroutine根據一定的算法分配到不同的作業系統執行緒中去執行。</p>
+<h3 id="goroutine調度器模型---g-p-m模型"><a class="header" href="#goroutine調度器模型---g-p-m模型">Goroutine調度器模型 - G-P-M模型</a></h3>
+<p>在Go語言的領域中，Goroutine的調度機制、垃圾回收（GC）以及記憶體管理屬於一些較為深奧且複雜的概念。這些主題每一個都可以獨立成章，且隨著Go語言版本的更新，這些主題的實現細節也在不斷進化。本文將嘗試為你揭開基於G-P-M模型的Goroutine調度原理的神秘面紗。如果你對這方面的知識渴望更深入的了解，可以從這裡開始深挖Go的原始碼，探索更多細節。</p>
+<p>首先，讓我們來看看G、P、M這三者的定義，它們在Go語言的原始碼中有詳細的闡述，位置在<code>$GOROOT/src/runtime/runtime2.go</code>。在這個檔案中，你會發現G、P、M這三種結構的定義都非常龐大，每個結構包含了許多程式碼和定義。調度器這塊核心的程式碼相當複雜，考慮到的情況繁多，程式碼之間的「耦合」也十分緊密。不過，通過這些複雜的程式碼，我們還是可以窺見G、P、M各自的主要功能，以下簡要說明：</p>
+<ul>
+<li><strong>G (Goroutine)</strong>：負責儲存Goroutine的運行堆棧(Queue/Heap)、狀態以及任務函數等資訊，G是可被重用的。</li>
+<li><strong>P (邏輯處理器)</strong>：其數量決定了系統能夠同時並行運行的Goroutine的數量，P的主要作用是管理Goroutine Queue、Linked List及一些Cache和狀態。</li>
+<li><strong>M (執行計算資源)</strong>：在綁定了有效的P之後，會進入調度循環。這個循環主要從P的Local Queue或Global Queue中取得Goroutine，切換到相應的運行stack/heap上執行，並在執行完畢後通過goexit進行清理，然後返回M，這一過程會不斷重複。值得注意的是，M本身不保留任何Goroutine的狀態，這也是Goroutine能夠跨M調度的基礎。</li>
+</ul>
+<h3 id="被搶佔的goroutine調度"><a class="header" href="#被搶佔的goroutine調度">被搶佔的Goroutine調度</a></h3>
+<p>接下來，我們來討論當Goroutine在沒有進行系統調用、I/O操作或在channel上阻塞時，調度器是如何進行工作的。在這些情況下，Go語言的運行時會利用搶佔式調度來暫停當前Goroutine，並調度其他可運行的Goroutine。一般來說，除了極端情況下的無限迴圈，只要Goroutine執行了函數調用，Go運行時就有機會對其進行搶佔。</p>
+<p>Go語言在啟動時會運行一個名為sysmon的M（通常被稱為監控線程），這個特殊的M在Go程式運行的整個過程中發揮著關鍵作用，並且它無需綁定P即可運行（以g0的形式出現）。除此之外，當Goroutine在channel操作或網絡I/O上阻塞，或者在系統調用中阻塞時，Go運行時會有特定的調度策略來處理這些情況，確保整個系統的有效運行。</p>
+<h3 id="總結"><a class="header" href="#總結">總結</a></h3>
+<ul>
+<li>Goroutine調度器是Go語言中實現併發控制的核心，負責將Goroutine有效地分配到CPU資源上。</li>
+<li>G-P-M模型是理解Go中Goroutine調度的基礎，涉及Goroutine、邏輯處理器和執行資源的交互。</li>
+<li>透過深入理解Goroutine的調度機制，開發者可以更好地掌握Go語言的併發模型，寫出更高效、更可靠的程式碼。</li>
+</ul>
+<p>更多Go語言相關的文章，歡迎參考我的部落格: <a href="https://kaichiachen.github.io/2024/02/29/golang/go_goroutine/">https://kaichiachen.github.io/2024/02/29/golang/go_goroutine/</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="day11.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="day13.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="day11.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="day13.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

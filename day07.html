@@ -1,0 +1,348 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Day7 - Method: 怎麼用變數模擬繼承 - Go語言設計與架構之美</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Go語言設計與架構之美</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://ithelp.ithome.com.tw/users/20130271/ironman/7195" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="day7---method-怎麼用變數模擬繼承"><a class="header" href="#day7---method-怎麼用變數模擬繼承">Day7 - Method: 怎麼用變數模擬繼承</a></h1>
+<h3 id="go-語言的繼承與組合"><a class="header" href="#go-語言的繼承與組合">Go 語言的繼承與組合</a></h3>
+<p>Go 語言沒有像 C++/Java 等語言可以透過 <code>extend</code> 關鍵字來繼承某個 class。因此，Go class的所有方法都是自己顯式實現的。讓我們舉個例子，自定義class <code>T</code> 有兩個methods <code>M1</code> 和 <code>M2</code>，如果 <code>T</code> 是一個獨立的自定義class，那我們在聲明class <code>T</code> 的 Go 包原始碼文件中一定可以找到其所有method的實現程式碼，比如：</p>
+<pre><code class="language-go">func (T) M1() {...}
+func (T) M2() {...}
+</code></pre>
+<p>在 Go 語言中，如果我們真的想模擬繼承的效果，可以透過 Go 語言設計思想的“組合”來實現。具體的 Go 語言設計思想可以參考我的這篇文章 - <a href="../../../../../2023/12/12/golang/design_philosophy/">Go語言的設計哲學</a></p>
+<p>這種“繼承”是通過 Go 語言的類型嵌入（Type Embedding）來實現的。因此，這篇文章將帶你了解這種語法，看看我們如何通過這種語法來實現對嵌入類型的方法的“繼承”，同時也搞清楚這種方式對新定義的類型的方法集合的影響。首先，我們來學習一下什麼是類型嵌入。</p>
+<h3 id="類型嵌入"><a class="header" href="#類型嵌入">類型嵌入</a></h3>
+<p>類型嵌入指的是在一個類型的定義中嵌入了其他類型。Go 語言支持兩種類型嵌入，分別是 <code>interface</code> 類型的類型嵌入和 <code>struct</code> 類型的類型嵌入。</p>
+<h4 id="interface-類型的類型嵌入"><a class="header" href="#interface-類型的類型嵌入">interface 類型的類型嵌入</a></h4>
+<p>interface類型聲明了由一個方法集合代表的interface，比如下面interface類型 <code>E</code>：</p>
+<pre><code class="language-go">type E interface {
+    M1()
+    M2()
+}
+</code></pre>
+<p>我們再定義另外一個interface類型 <code>I</code>，它的方法集合中包含了三個方法 <code>M1</code>、<code>M2</code> 和 <code>M3</code>，如下所示：</p>
+<pre><code class="language-go">type I interface {
+    M1()
+    M2()
+    M3()
+}
+</code></pre>
+<p>我們看到interface類型 <code>I</code> 方法集合中的 <code>M1</code> 和 <code>M2</code>，與接口類型 <code>E</code> 的方法集合中的方法完全相同。在這種情況下，我們可以用interface類型 <code>E</code> 替代上面interface類型 <code>I</code> 定義中的 <code>M1</code> 和 <code>M2</code>，如下所示：</p>
+<pre><code class="language-go">type I interface {
+    E
+    M3()
+}
+</code></pre>
+<p>這種在一個interface類型（<code>I</code>）定義中嵌入另外一個interface類型（<code>E</code>）的方式，就是我們說的interface類型的<strong>類型嵌入</strong>。</p>
+<h4 id="struct-類型的類型嵌入"><a class="header" href="#struct-類型的類型嵌入">struct 類型的類型嵌入</a></h4>
+<p><code>struct</code> 類型的類型嵌入就要更複雜一些了，以下是 Go struct類型的“完全體”：</p>
+<pre><code class="language-go">type T1 int
+type t2 struct{
+    n int
+    m int
+}
+
+type I interface {
+    M1()
+}
+
+type S1 struct {
+    T1
+    *t2
+    I            
+    a int
+    b string
+}
+</code></pre>
+<p>我們看到，struct <code>S1</code> 定義中有三個“非常規形式”的attribute，分別是 <code>T1</code>、<code>t2</code> 和 <code>I</code>。這三個struct裡的attribute究竟代表的是什麼呢？是名字還是類型呢？</p>
+<p>這裡我直接告訴你答案：它們既代表attribute的名字，也代表attribute的類型。我們分別以這三個attribute為例，說明一下它們的具體含義：</p>
+<ul>
+<li><code>T1</code> 表示attribute名為 <code>T1</code>，它的類型為自定義類型 <code>T1</code>；</li>
+<li><code>t2</code> 表示attribute名為 <code>t2</code>，它的類型為自定義struct類型 <code>t2</code> 的pointer類型；</li>
+<li><code>I</code> 表示attribute名為 <code>I</code>，它的類型為interface類型 <code>I</code>。</li>
+</ul>
+<pre><code class="language-go">type MyInt int
+
+func (n *MyInt) Add(m int) {
+    *n = *n + MyInt(m)
+}
+
+type t struct {
+    a int
+    b int
+}
+
+type S struct {
+    *MyInt
+    t
+    io.Reader
+    s string
+    n int
+}
+
+func main() {
+    m := MyInt(17)
+    r := strings.NewReader("hello, go")
+    s := S{
+        MyInt: &amp;m,
+        t: t{
+            a: 1,
+            b: 2,
+        },
+        Reader: r,
+        s:      "demo",
+    }
+
+    var sl = make([]byte, len("hello, go"))
+    s.Read(sl)              // 等同於 s.Reader.Read(sl)
+    fmt.Println(string(sl)) // 輸出：hello, go
+    s.Add(5) 
+    fmt.Println(*(s.MyInt)) // 輸出：22
+}
+</code></pre>
+<p>看到這段程式碼，你可能會問：類型 <code>S</code> 沒有定義 <code>Read</code> 方法和 <code>Add</code> 方法啊，這樣寫不會導致 Go 編譯器報錯嗎？如果你有這個疑問，可以暫停一下，先用你手上的 Go 編譯器編譯運行一下這段程式碼看看。</p>
+<p>是不是很驚喜？這段程序不但沒有引發編譯器報錯，還可以正常運行並輸出正確的結果！</p>
+<p>這段程式碼似乎在告訴我們：<code>Read</code> 方法和 <code>Add</code> 方法就是類型 <code>S</code> 方法集合中的方法。其實，這兩個方法來自於struct類型 <code>S</code> 的兩個嵌入attribute <code>Reader</code> 和 <code>MyInt</code>。struct類型 <code>S</code> “繼承”了 <code>Reader</code> attribute的方法 <code>Read</code> 的實現，也“繼承”了 <code>*MyInt</code> 的 <code>Add</code> 方法的實現。注意，我這裡的“繼承”用了引號，說明這並不是真正的繼承，而是 Go 語言的一種“障眼法”。</p>
+<p>這種“障眼法”的工作機制是這樣的：當我們通過struct類型 <code>S</code> 的變量 <code>s</code> 呼叫 <code>Read</code> 方法時，Go 發現struct類型 <code>S</code> 自身並沒有定義 <code>Read</code> 方法，於是 Go 會查看 <code>S</code> 的嵌入attribute對應的類型是否定義了 <code>Read</code> 方法。這時，<code>Reader</code> attribute就被找了出來，之後 <code>s.Read</code> 的呼叫就被轉換為 <code>s.Reader.Read</code> 的呼叫。</p>
+<p>這樣一來，嵌入attribute <code>Reader</code> 的 <code>Read</code> 方法就被提升為 <code>S</code> 的方法，放入了類型 <code>S</code> 的方法集合。同理，<code>*MyInt</code> 的 <code>Add</code> 方法也被提升為 <code>S</code> 的方法而放入 <code>S</code> 的方法集合。從外部來看，這種嵌入attribute的方法的提升就給了我們一種struct類型 <code>S</code> “繼承”了 <code>io.Reader</code> 類型 <code>Read</code> 方法的實現，以及 <code>*MyInt</code> 類型 <code>Add</code> 方法的實現的錯覺。嵌入attribute的使用的確可以幫我們在 Go 中實現方法的“繼承”。</p>
+<h3 id="多重繼承"><a class="header" href="#多重繼承">多重繼承</a></h3>
+<p>不過有一種情況需要注意，那就是當struct嵌入的多個接口類型的方法集合存在交集時，你要小心編譯器可能會出現的錯誤提示。</p>
+<p>Go 1.14 版本解決了嵌入接口類型的方法集合有交集的情況，僅限於interface類型中嵌入interface類型。這裡我們討論的是在struct類型中嵌入方法集合有交集的interface類型。</p>
+<p>如果struct自身實現了該方法，Go 就會優先使用struct自己實現的方法。如果沒有實現，那麼 Go 就會查找struct中的嵌入attribute的方法集合中是否包含這個方法。如果多個嵌入attribute的方法集合中都包含這個方法，那麼我們就說方法集合存在交集。這時，Go 編譯器就會因無法確定究竟使用哪個方法而報錯，所以 Go 會在編譯階段就限制多重繼承的問題。</p>
+<h3 id="總結"><a class="header" href="#總結">總結</a></h3>
+<ul>
+<li>Go 語言沒有傳統意義上的繼承，所有方法都必須顯式實現。</li>
+<li>可以通過類型嵌入（Type Embedding）來模擬繼承的效果，將嵌入類型的方法提升為新類型的方法。</li>
+<li><code>interface</code> 和 <code>struct</code> 都支持類型嵌入。</li>
+<li>使用嵌入attribute到class的方法提升機制，可以實現方法的“繼承”，但需注意多重繼承的衝突問題。</li>
+</ul>
+<p>這些技巧和知識將幫助你在 Go 語言中有效地使用組合和嵌入，編寫出更靈活且可維護的程式碼。</p>
+<p>更多Go語言相關的文章，歡迎追蹤我的部落格: <a href="https://kaichiachen.github.io/2024/01/23/golang/go_inherit/">https://kaichiachen.github.io/2024/01/23/golang/go_inherit/</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="day06.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="day08.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="day06.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="day08.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

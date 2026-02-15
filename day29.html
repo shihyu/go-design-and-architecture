@@ -1,0 +1,287 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Day29 - Go 語言適合寫什麼 AI 應用程式？ - Go語言設計與架構之美</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Go語言設計與架構之美</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://ithelp.ithome.com.tw/users/20130271/ironman/7195" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="day29---go-語言適合寫什麼-ai-應用程式"><a class="header" href="#day29---go-語言適合寫什麼-ai-應用程式">Day29 - Go 語言適合寫什麼 AI 應用程式？</a></h1>
+<p>Go 語言（Golang）是由 Google 開發的一種編譯型語言，擁有簡單的語法、快速的執行效率和優秀的併發能力。Go 在許多領域中已經展示了它的優勢，尤其是微服務、雲端應用和區塊鏈。但你可能會好奇：Go 適合用來開發 AI 應用嗎？這篇文章會深入探討 Go 語言的特性，並介紹它在 AI 應用中的潛在用途。</p>
+<hr />
+<h3 id="1-go-語言的特性簡介"><a class="header" href="#1-go-語言的特性簡介">1. Go 語言的特性簡介</a></h3>
+<p>在深入 AI 應用前，我們先來看看 Go 語言有哪些能幫助我們開發 AI 應用的特性：</p>
+<ul>
+<li><strong>簡單易學</strong>：Go 的語法非常簡單，讓開發者可以專注於問題本身，而不會陷入複雜的語法細節。</li>
+<li><strong>高效併發</strong>：Go 原生支援輕量級的併發處理，透過 <code>goroutine</code>，可以簡單啟動數以千計的輕量執行緒，非常適合需要大量資料處理的應用。</li>
+<li><strong>高性能編譯語言</strong>：作為編譯型語言，Go 的執行效率非常高，特別是在處理需要大量計算的應用時表現出色。</li>
+<li><strong>豐富的標準庫與社群支援</strong>：Go 擁有豐富的標準庫，並且越來越多開源的 AI 庫正在湧現，這讓 AI 開發變得更加容易。</li>
+</ul>
+<hr />
+<h3 id="2-go-語言適合的-ai-應用場景"><a class="header" href="#2-go-語言適合的-ai-應用場景">2. Go 語言適合的 AI 應用場景</a></h3>
+<p>雖然 Go 語言不像 Python 那樣在 AI 領域有強大的工具鏈，但它的獨特優勢讓它在某些 AI 應用場景中表現得非常優異。</p>
+<h4 id="1-微服務架構的-ai-應用"><a class="header" href="#1-微服務架構的-ai-應用">(1) <strong>微服務架構的 AI 應用</strong></a></h4>
+<p>AI 應用程式越來越常以微服務架構運行，因為這樣可以讓不同的模型或演算法被封裝成獨立的服務，方便維護和擴展。而 Go 正是微服務開發的利器。</p>
+<p><strong>為什麼適合？</strong><br />
+Go 天生適合開發後端服務，像是 API 服務和資料處理器。Go 的輕量併發（<code>goroutine</code>）允許我們處理大量的請求，同時保持高效的資源使用，這對 AI 服務而言尤為重要。舉例來說，當你的 AI 模型需要大量數據來進行預測時，Go 的併發能力能夠迅速地處理來自多個用戶的請求，並同步回傳結果。</p>
+<p>範例應用：</p>
+<ul>
+<li><strong>推薦系統</strong>：當需要從多個來源提取資料並進行即時推薦時，Go 的速度和併發能力非常適合這類型的應用。</li>
+<li><strong>聊天機器人 API</strong>：在聊天機器人應用中，需要即時回應大量使用者，Go 的快速回應能力讓它非常適合。</li>
+</ul>
+<h4 id="2-高性能分布式-ai-應用"><a class="header" href="#2-高性能分布式-ai-應用">(2) <strong>高性能分布式 AI 應用</strong></a></h4>
+<p>Go 在開發分布式系統和雲端應用中表現出色，這對於需要橫向擴展的 AI 系統來說非常重要。比如，處理大量資料進行模型訓練，或是進行分布式推理計算時，Go 能提供非常好的併發處理性能。</p>
+<p><strong>為什麼適合？</strong><br />
+當你在開發需要處理大量資料的分布式 AI 系統時，Go 的高併發和快速編譯速度將會發揮很大的優勢。這些特性能夠讓你的 AI 系統在多個節點上運行，並高效地進行資料交換與模型計算。區塊鏈技術中的智能合約應用就是一個例子，Go 被廣泛應用於 Hyperledger 和 Ethereum 這類區塊鏈平台上，用來處理去中心化的 AI 應用。</p>
+<p>範例應用：</p>
+<ul>
+<li><strong>分散式機器學習訓練</strong>：將機器學習模型訓練分散到多個節點上，Go 可以幫助你快速且安全地處理節點間的資料交換。</li>
+<li><strong>區塊鏈 AI 應用</strong>：如在區塊鏈網路上執行 AI 預測模型，Go 在智能合約與分散式計算中可以發揮很大作用。</li>
+</ul>
+<h4 id="3-實時數據處理和流處理"><a class="header" href="#3-實時數據處理和流處理">(3) <strong>實時數據處理和流處理</strong></a></h4>
+<p>在一些 AI 應用中，像是物聯網 (IoT) 相關的應用，需要實時處理大量來自感測器或設備的資料。這時候，Go 的高併發和即時回應特性讓它成為 AI 實時應用的理想選擇。</p>
+<p><strong>為什麼適合？</strong><br />
+Go 非常擅長處理大量的資料流，並能夠在不浪費系統資源的情況下保證應用的穩定性。在實時數據處理的場景中，我們經常需要即時收集資料並快速分析。Go 的 <code>goroutine</code> 和 <code>channel</code> 能夠高效處理這些實時流資料，並通過併發模型保證每個數據包都得到及時的處理。</p>
+<p>範例應用：</p>
+<ul>
+<li><strong>實時監控系統</strong>：用於分析來自不同設備的感測數據，如交通流量、環境監控等，AI 模型可以用來即時預測或偵測異常。</li>
+<li><strong>金融交易數據分析</strong>：Go 可以幫助構建高效的實時數據流處理系統，將來自市場的數據即時送入 AI 模型進行預測和分析。</li>
+</ul>
+<hr />
+<h3 id="3-go-ai-開發工具與庫"><a class="header" href="#3-go-ai-開發工具與庫">3. Go AI 開發工具與庫</a></h3>
+<p>雖然 Go 在 AI 領域的工具鏈不如 Python 豐富，但隨著 Go 的社群壯大，越來越多的開發者推出了專為 AI 設計的工具和庫。這些工具能夠讓 Go 在 AI 開發中更加得心應手。</p>
+<h4 id="1-gorgonia"><a class="header" href="#1-gorgonia">(1) <strong>Gorgonia</strong></a></h4>
+<p>Gorgonia 是一個用 Go 寫的數值計算和深度學習框架，它類似於 Python 的 TensorFlow 和 PyTorch。Gorgonia 支援張量操作、反向傳播（backpropagation）和自動微分，讓你可以用 Go 開發深度學習模型。對於那些希望使用 Go 進行機器學習的開發者來說，Gorgonia 提供了一個非常好的選擇。</p>
+<h4 id="2-golearn"><a class="header" href="#2-golearn">(2) <strong>GoLearn</strong></a></h4>
+<p>GoLearn 是一個機器學習庫，提供了常見的機器學習演算法，比如決策樹、隨機森林和 KNN（k-Nearest Neighbors）。GoLearn 的 API 簡單直觀，讓開發者可以快速構建和測試機器學習模型。它非常適合用於需要輕量機器學習解決方案的應用。</p>
+<h4 id="3-gonum"><a class="header" href="#3-gonum">(3) <strong>gonum</strong></a></h4>
+<p>Gonum 是一個科學計算庫，提供了強大的矩陣運算和數值計算能力。對於那些需要進行數據分析或數學運算的 AI 應用來說，gonum 是非常實用的工具。</p>
+<hr />
+<h3 id="結論"><a class="header" href="#結論">結論</a></h3>
+<p>雖然 Go 語言在 AI 領域的生態系統不如 Python 成熟，但它在特定場景中有著無可替代的優勢。Go 的高併發能力讓它非常適合開發需要處理大量請求的 AI 微服務；高效的編譯速度和單一可執行文件讓 AI 應用的部署變得更加簡單；而強大的分布式系統支援則讓它在大規模 AI 推理和數據處理中表現出色。</p>
+<p>總結來說，Go 語言適合作為 AI 應用的「基礎設施層」，負責高效的數據處理、服務部署和併發管理，而模型訓練等核心 AI 計算則可以交由 Python 等更專業的工具來完成。兩者搭配使用，能夠發揮出最大的效能。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="day28.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="day30.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="day28.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="day30.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

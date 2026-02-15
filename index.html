@@ -1,0 +1,244 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Day1 開篇 - Go語言設計與架構之美 - Go語言設計與架構之美</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Go語言設計與架構之美</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://ithelp.ithome.com.tw/users/20130271/ironman/7195" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="day1-開篇---go語言設計與架構之美"><a class="header" href="#day1-開篇---go語言設計與架構之美">Day1 開篇 - Go語言設計與架構之美</a></h1>
+<p>當你首次接觸 Go 語言時，可能會被它的簡潔、直觀所吸引，重點是，他還是編譯式語言，速度快、可執行文件小、開發也很快、還有很多第三方Library可以使用。然而，隨著時間的推移，這種表面上的簡單會逐漸揭示出更深層次的精妙設計。Go語言從不花哨，他甚至沒有繼承的語法，但總能讓你在不經意間學到最本質的東西。</p>
+<p>我決定在接下來的三十天，帶你領略 Go 語言設計背後的智慧與哲學。無論你是 Go 語言的新手，還是已經駕輕就熟的資深工程師，我希望這個系列能幫助你更深入地理解這門程式語言從而更好的設計 Go 專案。</p>
+<p>Go 語言由 Google 的工程師在 2007 年創建，目標是解決傳統語言在多核處理器時代下效率低下和繁瑣的問題。這門語言的設計核心是簡單、可維護性和高效能。Go 語言的設計哲學不是在語言中堆砌大量的功能，而是通過削減非必要的元素來強化核心功能。正如 Brian Kernighan 所說，“最好的設計是那種看起來像是為了避免犯錯誤而設計出來的東西。”</p>
+<p>在這個系列中，我會探討 Go 語言的方方面面，從語言的基本設計理念到實際應用中的架構模式。Go 語言的簡約並非意味著功能的貧乏，相反，這種簡約是一種力量，讓開發者能夠快速、高效地構建高質量的軟體系統。我們會從以下幾個方面進行深入的探討：</p>
+<ol>
+<li>語言設計的哲學：Go 語言的設計簡潔而不簡單，它讓我們得以從複雜的編程語言中解脫出來，專注於解決實際問題。</li>
+<li>併發模型的優雅：Go 的 goroutine 和 channel 設計展示了並發編程的簡單與強大，使得多線程編程不再讓人望而卻步。</li>
+<li>Library的力量：Go 的第三方Library豐富且實用，覆蓋了日常開發的絕大多數需求，讓開發者可以更專注於業務邏輯。</li>
+<li>編譯與測試的便利：Go 語言的單一靜態可執行文件和單元測試的特性，讓部署和測試變得極其簡單和高效。</li>
+<li>工具鏈的簡單強大：Go 提供了一整套原生工具來支持從程式碼格式化到Module管理，再到測試的完整開發流程。</li>
+</ol>
+<p>我們常說，“簡單即是美。”Go 語言的美，不僅在於它的簡單，更在於這種簡單背後的精妙與考量。當我們深入 Go 語言時，會發現設計者們精心考慮了每一個細節，讓開發者能夠專注於創造，而不是被語言本身的複雜性所困擾，例如C++?</p>
+<p>在接下來的三十天裡，我將每天分享一篇關於 Go 語言的設計與架構的見解。每篇文章將從不同角度切入，揭示 Go 語言如何通過設計和架構達到高效、優雅的平衡。我們將探討 Go 語言中的最佳實踐、常見設計模式和好用的一些Library，以及在實際開發中如何利用 Go 的特性來構建穩健的系統。</p>
+<p>最後，希望這個系列不僅僅是技術上的啟發，也能讓你在日常開發中感受到 Go 語言所帶來的樂趣。無論你是剛剛踏入 Go 語言世界的初學者，還是尋求深度理解的資深開發者，我希望這個系列都能給你帶來一些啟發。讓我們一起，探索 Go 語言設計與架構之美。</p>
+<p>準備好迎接挑戰了嗎？明天我們從 Go 語言的設計哲學開始，逐步揭開這門語言的神秘面紗。每一天都將是一次新的發現，讓我們一起走進這場充滿智慧與美感的探索之旅。</p>
+<p>也歡迎專注我的部落格，Go語言系列的部分: <a href="https://kaichiachen.github.io/categories/Go/">https://kaichiachen.github.io/categories/Go/</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+                            <a rel="next prefetch" href="day02.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+                    <a rel="next prefetch" href="day02.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

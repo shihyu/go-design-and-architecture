@@ -1,0 +1,3153 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Go語言設計與架構之美</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Go語言設計與架構之美</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://ithelp.ithome.com.tw/users/20130271/ironman/7195" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="day1-開篇---go語言設計與架構之美"><a class="header" href="#day1-開篇---go語言設計與架構之美">Day1 開篇 - Go語言設計與架構之美</a></h1>
+<p>當你首次接觸 Go 語言時，可能會被它的簡潔、直觀所吸引，重點是，他還是編譯式語言，速度快、可執行文件小、開發也很快、還有很多第三方Library可以使用。然而，隨著時間的推移，這種表面上的簡單會逐漸揭示出更深層次的精妙設計。Go語言從不花哨，他甚至沒有繼承的語法，但總能讓你在不經意間學到最本質的東西。</p>
+<p>我決定在接下來的三十天，帶你領略 Go 語言設計背後的智慧與哲學。無論你是 Go 語言的新手，還是已經駕輕就熟的資深工程師，我希望這個系列能幫助你更深入地理解這門程式語言從而更好的設計 Go 專案。</p>
+<p>Go 語言由 Google 的工程師在 2007 年創建，目標是解決傳統語言在多核處理器時代下效率低下和繁瑣的問題。這門語言的設計核心是簡單、可維護性和高效能。Go 語言的設計哲學不是在語言中堆砌大量的功能，而是通過削減非必要的元素來強化核心功能。正如 Brian Kernighan 所說，“最好的設計是那種看起來像是為了避免犯錯誤而設計出來的東西。”</p>
+<p>在這個系列中，我會探討 Go 語言的方方面面，從語言的基本設計理念到實際應用中的架構模式。Go 語言的簡約並非意味著功能的貧乏，相反，這種簡約是一種力量，讓開發者能夠快速、高效地構建高質量的軟體系統。我們會從以下幾個方面進行深入的探討：</p>
+<ol>
+<li>語言設計的哲學：Go 語言的設計簡潔而不簡單，它讓我們得以從複雜的編程語言中解脫出來，專注於解決實際問題。</li>
+<li>併發模型的優雅：Go 的 goroutine 和 channel 設計展示了並發編程的簡單與強大，使得多線程編程不再讓人望而卻步。</li>
+<li>Library的力量：Go 的第三方Library豐富且實用，覆蓋了日常開發的絕大多數需求，讓開發者可以更專注於業務邏輯。</li>
+<li>編譯與測試的便利：Go 語言的單一靜態可執行文件和單元測試的特性，讓部署和測試變得極其簡單和高效。</li>
+<li>工具鏈的簡單強大：Go 提供了一整套原生工具來支持從程式碼格式化到Module管理，再到測試的完整開發流程。</li>
+</ol>
+<p>我們常說，“簡單即是美。”Go 語言的美，不僅在於它的簡單，更在於這種簡單背後的精妙與考量。當我們深入 Go 語言時，會發現設計者們精心考慮了每一個細節，讓開發者能夠專注於創造，而不是被語言本身的複雜性所困擾，例如C++?</p>
+<p>在接下來的三十天裡，我將每天分享一篇關於 Go 語言的設計與架構的見解。每篇文章將從不同角度切入，揭示 Go 語言如何通過設計和架構達到高效、優雅的平衡。我們將探討 Go 語言中的最佳實踐、常見設計模式和好用的一些Library，以及在實際開發中如何利用 Go 的特性來構建穩健的系統。</p>
+<p>最後，希望這個系列不僅僅是技術上的啟發，也能讓你在日常開發中感受到 Go 語言所帶來的樂趣。無論你是剛剛踏入 Go 語言世界的初學者，還是尋求深度理解的資深開發者，我希望這個系列都能給你帶來一些啟發。讓我們一起，探索 Go 語言設計與架構之美。</p>
+<p>準備好迎接挑戰了嗎？明天我們從 Go 語言的設計哲學開始，逐步揭開這門語言的神秘面紗。每一天都將是一次新的發現，讓我們一起走進這場充滿智慧與美感的探索之旅。</p>
+<p>也歡迎專注我的部落格，Go語言系列的部分: <a href="https://kaichiachen.github.io/categories/Go/">https://kaichiachen.github.io/categories/Go/</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day2---go語言的設計哲學"><a class="header" href="#day2---go語言的設計哲學">Day2 - Go語言的設計哲學</a></h1>
+<p>Go語言，又稱Golang，是由Google開發的一種現代程式語言。它在2007年誕生，由Robert Griesemer、Rob Pike和Ken Thompson設計。Go語言的設計哲學非常獨特，使它在眾多程式語言中脫穎而出。這篇文章，我們來聊聊Go語言的設計哲學，看看這門語言是如何讓寫程式變得更加簡單、高效和愉快的。</p>
+<p>所謂程式語言的設計哲學，就是指決定這門語言演化進程的高級原則和依據。好比Python的設計哲學是<strong>簡單就是美</strong>，使開發者能專注於解決問題本身，而不是被語法所困擾。而Java的設計哲學強調穩定性、可擴展性和跨平台性，Java的座右銘是「Write Once, Run Anywhere」。</p>
+<p><strong>設計哲學之於程式語言，就好比一個人的價值觀之於這個人的行為</strong><br />
+因為如果你不認同一個人的價值觀，那你其實很難與之持續交往下去，即所謂道不同不相為謀。類似的，如果你不認同一門程式語言的設計哲學，那麼很有可能你在後續的語言學習中，就會遇到上面提到的這些問題，而且可能會讓你失去繼續學習的精神動力。</p>
+<p>我認為Go語言的設計哲學可以總結為以下五點：簡單、顯式、組合、併發和工程導向。</p>
+<h3 id="簡單"><a class="header" href="#簡單">簡單</a></h3>
+<p>簡單意味著語言本身保持最小的語法和特性集，避免過於複雜的結構和特性，使程式碼更易於閱讀和理解。例如，Go 不支持繼承、多型等傳統 OOP（物件導向程式設計）的特性，而是依賴於更簡單的結構體和接口。</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+type Person struct {
+    Name string
+    Age  int
+}
+
+func main() {
+    p := Person{Name: "John", Age: 30}
+    fmt.Println(p)
+}
+</code></pre>
+<h3 id="顯式"><a class="header" href="#顯式">顯式</a></h3>
+<p>Go 語言強調「顯式」而非「隱式」，這意味著程式碼應該明確表達其意圖。這有助於減少錯誤，提高程式碼的可讀性和可維護性。Go 的錯誤處理機制也是這一理念的體現，它要求開發者顯式處理錯誤，而不是依賴隱式的異常機制。所以在開發Go程式時，經常可以在開發中而不是編譯或運行時才捕捉到人為錯誤。</p>
+<pre><code class="language-go">package main
+
+import (
+    "fmt"
+    "os"
+)
+
+func main() {
+    file, err := os.Open("test.txt")
+    if err != nil {
+        fmt.Println("Error opening file:", err)
+        return
+    }
+    defer file.Close()
+    // 處理文件的邏輯
+}
+</code></pre>
+<h3 id="組合"><a class="header" href="#組合">組合</a></h3>
+<p>Go 語言提倡通過「組合」來構建複雜的系統，而不是通過繼承。這種方式使得程式碼更加靈活和可重用。Go 的接口系統允許我們定義一組行為，而不需要在類層次上建立複雜的繼承關係。</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+type Flyer interface {
+    Fly()
+}
+
+type Bird struct{}
+
+func (b Bird) Fly() {
+    fmt.Println("Bird is flying")
+}
+
+type Plane struct{}
+
+func (p Plane) Fly() {
+    fmt.Println("Plane is flying")
+}
+
+func main() {
+    var f Flyer
+
+    f = Bird{}
+    f.Fly()
+
+    f = Plane{}
+    f.Fly()
+}
+</code></pre>
+<p>這有點類似物件導向的多型，只要struct滿足事先定義的interface介口方法，就可以實作並且執行。</p>
+<h3 id="併發"><a class="header" href="#併發">併發</a></h3>
+<p>Go 語言原生支持「併發」，並通過 goroutine 和 channel 提供了簡單且強大的併發程式開發模型。這使得開發者能夠輕鬆地寫出高效的併發程式，而不需要處理複雜的併發控制機制。</p>
+<pre><code class="language-go">package main
+
+import (
+    "fmt"
+    "time"
+)
+
+func say(s string) {
+    for i := 0; i &lt; 5; i++ {
+        time.Sleep(100 * time.Millisecond)
+        fmt.Println(s)
+    }
+}
+
+func main() {
+    go say("world")
+    say("hello")
+}
+</code></pre>
+<h3 id="工程導向"><a class="header" href="#工程導向">工程導向</a></h3>
+<p>Go 語言的設計非常「工程導向」，它關注於實際工程中的問題，提供了快速編譯、簡單部署、以及高效執行的特性。這使得 Go 成為構建大型分佈式系統和微服務架構的理想選擇。</p>
+<h3 id="總結"><a class="header" href="#總結">總結</a></h3>
+<ul>
+<li>Go語言設計哲學強調簡單、顯式、組合、併發和工程導向。</li>
+<li>它通過減少語法和特性，使程式碼更易讀和理解。</li>
+<li>強調顯式處理錯誤，減少潛在錯誤風險。</li>
+<li>鼓勵組合而非繼承，提高程式碼靈活性和重用性。</li>
+<li>原生支持併發，方便開發高效的併發程式。</li>
+<li>工程導向設計，適合大型分佈式系統和微服務架構。</li>
+</ul>
+<p>更多關於Go語言的文章可以參考我的部落格: <a href="https://kaichiachen.github.io/2023/12/12/golang/design_philosophy/">https://kaichiachen.github.io/2023/12/12/golang/design_philosophy/</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day3---一個go的程式專案是怎麼樣的"><a class="header" href="#day3---一個go的程式專案是怎麼樣的">Day3 - 一個Go的程式專案是怎麼樣的</a></h1>
+<p>我們編寫的 Go 程式一般都是簡單程式，一般由一個或幾個 Go 原始碼檔案組成，而且所有原始碼檔案都在同一個目錄中。但是生產環境中運行的程式可不會這麼簡單，通常它們都有著複雜的專案結構佈局。弄清楚一個實用 Go 專案的專案佈局標準是 Go 開發者走向編寫複雜 Go 程式的第一步，也是必經的一步。</p>
+<p>但 Go 官方到目前為止也沒有給出一個關於 Go 專案佈局標準的正式定義。那在這樣的情況下，Go 社群是否有我們可以遵循的參考佈局，或者標準呢？有的。在這一篇文章裡，我就來告訴你 Go 社群廣泛採用的 Go 專案佈局是什麼樣子的。</p>
+<p>一個 Go 專案通常分為可執行程式專案和第三方module/lib，現在我們就來分析一下這兩類 Go 專案的典型結構佈局分別是怎樣的。首先我們先來看 Go 可執行程式專案的典型結構佈局。可執行程式專案是以建構可執行程式為目的的專案，Go 社群針對這類 Go 專案所形成的典型結構佈局是這樣的：</p>
+<pre><code class="language-go">#&gt; tree -F goProject
+goProject
+├── cmd/
+│   ├── app1/
+│   │   └── main.go
+│   └── app2/
+│       └── main.go
+├── go.mod
+├── go.sum
+├── internal/
+│   ├── pkga/
+│   │   └── pkg_a.go
+│   └── pkgb/
+│       └── pkg_b.go
+├── pkg1/
+│   └── pkg1.go
+└── pkg2/
+    └── pkg2.go
+</code></pre>
+<p>我來解釋一下這裡面的幾個重點。</p>
+<p>我們從上往下按順序來，先來看 cmd 目錄。cmd 目錄就是存放專案要編譯構建的可執行檔案對應的帶有<code>func main()</code>.go檔案。如果你的專案中有多個可執行檔案需要構建，每個可執行檔案的 main 套件單獨放在一個子目錄中，比如圖中的 app1、app2，cmd 目錄下的各 app 的 main 套件將整個專案的依賴連接在一起。</p>
+<p>而且通常來說，main 應該很簡潔。我們在 main 裡的實作會做一些command參數解析、資源初始化、Logger初始化、資料庫連接初始化等工作，之後就程式就會進去其他package去執行更高級的邏輯控制。另外，也有一些 Go 專案將 cmd 這個名字改為 app 或其他名字，但它的功能其實並沒有變。</p>
+<p>接著我們來看 pkgN 目錄，這是一個存放專案自身要使用、同樣也是可執行檔案對應 main 所要依賴的Library，同時這些目錄下的Library還可以被外部Project引用。</p>
+<p>然後是 go.mod 和 go.sum，它們是管理 Go 語言第三方Library所使用的配置檔。建議所有新專案都基於 Go Module 來進行Library管理，因為這是目前 Go 官方推薦的標準構建模式。</p>
+<p><strong>好了到這裡，我們已經了解了 Go 可執行程式專案的典型佈局，現在我們再來看看 Go Library的典型結構佈局是怎樣的。</strong><br />
+Go Library僅對外暴露 Go 套件，這類專案的典型佈局形式是這樣的</p>
+<pre><code class="language-go">#&gt; tree -F libLayout 
+libLayout
+├── go.mod
+├── internal/
+│   ├── pkga/
+│   │   └── pkg_a.go
+│   └── pkgb/
+│       └── pkg_b.go
+├── pkg1/
+│   └── pkg1.go
+└── pkg2/
+    └── pkg2.go
+</code></pre>
+<p>我們看到，Library類型專案相比於 Go 可執行程式專案的佈局要簡單一些。因為這類Project不需要構建可執行程式，所以去除了 cmd 目錄。</p>
+<p>Go Library的初衷是為了對外部（開源或組織內部公開）暴露 API，對於僅限Project內部使用而不想暴露到外部的套件，可以放在Project頂層的 internal 目錄下面。當然 internal 也可以有多個並存在於Project結構中的任一目錄層級中，關鍵是專案結構設計人員要明確各級 internal 套件的應用層次和範圍。</p>
+<p>對於有一個且僅有一個套件的 Go Library來說，我們也可以將上面的佈局做進一步簡化，簡化的佈局如下所示：</p>
+<pre><code class="language-go">#&gt; tree -L 1 -F singleLibLayout
+singleLibLayout
+├── feature1.go
+├── feature2.go
+├── go.mod
+└── internal/
+</code></pre>
+<p>簡化後，我們將這唯一套件的所有原始碼檔案放置在Project的頂層目錄下（比如上面的 feature1.go 和 feature2.go），其他佈局元素位置和功用不變。</p>
+<h3 id="總結-1"><a class="header" href="#總結-1">總結</a></h3>
+<p>首先，對於以生產可執行程式為目的的 Go Project，它的典型Project結構分為五部分：</p>
+<ul>
+<li>放在Project頂層的 Go Module 相關檔案，包括 go.mod 和 go.sum</li>
+<li>cmd 目錄：存放Project要編譯構建的可執行檔案所對應的 main 套件的源檔</li>
+<li>Project套件目錄：每個Project下的非 main 套件都“平鋪”在Project的根目錄下，每個目錄對應一個 Go 套件</li>
+<li>internal 目錄：存放僅Project內部引用的 Go 套件，這些套件無法被Project外引用</li>
+</ul>
+<p>第二，對於以生產可復用Library為目的的 Go Project，它的典型結構則要簡單許多，我們可以直接理解為在 Go 可執行程式專案的基礎上去掉 cmd 目錄。</p>
+<p>更多Go相關的文章可以參閱我的部落格: <a href="https://kaichiachen.github.io/2023/12/12/golang/design_philosophy/">https://kaichiachen.github.io/2023/12/12/golang/design_philosophy/</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day4---搞清楚go語言的生命週期"><a class="header" href="#day4---搞清楚go語言的生命週期">Day4 - 搞清楚Go語言的生命週期</a></h1>
+<p>在剛開始學習 Go 語言的時候，我們可能經常會遇到這樣一個問題：一個 Go 專案中有數十個 Go packages，每個package中又有若干常數、變數、各種函數和方法，那 Go 程式究竟是從哪裡開始執行的呢？後續的執行順序又是什麼樣的呢？</p>
+<p>了解這門語言的執行次序，對我們寫出結構合理、邏輯清晰的程式大有助益。無論你使用的是哪種編程範式（Paradigm），過程式的、物件導向的、函數式的，還是其他編程範式，深入了解一下總歸是好的。</p>
+<p>今天這篇文章，我就帶你來了解一下 Go 程式的執行次序，這樣在後續閱讀和理解 Go 程式碼的時候，你就好比擁有了“通往寶藏的地圖”，可以直接沿著 Go 程式碼執行次序這張“地圖”去閱讀和理解 Go 程式碼，不會在龐大的程式庫中迷失。</p>
+<p>Go 程式由一系列 Go package組成，程式碼的執行也是在各個package之間跳轉。和其他語言一樣，Go 也擁有自己的執行入口 - <strong>main 函數</strong>。這篇文章我們就從 main 函數入手，逐步展開，最終帶你掌握 Go 程式的執行順序。</p>
+<h3 id="mainmain-函數go-應用的入口函數"><a class="header" href="#mainmain-函數go-應用的入口函數">main.main 函數：Go 應用的入口函數</a></h3>
+<p>Go 語言中有一個特殊的函數：main package中的 main 函數，也就是 main.main，它是所有 Go 可執行程式的用戶層執行邏輯的入口函數。Go 程式的執行邏輯，會在這個函數內按照它的調用順序展開。</p>
+<p>入口函數 - main 的定義是這樣的：</p>
+<pre><code class="language-go">package main
+
+func main() {
+    // 執行程式邏輯
+    ...
+}
+</code></pre>
+<p>你會發現，main 的定義非常簡單，沒有參數也沒有返回值。而且，Go 語言要求：可執行程式的 main package必須定義 main 函數，否則 Go 編譯器會報錯。在啟動了多個 Goroutine（Go 語言的輕量級userspace執行緒，後面的文章會詳細講解）的 Go 程式中，main.main 函數將在 Go 應用的主要的 Goroutine 中執行。main 函數返回就意味著整個 Go 程式的終結，而且你也不用管這個時候是否還有其他子 Goroutine 正在執行。</p>
+<p>另外還值得我們注意的是，除了 main package外，其他package也可以擁有自己的名為 main 的函數或方法。但按照 Go 的可見性規則（小寫字母開頭的函數無法被導出），非 main package中自定義的 main 函數僅限於package內使用，就像下面程式碼這樣，這是一段在非 main package中定義 main 函數的程式碼：</p>
+<pre><code class="language-go">package pkg1
+
+import "fmt"
+
+func Main() {
+    main()
+}
+
+func main() {
+    fmt.Println("main func for pkg1")
+}
+</code></pre>
+<p>可以看到，這裡 main 函數就主要是用來在package pkg1 內部使用的，它是沒法在package外使用的。</p>
+<p>現在我們已經了解了 Go 應用的入口函數 main.main 的特性。不過對於 main package的 main 函數來說，你還需要明確一點，就是它雖然是用戶層邏輯的入口函數，但它卻不一定是Go程式第一個被執行的函數。這是為什麼呢？</p>
+<p>這跟 Go 語言的另一個函數 init 有關。</p>
+<h3 id="init-函數go-package的初始化函數"><a class="header" href="#init-函數go-package的初始化函數">init 函數：Go package的初始化函數</a></h3>
+<p>除了前面講過的 main.main 函數之外，Go 語言還有一個特殊函數，它就是用於進行package初始化的 init 函數。和 main.main 函數一樣，init 函數也是一個無參數無返回值的函數：</p>
+<pre><code class="language-go">func init() {
+    // package初始化邏輯
+    ...
+}
+</code></pre>
+<p>不過對於 init 函數來說，我們還需要注意一點，就是在 Go 程式中我們不能顯式地調用 init，否則就會收到編譯錯誤，就像下面這個範例，它表示的手工顯式調用 init 函數的錯誤做法：</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func init() {
+  fmt.Println("init invoked")
+}
+
+func main() {
+   init()
+}
+</code></pre>
+<p>這樣，在構建並運行上面這些範例程式碼之後，Go 編譯器會報下面這個錯誤：</p>
+<pre><code class="language-go">#&gt; go run call_init.go 
+./call_init.go:10:2: undefined: init
+</code></pre>
+<p>實際上，Go package可以擁有不止一個 init 函數，每個組成 Go package的 Go 原始檔(.go文件)中，也可以定義 init 函數。</p>
+<p>所以說，在初始化 Go package時，Go 會按照一定的次序，逐一、順序地調用這個package的 init 函數。一般來說，先傳遞給 Go 編譯器的原始檔中的 init 函數，會先被執行；而同一個原始檔中的多個 init 函數，會按定義順序依次執行。</p>
+<p>現在我們就知曉了 main.main 函數可能並不是第一個被執行的函數的原因。所以，當我們要在 main.main 函數執行之前，執行一些函數或語句的時候，我們只需要將它放入 init 函數中就可以了。</p>
+<p>了解了這兩個函數的執行順序之後，我們現在就來整體地看看，一個 Go package的初始化是以何種次序和邏輯進行的。</p>
+<h3 id="go-package的初始化次序"><a class="header" href="#go-package的初始化次序">Go package的初始化次序</a></h3>
+<p>從程式邏輯結構角度來看，Go package是程式邏輯封裝的基本單位，每個package都可以理解為是一個“自治”的、封裝良好的、對外部暴露有限接口的基本單位。一個 Go 程式就是由一組package組成的，程式的初始化就是這些package的初始化。每個 Go package還會有自己所需的外部package、常數、變數、init 函數（其中 main package有 main 函數）等。</p>
+<p>在這裡你要注意：<strong>我們在閱讀和理解程式碼的時候，需要知道這些元素在程式初始化過程中的初始化順序，這樣便於我們確定在某一行程式碼處這些元素的當前狀態。</strong><br />
+簡而言之，記住 Go package的初始化次序並不難，你只需要記住這三點就可以了：</p>
+<ul>
+<li>package按“深度優先DFS”的次序進行初始化；</li>
+<li>每個package內按以“常數 -&gt; 變數 -&gt; init 函數”的順序進行初始化；</li>
+<li>package內的多個 init 函數按出現次序進行自動調用。</li>
+</ul>
+<h3 id="init-函數的用途"><a class="header" href="#init-函數的用途">init 函數的用途</a></h3>
+<p>其實，init 函數的這些常用用途，與 init 函數在 Go package初始化過程中的次序密不可分。我們前面講過，Go package初始化時，init 函數的初始化次序在變數之後，這給了開發人員在 init 函數中對package變數進行進一步檢查與操作的機會。</p>
+<h4 id="1-重置package變數值和初始化"><a class="header" href="#1-重置package變數值和初始化">1. 重置package變數值和初始化</a></h4>
+<p>初始化 package 內部會用到的各種變數</p>
+<h4 id="2-在-init-函數中實現註冊模式"><a class="header" href="#2-在-init-函數中實現註冊模式">2. 在 init 函數中實現“註冊模式”</a></h4>
+<p>為了讓你更好地理解，首先我們來看一段使用 lib/pq package連接 PostgreSQL 資料庫的程式碼範例：</p>
+<pre><code class="language-go">import (
+    "database/sql"
+    _ "github.com/lib/pq"
+)
+
+func main() {
+    db, err := sql.Open("postgres", "user=pqgotest dbname=pqgotest sslmode=verify-full")
+    if (err != nil) {
+        log.Fatal(err)
+    }
+    
+    age := 21
+    rows, err := db.Query("SELECT name FROM users WHERE age = $1", age)
+    ...
+}
+</code></pre>
+<p>這是一段“神奇”的程式碼，你可以看到範例程式碼是以空導入的方式導入 lib/pq package的，main 函數中沒有使用 pq package的任何變數、函數或方法，這樣就實現了對 PostgreSQL 資料庫的訪問。而這一切的奧秘，全在 pq package的 init 函數中：</p>
+<pre><code class="language-go">func init() {
+    sql.Register("postgres", &amp;Driver{})
+}
+</code></pre>
+<p>這個奧秘就在，我們其實是利用了用空導入的方式導入 lib/pq package時產生的一個“副作用”，也就是 lib/pq package作為 main package的所需的Library，它的 init 函數會在 pq package初始化的時候得以執行。</p>
+<p>這種通過在 init 函數中註冊自己的實現的模式，就有效降低了 Go package對外的直接暴露，尤其是package變數的暴露，從而避免了外部通過package變數對package狀態的改動。</p>
+<p>另外，從標準庫 database/sql package的角度來看，這種“註冊模式”實質是一種工廠設計模式的實現，sql.Open 函數就是這個模式中的工廠方法，它根據外部傳入的驅動名稱“生產”出不同類別的資料庫instance。</p>
+<p>現在我們了解了 init 函數的常見用途。init 函數之所以可以勝任這些工作，恰恰是因為它在 Go 應用初始化次序中的特殊“位次”，也就是 main 函數之前，常數和變數初始化之後。</p>
+<h3 id="總結-2"><a class="header" href="#總結-2">總結</a></h3>
+<p><strong>main 函數的特徵</strong></p>
+<ul>
+<li>Go 應用的用戶層入口函數<br />
+<strong>init 函數的特徵</strong></li>
+<li>執行順位排在package內其他語法元素(var, const)的後面；</li>
+<li>每個 init 函數在整個 Go 程式生命週期內僅會被執行一次；</li>
+<li>init 函數是順序執行的，只有當一個 init 函數執行完畢後，才會去執行下一個 init 函數。</li>
+</ul>
+<p>大多 Go 程式都是併發程式，程式會啟動多個 Goroutine 併發執行程式邏輯，這裡你一定要注意主 Goroutine 的優雅退出，也就是main上的 Goroutine 要根據實際情況來決定，是否要等待其他子 Goroutine 做完清理收尾工作退出後再行退出。</p>
+<p>更多Go語言相關的文章歡迎參考我的部落格: <a href="https://kaichiachen.github.io/2023/12/27/golang/go_runtime_cycle/">https://kaichiachen.github.io/2023/12/27/golang/go_runtime_cycle/</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day5---defer的妙用---跟蹤函數調用鏈"><a class="header" href="#day5---defer的妙用---跟蹤函數調用鏈">Day5 - Defer的妙用 - 跟蹤函數調用鏈</a></h1>
+<p>在 Go 語言中，defer 關鍵字是一個強大而且實用的工具，能讓你更優雅地處理資源釋放和一些在函數結束前必須執行的清理工作。本文將通過生動的比喻和簡單的示例，幫助你理解 defer 的使用方法及其重要性。</p>
+<h3 id="defer-是什麼"><a class="header" href="#defer-是什麼">defer 是什麼？</a></h3>
+<p>簡單來說，defer 是用來延遲執行一段程式碼，直到所在的函數即將返回時才執行。就像你在餐廳吃飯，最後才會付錢一樣，defer 讓你在程式的適當位置安排程式碼，但等到適當的時候才執行。</p>
+<h3 id="基本語法"><a class="header" href="#基本語法">基本語法</a></h3>
+<p>使用 defer 非常簡單，只需在你要延遲執行的函數或表達式前面加上 defer 關鍵字即可：</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Start")
+    defer fmt.Println("End")
+    fmt.Println("Doing something...")
+}
+</code></pre>
+<p>輸出結果將是：</p>
+<pre><code class="language-go">Start
+Doing something...
+End
+</code></pre>
+<p>可以看到，defer 語句會在 main 函數即將返回前執行，無論函數中間發生了什麼。</p>
+<h3 id="典型使用場景"><a class="header" href="#典型使用場景">典型使用場景</a></h3>
+<p>defer 最常見的使用場景是資源釋放，例如文件操作、網絡連接、資料庫連接等。以下是一個簡單的文件操作示例：</p>
+<pre><code class="language-go">package main
+
+import (
+    "fmt"
+    "os"
+)
+
+func main() {
+    file, err := os.Open("example.txt")
+    if err != nil {
+        fmt.Println("Error opening file:", err)
+        return
+    }
+    defer file.Close() // 延遲關閉文件
+
+    // 假設這裡有一些讀取文件的操作
+    fmt.Println("Reading file...")
+}
+</code></pre>
+<p>在這個例子中，file.Close() 被延遲執行，確保無論 main 函數如何返回，文件都會被正確關閉，避免資源洩漏。</p>
+<h3 id="延遲執行的捕捉"><a class="header" href="#延遲執行的捕捉">延遲執行的捕捉</a></h3>
+<p>你可以用 defer 來捕捉並處理異常，確保在異常情況下也能執行必要的清理工作：</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+    defer func() {
+        if r := recover(); r != nil {
+            fmt.Println("Recovered from panic:", r)
+        }
+    }()
+
+    fmt.Println("Starting")
+    panic("Something went wrong")
+    fmt.Println("This will not be printed")
+}
+</code></pre>
+<p>在這個例子中，recover 函數會捕捉到 panic，並且 defer 語句保證了即使發生異常，也能執行清理工作。</p>
+<h3 id="多個-defer-語句"><a class="header" href="#多個-defer-語句">多個 defer 語句</a></h3>
+<p>如果你在一個函數中使用多個 defer 語句，它們會按照後進先出的順序執行（LIFO）。這就像你堆疊盤子，最後放上的盤子會最先被拿走。</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+    defer fmt.Println("First")
+    defer fmt.Println("Second")
+    defer fmt.Println("Third")
+    fmt.Println("Doing something...")
+}
+</code></pre>
+<p>輸出結果將是：</p>
+<pre><code class="language-go">Doing something...
+Third
+Second
+First
+</code></pre>
+<h3 id="高效使用-defer"><a class="header" href="#高效使用-defer">高效使用 defer</a></h3>
+<p>雖然 defer 是一個非常有用的工具，但它並非免費的。每次調用 defer 都會有一些額外的開銷，尤其是在高頻率調用的場景中。例如，在一個非常深的遞迴函數中頻繁使用 defer 可能會帶來性能問題。可以考慮在這種情況下使用顯式的資源管理方式來代替 defer。<br />
+以下是defer 的最佳實踐</p>
+<ul>
+<li>資源管理：defer 非常適合用來管理資源的釋放，如文件、網路socket連接等。</li>
+<li>錯誤處理：在需要進行清理操作的錯誤處理中使用 defer 確保資源被正確釋放。</li>
+<li>讀取程式碼順序：在程式碼靠近資源分配的地方使用 defer，提高程式碼的可讀性和可維護性。</li>
+</ul>
+<h3 id="總結-3"><a class="header" href="#總結-3">總結</a></h3>
+<p>defer 是 Go 語言中一個簡單但強大的工具，可以讓你的程式更加優雅和可靠。無論是資源釋放、捕捉異常還是簡單的清理工作，defer 都能幫助你寫出更加整潔和易於維護的程式碼。</p>
+<p>記得，像處理餐廳賬單一樣，把 defer 放在適當的位置，等到最後才執行，就能讓你的程式運行更加順暢！</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day6---method-method與如何選擇receiver類型"><a class="header" href="#day6---method-method與如何選擇receiver類型">Day6 - Method: Method與如何選擇Receiver類型</a></h1>
+<p>和多數程式語言一樣，在 Go 語言中，我們需要考慮如何設計方法。由於在 Go 語言中，方法本質上就是函數，所以我們之前講解的關於函數設計的內容同樣適用於方法，例如錯誤處理設計、針對異常的處理策略、使用 <code>defer</code> 提升簡潔性，等等。</p>
+<p>Receiver（Receiver）也是設計方法時需要考量的一點。Receiver定義了一個Method所屬的類型，有點類似於其他語言中的 class 或 object 的概念，如下所示：</p>
+<pre><code class="language-go">func (t T) M1() {}
+func (t *T) M2() {}
+</code></pre>
+<p>上面範例中的 <code>t</code> 就是Receiver，而 <code>M1</code> 和 <code>M2</code> 是Receiver定義的Method。<code>M1</code> 方法代表Receiver類型為 <code>T</code> 的Method，而 <code>M2</code> 方法則代表Receiver類型為 <code>*T</code> 的Method。下面我們來看看不同的Receiver類型對 <code>M1</code> 和 <code>M2</code> 的影響。</p>
+<h3 id="當receiver類型為-t-時"><a class="header" href="#當receiver類型為-t-時">當Receiver類型為 <code>T</code> 時:</a></h3>
+<p>代表 <code>T</code> 類型Object的Receiver參數以pass by value傳遞到 <code>M1</code> 方法中，實際上是 <code>T</code> 類型Object的副本，因此 <code>M1</code> 方法中對副本的任何修改操作，都不會影響原 <code>T</code> 類型Object。</p>
+<h3 id="當receiver類型為-t-時-1"><a class="header" href="#當receiver類型為-t-時-1">當Receiver類型為 <code>*T</code> 時:</a></h3>
+<p>代表 <code>*T</code> 類型實例的Receiver參數以pass by reference傳遞到 <code>M2</code> 方法中，實際上是 <code>T</code> 類型Object的地址，因此 <code>M2</code> 方法可以通過該address對原 <code>T</code> 類型Object進行修改操作。</p>
+<p>我們來看看一個更直觀的範例，來證明上述分析結果，並觀察 Go 方法選擇不同的Receiver類型對原類型Object的影響：</p>
+<pre><code class="language-go">package main
+
+type T struct {
+    a int
+}
+
+func (t T) M1() {
+    t.a = 10
+}
+
+func (t *T) M2() {
+    t.a = 11
+}
+
+func main() {
+    var t T
+    println(t.a) // 0
+
+    t.M1()
+    println(t.a) // 0
+
+    p := &amp;t
+    p.M2()
+    println(t.a) // 11
+}
+</code></pre>
+<p>在這個範例中，我們為類型 <code>T</code> 定義了兩個Method - <code>M1</code> 和 <code>M2</code>，其中 <code>M1</code> 的Receiver類型為 <code>T</code>，而 <code>M2</code> 的Receiver類型為 <code>*T</code>。<code>M1</code> 和 <code>M2</code> 方法都通過Receiver參數 <code>t</code> 修改了 <code>t</code> 的attribute - <code>a</code>。</p>
+<p>了解了不同Receiver類型對 Go 方法的影響後，我們可以總結一下，日常寫程式中選擇Receiver參數類型時可以參考的原則：</p>
+<ol>
+<li><strong>如果 Go 方法需要修改Receiver代表的類型Object，並將修改反映到原類型Object上，應選擇 <code>*T</code> 作為Receiver參數類型。</strong></li>
+<li><strong>如果Receiver的 size 太大，應選擇 <code>*T</code> 作為Receiver參數類型，以避免複製大Object。</strong></li>
+<li><strong>如果需要縮小外部接觸面，盡量少暴露可以修改內部型態的方法，可以考慮使用 <code>T</code> 作為Receiver。</strong></li>
+<li><strong>T 類型是否需要實作某個interface</strong>：<br />
+如果 <code>T</code> 類型需要實作某個interface，那我們就要使用 <code>T</code> 作為Receiver參數類型，以滿足interface類型方法集合中的所有Method。如果 <code>T</code> 不需要實作某個interface，但 <code>*T</code> 需要實作該interface，則 <code>*T</code> 的方法集合包含 <code>T</code> 的方法集合。因此，我們在確定 Go 方法的Receiver類型時，可以參考上述原則。</li>
+</ol>
+<p>這裡可以解釋一下什麼是<strong>方法集合</strong>，我們先通過一個範例來直觀了解為什麼要有方法集合，以及它主要用來解決什麼問題：</p>
+<pre><code class="language-go">type Interface interface {
+    M1()
+    M2()
+}
+
+type T struct{}
+
+func (t T) M1() {}
+func (t *T) M2() {}
+
+func main() {
+    var t T
+    var pt *T
+    var i Interface
+
+    i = pt
+    i = t // cannot use t (type T) as type Interface in assignment: T does not implement Interface (M2 method has pointer receiver)
+}
+</code></pre>
+<p>運行這個範例程式，我們在 <code>i = t</code> 這一行會得到 Go 編譯器的錯誤提示，Go 編譯器提示我們：<code>T</code> 沒有實作 <code>Interface</code> 類型方法列表中的 <code>M2</code>，因此類型 <code>T</code> 的Object <code>t</code> 不能賦值給 <code>Interface</code> 變量。</p>
+<p>Interface類型相對特殊，它只會列出代表interface的方法列表，不會具體定義某個方法，類似C++的virtual和Java的interface，其方法集合就是<strong>它的方法列表中的所有方法</strong>，我們可以一目了然地看到。因此，我們下面重點講解的是非interface類型的方法集合。</p>
+<p>為了方便查看一個非interface類型的方法集合，我這裡提供了一個函數 <code>dumpMethodSet</code>，用於輸出一個非interface類型的方法集合：</p>
+<pre><code class="language-go">func dumpMethodSet(i interface{}) {
+    dynTyp := reflect.TypeOf(i)
+
+    if dynTyp == nil {
+        fmt.Printf("there is no dynamic type\n")
+        return
+    }
+
+    n := dynTyp.NumMethod()
+    if n == 0 {
+        fmt.Printf("%s's method set is empty!\n", dynTyp)
+        return
+    }
+
+    fmt.Printf("%s's method set:\n", dynTyp)
+    for j := 0; j &lt; n; j++ {
+        fmt.Println("-", dynTyp.Method(j).Name)
+    }
+    fmt.Printf("\n")
+}
+</code></pre>
+<p>下面我們利用這個函數，試著輸出一下 Go 原生類型以及自定義類型的方法集合：</p>
+<pre><code class="language-go">type T struct{}
+
+func (T) M1() {}
+func (T) M2() {}
+
+func (*T) M3() {}
+func (*T) M4() {}
+
+func main() {
+    var n int
+    dumpMethodSet(n)
+    dumpMethodSet(&amp;n)
+
+    var t T
+    dumpMethodSet(t)
+    dumpMethodSet(&amp;t)
+}
+</code></pre>
+<p>我們得到如下結果：</p>
+<pre><code class="language-go">int's method set is empty!
+*int's method set is empty!
+main.T's method set:
+- M1
+- M2
+
+*main.T's method set:
+- M1
+- M2
+- M3
+- M4
+</code></pre>
+<p>我們看到以 <code>int</code> 和 <code>*int</code> 為代表的 Go 原生類型，由於沒有定義Method，所以它們的方法集合都是空的。自定義類型 <code>T</code> 定義了方法 <code>M1</code> 和 <code>M2</code>，因此其方法集合包含了 <code>M1</code> 和 <code>M2</code>，也符合我們的預期。然而，<code>*T</code> 的方法集合中除了預期的 <code>M3</code> 和 <code>M4</code> 外，還包含了類型 <code>T</code> 的方法 <code>M1</code> 和 <code>M2</code>！</p>
+<p>這是因為，Go 語言規定，<strong><code>*T</code> 類型的方法集合包含所有以 <code>*T</code> 為Receiver參數類型的方法，以及所有以 <code>T</code> 為Receiver參數類型的方法</strong>。這就是為何 <code>*T</code> 類型的方法集合包含四個方法的原因，以及第一個範例會報錯的原因。</p>
+<h3 id="總結-4"><a class="header" href="#總結-4">總結</a></h3>
+<ul>
+<li><strong>Receiver類型為 <code>T</code> 時</strong>：方法Receiver是一個值，任何修改都不會影響原Object。</li>
+<li><strong>Receiver類型為 <code>*T</code> 時</strong>：方法Receiver是一個pointer，可以修改原Object。</li>
+<li><strong>選擇Receiver類型的原則</strong>：
+<ul>
+<li>如果需要修改原Object，使用 <code>*T</code>。</li>
+<li>如果Receiver的 size 太大，使用 <code>*T</code>。</li>
+<li>如果希望縮小外部接觸面，減少Method, Attribute暴露，使用 <code>T</code>。</li>
+<li>根據是否需要實作Interface來決定使用 <code>T</code> 還是 <code>*T</code>。</li>
+</ul>
+</li>
+</ul>
+<p>這些原則可以幫助你在 Go 程式設計中做出更好的Method設計決策。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day7---method-怎麼用變數模擬繼承"><a class="header" href="#day7---method-怎麼用變數模擬繼承">Day7 - Method: 怎麼用變數模擬繼承</a></h1>
+<h3 id="go-語言的繼承與組合"><a class="header" href="#go-語言的繼承與組合">Go 語言的繼承與組合</a></h3>
+<p>Go 語言沒有像 C++/Java 等語言可以透過 <code>extend</code> 關鍵字來繼承某個 class。因此，Go class的所有方法都是自己顯式實現的。讓我們舉個例子，自定義class <code>T</code> 有兩個methods <code>M1</code> 和 <code>M2</code>，如果 <code>T</code> 是一個獨立的自定義class，那我們在聲明class <code>T</code> 的 Go 包原始碼文件中一定可以找到其所有method的實現程式碼，比如：</p>
+<pre><code class="language-go">func (T) M1() {...}
+func (T) M2() {...}
+</code></pre>
+<p>在 Go 語言中，如果我們真的想模擬繼承的效果，可以透過 Go 語言設計思想的“組合”來實現。具體的 Go 語言設計思想可以參考我的這篇文章 - <a href="../../../../../2023/12/12/golang/design_philosophy/">Go語言的設計哲學</a></p>
+<p>這種“繼承”是通過 Go 語言的類型嵌入（Type Embedding）來實現的。因此，這篇文章將帶你了解這種語法，看看我們如何通過這種語法來實現對嵌入類型的方法的“繼承”，同時也搞清楚這種方式對新定義的類型的方法集合的影響。首先，我們來學習一下什麼是類型嵌入。</p>
+<h3 id="類型嵌入"><a class="header" href="#類型嵌入">類型嵌入</a></h3>
+<p>類型嵌入指的是在一個類型的定義中嵌入了其他類型。Go 語言支持兩種類型嵌入，分別是 <code>interface</code> 類型的類型嵌入和 <code>struct</code> 類型的類型嵌入。</p>
+<h4 id="interface-類型的類型嵌入"><a class="header" href="#interface-類型的類型嵌入">interface 類型的類型嵌入</a></h4>
+<p>interface類型聲明了由一個方法集合代表的interface，比如下面interface類型 <code>E</code>：</p>
+<pre><code class="language-go">type E interface {
+    M1()
+    M2()
+}
+</code></pre>
+<p>我們再定義另外一個interface類型 <code>I</code>，它的方法集合中包含了三個方法 <code>M1</code>、<code>M2</code> 和 <code>M3</code>，如下所示：</p>
+<pre><code class="language-go">type I interface {
+    M1()
+    M2()
+    M3()
+}
+</code></pre>
+<p>我們看到interface類型 <code>I</code> 方法集合中的 <code>M1</code> 和 <code>M2</code>，與接口類型 <code>E</code> 的方法集合中的方法完全相同。在這種情況下，我們可以用interface類型 <code>E</code> 替代上面interface類型 <code>I</code> 定義中的 <code>M1</code> 和 <code>M2</code>，如下所示：</p>
+<pre><code class="language-go">type I interface {
+    E
+    M3()
+}
+</code></pre>
+<p>這種在一個interface類型（<code>I</code>）定義中嵌入另外一個interface類型（<code>E</code>）的方式，就是我們說的interface類型的<strong>類型嵌入</strong>。</p>
+<h4 id="struct-類型的類型嵌入"><a class="header" href="#struct-類型的類型嵌入">struct 類型的類型嵌入</a></h4>
+<p><code>struct</code> 類型的類型嵌入就要更複雜一些了，以下是 Go struct類型的“完全體”：</p>
+<pre><code class="language-go">type T1 int
+type t2 struct{
+    n int
+    m int
+}
+
+type I interface {
+    M1()
+}
+
+type S1 struct {
+    T1
+    *t2
+    I            
+    a int
+    b string
+}
+</code></pre>
+<p>我們看到，struct <code>S1</code> 定義中有三個“非常規形式”的attribute，分別是 <code>T1</code>、<code>t2</code> 和 <code>I</code>。這三個struct裡的attribute究竟代表的是什麼呢？是名字還是類型呢？</p>
+<p>這裡我直接告訴你答案：它們既代表attribute的名字，也代表attribute的類型。我們分別以這三個attribute為例，說明一下它們的具體含義：</p>
+<ul>
+<li><code>T1</code> 表示attribute名為 <code>T1</code>，它的類型為自定義類型 <code>T1</code>；</li>
+<li><code>t2</code> 表示attribute名為 <code>t2</code>，它的類型為自定義struct類型 <code>t2</code> 的pointer類型；</li>
+<li><code>I</code> 表示attribute名為 <code>I</code>，它的類型為interface類型 <code>I</code>。</li>
+</ul>
+<pre><code class="language-go">type MyInt int
+
+func (n *MyInt) Add(m int) {
+    *n = *n + MyInt(m)
+}
+
+type t struct {
+    a int
+    b int
+}
+
+type S struct {
+    *MyInt
+    t
+    io.Reader
+    s string
+    n int
+}
+
+func main() {
+    m := MyInt(17)
+    r := strings.NewReader("hello, go")
+    s := S{
+        MyInt: &amp;m,
+        t: t{
+            a: 1,
+            b: 2,
+        },
+        Reader: r,
+        s:      "demo",
+    }
+
+    var sl = make([]byte, len("hello, go"))
+    s.Read(sl)              // 等同於 s.Reader.Read(sl)
+    fmt.Println(string(sl)) // 輸出：hello, go
+    s.Add(5) 
+    fmt.Println(*(s.MyInt)) // 輸出：22
+}
+</code></pre>
+<p>看到這段程式碼，你可能會問：類型 <code>S</code> 沒有定義 <code>Read</code> 方法和 <code>Add</code> 方法啊，這樣寫不會導致 Go 編譯器報錯嗎？如果你有這個疑問，可以暫停一下，先用你手上的 Go 編譯器編譯運行一下這段程式碼看看。</p>
+<p>是不是很驚喜？這段程序不但沒有引發編譯器報錯，還可以正常運行並輸出正確的結果！</p>
+<p>這段程式碼似乎在告訴我們：<code>Read</code> 方法和 <code>Add</code> 方法就是類型 <code>S</code> 方法集合中的方法。其實，這兩個方法來自於struct類型 <code>S</code> 的兩個嵌入attribute <code>Reader</code> 和 <code>MyInt</code>。struct類型 <code>S</code> “繼承”了 <code>Reader</code> attribute的方法 <code>Read</code> 的實現，也“繼承”了 <code>*MyInt</code> 的 <code>Add</code> 方法的實現。注意，我這裡的“繼承”用了引號，說明這並不是真正的繼承，而是 Go 語言的一種“障眼法”。</p>
+<p>這種“障眼法”的工作機制是這樣的：當我們通過struct類型 <code>S</code> 的變量 <code>s</code> 呼叫 <code>Read</code> 方法時，Go 發現struct類型 <code>S</code> 自身並沒有定義 <code>Read</code> 方法，於是 Go 會查看 <code>S</code> 的嵌入attribute對應的類型是否定義了 <code>Read</code> 方法。這時，<code>Reader</code> attribute就被找了出來，之後 <code>s.Read</code> 的呼叫就被轉換為 <code>s.Reader.Read</code> 的呼叫。</p>
+<p>這樣一來，嵌入attribute <code>Reader</code> 的 <code>Read</code> 方法就被提升為 <code>S</code> 的方法，放入了類型 <code>S</code> 的方法集合。同理，<code>*MyInt</code> 的 <code>Add</code> 方法也被提升為 <code>S</code> 的方法而放入 <code>S</code> 的方法集合。從外部來看，這種嵌入attribute的方法的提升就給了我們一種struct類型 <code>S</code> “繼承”了 <code>io.Reader</code> 類型 <code>Read</code> 方法的實現，以及 <code>*MyInt</code> 類型 <code>Add</code> 方法的實現的錯覺。嵌入attribute的使用的確可以幫我們在 Go 中實現方法的“繼承”。</p>
+<h3 id="多重繼承"><a class="header" href="#多重繼承">多重繼承</a></h3>
+<p>不過有一種情況需要注意，那就是當struct嵌入的多個接口類型的方法集合存在交集時，你要小心編譯器可能會出現的錯誤提示。</p>
+<p>Go 1.14 版本解決了嵌入接口類型的方法集合有交集的情況，僅限於interface類型中嵌入interface類型。這裡我們討論的是在struct類型中嵌入方法集合有交集的interface類型。</p>
+<p>如果struct自身實現了該方法，Go 就會優先使用struct自己實現的方法。如果沒有實現，那麼 Go 就會查找struct中的嵌入attribute的方法集合中是否包含這個方法。如果多個嵌入attribute的方法集合中都包含這個方法，那麼我們就說方法集合存在交集。這時，Go 編譯器就會因無法確定究竟使用哪個方法而報錯，所以 Go 會在編譯階段就限制多重繼承的問題。</p>
+<h3 id="總結-5"><a class="header" href="#總結-5">總結</a></h3>
+<ul>
+<li>Go 語言沒有傳統意義上的繼承，所有方法都必須顯式實現。</li>
+<li>可以通過類型嵌入（Type Embedding）來模擬繼承的效果，將嵌入類型的方法提升為新類型的方法。</li>
+<li><code>interface</code> 和 <code>struct</code> 都支持類型嵌入。</li>
+<li>使用嵌入attribute到class的方法提升機制，可以實現方法的“繼承”，但需注意多重繼承的衝突問題。</li>
+</ul>
+<p>這些技巧和知識將幫助你在 Go 語言中有效地使用組合和嵌入，編寫出更靈活且可維護的程式碼。</p>
+<p>更多Go語言相關的文章，歡迎追蹤我的部落格: <a href="https://kaichiachen.github.io/2024/01/23/golang/go_inherit/">https://kaichiachen.github.io/2024/01/23/golang/go_inherit/</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day8---interface即類型的使用定義"><a class="header" href="#day8---interface即類型的使用定義">Day8 - Interface即類型的使用定義</a></h1>
+<p>在 Go 語言中，<code>interface</code> 是一組方法的集合，透過 <code>type</code> 和 <code>interface</code> 關鍵字來定義。這些方法的集合唯一確定了這個 <code>interface</code> 類型所表示的契約。讓我們來看看一個典型的 <code>interface</code> 類型 <code>MyInterface</code> 的定義：</p>
+<pre><code class="language-go">type MyInterface interface {
+    M1(int) error
+    M2(io.Writer, ...string)
+}
+</code></pre>
+<p>從這個定義中，我們可以看到，<code>interface</code> 類型 <code>MyInterface</code> 包含了兩個方法：<code>M1</code> 和 <code>M2</code>。Go 語言要求 <code>interface</code> 類型聲明中的方法必須是具名的，並且方法名字在這個 <code>interface</code> 類型的方法集合中必須唯一。從 Go 1.14 版本開始，Go 允許嵌入的不同 <code>interface</code> 類型的方法集合存在交集，但前提是交集中的方法不僅名字一樣，連方法簽名（參數列表和返回值列表）也必須一致，否則 Go 編譯器會報錯。</p>
+<p>例如，以下示例中 <code>Interface3</code> 嵌入了 <code>Interface1</code> 和 <code>Interface2</code>，但它們之間的 <code>M1</code> 方法簽名不同，導致編譯出錯：</p>
+<pre><code class="language-go">type Interface1 interface {
+    M1()
+}
+type Interface2 interface {
+    M1(string) 
+    M2()
+}
+
+type Interface3 interface {
+    Interface1
+    Interface2 // 編譯器報錯：duplicate method M1
+    M3()
+}
+</code></pre>
+<p>Go 語言也可以定義空 <code>interface</code> 類型，代表沒有定義任何方法集合的 <code>interface</code>：</p>
+<pre><code class="language-go">type EmptyInterface interface {}
+</code></pre>
+<p>如果一個變數的類型是空 <code>interface</code> 類型，由於空 <code>interface</code> 類型的方法集合為空，這意味著<strong>任何類型都實現了空 <code>interface</code> 的方法集合</strong>。所以我們可以將任何類型的值賦值給空 <code>interface</code> 類型的變數。例如：</p>
+<pre><code class="language-go">var i interface{} = 15 // ok
+i = "hello, golang" // ok
+type T struct{}
+var t T
+i = t  // ok
+i = &amp;t // ok
+</code></pre>
+<p>空 <code>interface</code> 類型能夠接受任意類型變數值，使它成為 Go 在引入泛型之前唯一具備“泛型”能力的語法元素。包括 Go 標準庫在內的一些通用資料結構與算法的實現，都使用了空 <code>interface</code> <code>interface{}</code> 作為參數元素的類型，這樣我們就無需為每種支持的元素類型單獨編寫程式碼或方法。</p>
+<p>Go 語言還支持從 <code>interface</code> 類型變數“還原”其右值的類型與值信息，這個過程稱為“Type Assertion”。Type Assertion 通常使用以下語法形式：</p>
+<pre><code class="language-go">v, ok := i.(T)
+</code></pre>
+<p>其中 <code>i</code> 是某個 <code>interface</code> 類型變數。如果 <code>T</code> 是一個非 <code>interface</code> 類型且 <code>T</code> 是想要還原的類型，這句程式碼的含義是“斷言”儲存在 <code>interface</code> 類型變數 <code>i</code> 中的值的類型為 <code>T</code>。</p>
+<p>如果 <code>interface</code> 類型變數 <code>i</code> 之前被賦予的值確為 <code>T</code> 類型的值，這個語句執行後，左側 <code>comma, ok</code> 語句中的變數 <code>ok</code> 的值將為 <code>true</code>，變數 <code>v</code> 的類型為 <code>T</code>，其值為之前賦予給 <code>i</code> 的值。如果 <code>i</code> 之前被賦予的值不是 <code>T</code> 類型，這個語句執行後，變數 <code>ok</code> 的值為 <code>false</code>，變數 <code>v</code> 的類型仍然是 <code>T</code>，但其值是類型 <code>T</code> 的初始值。</p>
+<p>好了，到這裡關於 <code>interface</code> 類型的基礎語法我們已經全部講完了。有了這個基礎後，我們再來看看 Go 語言 <code>interface</code> 定義的慣例，也就是盡量定義“小 <code>interface</code>”。</p>
+<h3 id="盡量定義小-interface"><a class="header" href="#盡量定義小-interface">盡量定義“小 <code>interface</code>”</a></h3>
+<p><code>interface</code> 類型的背後，是透過將類型的行為封裝成契約，建立雙方共同遵守的約定，從而降低耦合度。和生活中的契約有繁有簡、形式多樣一樣，程式碼間的契約也有大小之分。而 Go 選擇了簡單的形式，主要體現在以下兩點上：</p>
+<h4 id="隱式契約無需顯示立即生效"><a class="header" href="#隱式契約無需顯示立即生效">隱式契約，無需顯示，立即生效</a></h4>
+<p>在 Go 語言中，<code>interface</code> 類型與其實現者之間的關係是隱式的，不需要像其他語言（如 Java）那樣要求實現者顯式聲明 <code>implements</code>。實現者只需要實現 <code>interface</code> 方法集合中的全部方法，便自動生效。</p>
+<h4 id="更傾向於小契約"><a class="header" href="#更傾向於小契約">更傾向於“小契約”</a></h4>
+<p>這點也不難理解。若契約太繁雜，就會束縛手腳，缺少靈活性。因此 Go 選擇了“小契約”，表現在程式碼上就是盡量定義小 <code>interface</code>，即方法個數在 1~3 個之間的 <code>interface</code>。Go 語言之父 Rob Pike 曾說過，“<code>interface</code> 越大，封裝程度越弱”，這也是 Go 社群傾向於定義小 <code>interface</code> 的原因之一。</p>
+<h5 id="小-interface-的優點"><a class="header" href="#小-interface-的優點">小 <code>interface</code> 的優點</a></h5>
+<ul>
+<li><strong><code>interface</code> 越小，封裝程度越高</strong><br />
+封裝程度越高，對應的集合空間就越大；封裝程度越低，也就是越具像化，更接近事物真實面貌，對應的集合空間越小。</li>
+<li><strong>小 <code>interface</code> 易於實現和測試</strong><br />
+小<code>interface</code>擁有較少的Method，一般情況下只有一個Method。所以要想滿足這一<code>interface</code>，我們只需要實現一個Method或者少數幾個Method就可以了，這顯然要比實現擁有較多Method的<code>interface</code>要容易得多。尤其是在單元測試環節，構建類型去實現只有少量Method的<code>interface</code>要比實現擁有較多Method的<code>interface</code>付出的勞動要少許多。</li>
+<li><strong>小 <code>interface</code> 表示職責單一，易於複用和組合</strong><br />
+寫程式時，如果有眾多候選<code>interface</code>類型供我們選擇，我們會怎麼選擇呢？顯然，我們會選擇那些新<code>interface</code>類型需要的契約職責，同時也要求不要引入我們不需要的契約職責。在這樣的情況下，擁有單一或少數Method的小<code>interface</code>便更有可能成為我們的目標，而那些擁有較多Method的大<code>interface</code>，可能會因引入了諸多不需要的契約職責而被放棄。由此可見，小<code>interface</code>更契合 Go 的組合思想，也更容易發揮出組合的威力。</li>
+</ul>
+<h3 id="如何定義小-interface"><a class="header" href="#如何定義小-interface">如何定義小 <code>interface</code></a></h3>
+<p>保持簡單有時比複雜更難。小 <code>interface</code> 雖好，但如何定義出小 <code>interface</code> 是每個 Gopher 面前的一道難題。雖然這道題沒有標準答案，但有一些建議可供參考：</p>
+<ol>
+<li><strong>首先，先封裝出 <code>interface</code>，不管大小</strong>：在定義小 <code>interface</code> 之前，我們需要深入理解問題領域，聚焦封裝並發現 <code>interface</code>。初期，先不要介意 <code>interface</code> 裡的方法數量，因為對問題域的理解是循序漸進的。在第一版程式碼中直接定義出小 <code>interface</code> 可能不現實。例如，標準庫中的 <code>io.Reader</code> 和 <code>io.Writer</code> 也不是 Go 剛誕生時就有的，而是在發現對網路、文件、其他資料處理的實現十分相似後才封裝出來的。</li>
+<li><strong>將大 <code>interface</code> 拆分為小 <code>interface</code></strong>：有了 <code>interface</code> 後，我們會在程式碼中各處使用 <code>interface</code>。一段時間後，分析哪些場合使用了 <code>interface</code> 的哪些方法，是否可以將這些方法提取出來，放入一個新的小 <code>interface</code> 中。</li>
+<li><strong>注意 <code>interface</code> 的單一職責</strong>：被拆分成的小 <code>interface</code> 是否需要進一步拆分，以滿足單一職責原則，如同 <code>io.Reader</code> 一樣。如果需要，就進一步拆分，提升封裝程度。</li>
+</ol>
+<h3 id="總結-6"><a class="header" href="#總結-6">總結</a></h3>
+<ul>
+<li><strong><code>interface</code> 是方法的集合</strong>：用來定義類型的行為契約。</li>
+<li><strong>Go 中的 <code>interface</code> 是隱式實現的</strong>：不需要顯式聲明 <code>implements</code>。</li>
+<li><strong>小 <code>interface</code> 更具靈活性和複用性</strong>：方法數量在 1~3 個之間。</li>
+<li><strong>將大 <code>interface</code> 拆分為小 <code>interface</code></strong>：聚焦單一職責，提升封裝程度，符合高內聚、低耦合的精神。</li>
+</ul>
+<p>這些建議和技巧將幫助你在 Go 語言中有效地使用 <code>interface</code>，寫出更具高內聚、低耦合的程式碼。</p>
+<p>更多Go語言相關的文章，歡迎關注我的部落格: <a href="https://kaichiachen.github.io/2024/01/31/golang/go_interface/">https://kaichiachen.github.io/2024/01/31/golang/go_interface/</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day9---interface-為什麼nil接口不等於nil"><a class="header" href="#day9---interface-為什麼nil接口不等於nil">Day9 - Interface: 為什麼nil接口不等於nil?</a></h1>
+<p>Interface 是 Go 這門靜態語言中具有「動靜兼備」特性的語法元素。它既展示了 Go 的強大表達能力，也經常讓初學者感到迷惑。為了釐清這些迷惑，本文將深入探討 Go 在 runtime 時是如何處理 Interface 的類型表現。</p>
+<p>在我們揭開 Interface 的神秘面紗之前，先來理解其「動靜兼備」的特性究竟是什麼。</p>
+<h3 id="接口的靜態與動態特性"><a class="header" href="#接口的靜態與動態特性">接口的靜態與動態特性</a></h3>
+<p>接口的靜態特性主要是指接口類型變數有其靜態類型，例如在 <code>var err error</code> 中，<code>err</code> 的靜態類型為 <code>error</code>。有了這樣的靜態類型，編譯器在編譯階段對所有接口類型變數的賦值進行類型檢查，確保賦值操作的右值實現了該接口的所有方法，否則會報錯：</p>
+<pre><code class="language-go">var err error = 1 // cannot use 1 (type int) as type error in assignment: int does not implement error (missing Error method)
+</code></pre>
+<p>接口的動態特性則顯示在接口類型變數在 runtime 中儲存了右值的真實類型，這種特性讓 Go 的接口變數具有類似動態語言的靈活性，如 Python 的 Duck Typing。這種類型的特性不是由其繼承關係決定的，而是由類型表現出來的行為決定的。例如：</p>
+<pre><code class="language-go">var err error
+err = errors.New("error1")
+fmt.Printf("%T\n", err)  // *errors.errorString
+</code></pre>
+<p>在這裡，我們通過 <code>errors.New</code> 創建了一個錯誤值並賦值給 <code>error</code> 類型的接口變數 <code>err</code>，通過 <code>fmt.Printf</code> 輸出了 <code>err</code> 的動態類型為 <code>*errors.errorString</code>。</p>
+<p>這種「動靜兼備」的特性具體好處包括：</p>
+<ul>
+<li>程序在 runtime 可以將接口類型變數賦值為不同的動態類型，增加了語言的靈活性。</li>
+<li>接口的動態特性還保障了使用時的安全性，如編譯器能在編譯期捕捉到錯誤的賦值。</li>
+</ul>
+<h3 id="nil-error-值不等於-nil-的疑惑"><a class="header" href="#nil-error-值不等於-nil-的疑惑">nil error 值不等於 nil 的疑惑</a></h3>
+<p>這裡我們通過一個範例來探討常見的疑惑 —— 「nil 的 error 值不等於 nil」。讓我們看下這段程式碼：</p>
+<pre><code class="language-go">type MyError struct {
+    error
+}
+
+var ErrBad = MyError{
+    error: errors.New("bad things happened"),
+}
+
+func bad() bool {
+    return false
+}
+
+func returnsError() error {
+    var p *MyError = nil
+    if bad() {
+        p = &amp;ErrBad
+    }
+    return p
+}
+
+func main() {
+    err := returnsError()
+    if err != nil {
+        fmt.Printf("error occur: %+v\n", err)
+        return
+    }
+    fmt.Println("ok")
+}
+</code></pre>
+<p>在這個例子中，<code>returnsError</code> 函數返回的是 <code>error</code> 接口類型的變數 <code>err</code>，即使其動態類型 <code>p</code> 為 <code>nil</code>，<code>err</code> 與 <code>nil</code> 進行比較時並不相等，這是因為接口變數的內部表示除了數據pointer，還包括了類型信息。</p>
+<h3 id="接口類型變數的內部表示詳解"><a class="header" href="#接口類型變數的內部表示詳解">接口類型變數的內部表示詳解</a></h3>
+<p>在 Go 語言中，接口類型變數的內部表示是理解其動態行為的關鍵。接口類型變數在內部主要通過兩種結構表達：<code>eface</code> 和 <code>iface</code>。這兩種結構分別對應於不帶有Method的空接口和帶Method的接口。</p>
+<h4 id="1-eface-結構空接口的表示"><a class="header" href="#1-eface-結構空接口的表示">1. <code>eface</code> 結構：空接口的表示</a></h4>
+<ul>
+<li>
+<p><strong>用途</strong>：用於表示空接口 <code>interface{}</code>，這種接口不包含任何方法。</p>
+</li>
+<li>
+<p><strong>結構</strong>：</p>
+<pre><code class="language-go">type eface struct {
+    _type *_type         // 表示動態類型的 `_type` 結構的pointer
+    data  unsafe.Pointer // 實際數據的pointer
+}
+</code></pre>
+</li>
+<li>
+<p><strong>功能</strong>：<code>_type</code> 指向一個描述數據的動態類型的結構，而 <code>data</code> pointer直接指向實際的數據。這個簡單的表示方式使得空接口能夠儲存任何類型的值。</p>
+</li>
+</ul>
+<h4 id="2-iface-結構帶方法的接口表示"><a class="header" href="#2-iface-結構帶方法的接口表示">2. <code>iface</code> 結構：帶方法的接口表示</a></h4>
+<ul>
+<li>
+<p><strong>用途</strong>：用於表示包含方法的接口。</p>
+</li>
+<li>
+<p><strong>結構</strong>：</p>
+<pre><code class="language-go">type iface struct {
+    tab  *itab           // 指向 `itab` 結構，包含類型信息和方法pointer
+    data unsafe.Pointer  // 指向實際數據的pointer
+}
+</code></pre>
+</li>
+<li>
+<p><strong>功能</strong>：<code>tab</code> 指向的 <code>itab</code> 結構不僅保存了接口的動態類型信息，還包括了指向實現接口方法的函數pointer。這使得 Go 在執行時能夠通過接口調用具體類型的方法。</p>
+</li>
+</ul>
+<h4 id="內部實現的影響"><a class="header" href="#內部實現的影響">內部實現的影響</a></h4>
+<ul>
+<li><strong>比較行為</strong>：當兩個接口變數進行比較時，Go 不僅比較 <code>data</code> pointer，還要比較他們的類型pointer（<code>eface._type</code> 或 <code>iface.tab._type</code>）。只有當這兩部分都相同時，兩個接口變數才視為相等。</li>
+</ul>
+<p>再回到開頭的問題，是不是已經豁然開朗了？<code>returnsError</code> 函數返回的 <code>error</code> 接口類型變數 <code>err</code> 的數據pointer雖然為空，但其類型（<code>iface.tab</code>）不為空，而是 <code>*MyError</code> 對應的類型，這樣 <code>err</code> 與 <code>nil</code>（0x0, 0x0）相比自然不相等，這就是問題的答案。</p>
+<h3 id="總結-7"><a class="header" href="#總結-7">總結</a></h3>
+<ul>
+<li><strong>接口的靜態特性</strong>：保障了類型的正確性和編譯期的類型檢查。</li>
+<li><strong>接口的動態特性</strong>：提供了如動態語言般的靈活使用方式。</li>
+<li><strong>nil 的 error 值問題</strong>：揭示了接口類型變數的內部複雜性，說明了為何 <code>nil</code> 的 <code>error</code> 值在某些情況下不等於 <code>nil</code>。<br />
+通過深入理解這些內部結構和行為，Go 開發者可以更好地掌握接口的使用規則，避免一些常見的錯誤，尤其是在處理接口和 nil 值比較時的特殊行為。</li>
+</ul>
+<p>更多Go語言相關的文章歡迎參考我的部落格: <a href="https://kaichiachen.github.io/2024/02/08/golang/interface_nil/">https://kaichiachen.github.io/2024/02/08/golang/interface_nil/</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day-10---interface的使用技巧"><a class="header" href="#day-10---interface的使用技巧">Day 10 - Interface的使用技巧</a></h1>
+<p>這篇文章要來聊聊如何運用Interface改善我們的程式專案，換句話說，我們講的是Go語言中interface的使用模式和習慣。</p>
+<p>首先得強調一點，那就是「適度封裝」。換句話說，我們不是為了封裝而封裝。我們之前提到過，接口其實就是一種封裝的手段，主要目的是為了解耦。所以，重點是我們應該在真正需要的時候才使用接口。</p>
+<p>大部分情況下，接口都能對應用設計帶來好處。但如何恰當地使用interface來優化我們的程式設計呢？這就要從Go語言的「組合」設計哲學說起了。</p>
+<h3 id="一切皆組合"><a class="header" href="#一切皆組合">一切皆組合</a></h3>
+<p>Go語言的創始人Rob Pike有句名言：如果說C++和Java是講究類型層次和分類的語言，那Go語言則是專注於組合的語言。想像Go應用就像一台機器，組合的藝術就在於如何把分散於各個包中的零件有效組合起來。這是Go的核心設計理念之一，而「正交性」則讓這種設計更加方便實現。</p>
+<p>所謂正交性，其實是個幾何學上的概念，意指兩條直線在直角交會。在程式設計中，這表示兩個或多個元素之間的相互獨立，互不影響。這種設計使得當一個元素改變時，不會牽連到其他元素。</p>
+<h4 id="垂直組合"><a class="header" href="#垂直組合">垂直組合</a></h4>
+<p>在傳統的面向對象語言中，如C++，通常透過繼承來建立一個類型體系。但在Go語言中，我們不使用繼承，而是採用「組合」來賦予單一類型更多的功能，這種方法有點類似於硬體升級時的垂直擴充。因為這不涉及繼承，所以新類型與被嵌入的類型之間不存在「父子關係」，它們之間的關聯僅由方法名來決定。更多關於垂直組合(繼承)可以參考我之前寫的這篇文章Method: 怎麼用變數模擬繼承</p>
+<h4 id="水平組合"><a class="header" href="#水平組合">水平組合</a></h4>
+<p>當通過垂直組合確立了類型之後，我們如何將這些獨立的component連結成一個完整的應用呢？來看一個具體的例子：</p>
+<p>假設我們要寫一個函數，負責把數據寫到硬碟上：</p>
+<pre><code class="language-go">func Save(f *os.File, data []byte) error
+</code></pre>
+<p>上面函數用*os.File來定位數據要寫入的目標。但這樣設計有幾個問題。首先，它很難進行測試，因為*os.File涉及到實際的file descripter，我們必須操作實體文件來測試這個函數，這非常不方便。</p>
+<p>其次，Save函數直接指定*os.File最為參數型態限制了它的可擴充性。如果我們想改為向網路儲存寫數據，就必須修改這個函數的參數型態，這會影響到所有使用這個函數的程式碼。</p>
+<p>那麼，如何改進Save函數的設計呢？我們可以嘗試使用interface。以下是新版Save函數的原型：</p>
+<pre><code class="language-go">func Save(w io.Writer, data []byte) error
+</code></pre>
+<p>這裡，我們用io.Writer接口替代了*os.File。這種設計遵循了interface分離的原則，因為io.Writer只包含一個Write方法，恰恰是Save函數所需要的。</p>
+<p>如此一來，新版的Save函數不僅可以向硬碟寫入數據，也能向網路儲存(NAS)寫入數據，並支持任何實現了Write方法的類型，這大大提升了其可擴充性。而且，這也使得測試變得簡單，只需使用bytes.NewBuffer創建一個*bytes.Buffer，傳入Save函數，完成測試後比對數據即可。</p>
+<h3 id="interface的其他設計模式"><a class="header" href="#interface的其他設計模式">Interface的其他設計模式</a></h3>
+<p>Go語言中有幾種常見的接口設計模式：</p>
+<h4 id="工廠模式"><a class="header" href="#工廠模式">工廠模式</a></h4>
+<p>這種模式在原生的Library sync、log和bufio中都有使用。以log中的New函數為例：</p>
+<pre><code class="language-go">type Logger struct {
+    mu     sync.Mutex
+    prefix string
+    flag   int
+    out    io.Writer
+}
+
+func New(out io.Writer, prefix string, flag int) *Logger {
+    return &amp;Logger{out: out, prefix: prefix, flag: flag}
+}
+</code></pre>
+<h4 id="包裝器模式"><a class="header" href="#包裝器模式">包裝器模式</a></h4>
+<p>這種模式用於對輸入數據進行過濾或變換。一個典型的例子是Go標準庫<code>io</code>中的<code>LimitReader</code>函數：</p>
+<pre><code class="language-go">func LimitReader(r Reader, n int64) Reader { 
+    // Do something
+    reader := &amp;LimitedReader{r, n}
+    // Do something
+    return reader 
+}
+
+type LimitedReader struct {
+    R Reader
+    N int64
+}
+
+func (l *LimitedReader) Read(p []byte) (n int, err error) {
+    // ...
+}
+</code></pre>
+<p><code>LimitReader</code>是一個新的Reader，在init <code>io.Reader</code>前後對Read函數做客製化包裝。</p>
+<h4 id="適配器模式"><a class="header" href="#適配器模式">適配器模式</a></h4>
+<p>這種模式的核心是適配函數的類型轉換。最常見的例子是<code>http.HandlerFunc</code>：</p>
+<pre><code class="language-go">func greetings(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, "Welcome!")
+}
+
+func main() {
+    http.ListenAndServe(":8080", http.HandlerFunc(greetings))
+}
+</code></pre>
+<p>這個例子展示了怎麼透過 <code>http.HandlerFunc</code> 這個適配器函數類型，將一般的 <code>greetings</code> 函數迅速轉換成符合 <code>http.Handler</code> interface的類型。在 Go 語言的 <code>http</code> Library中，<code>http.HandlerFunc</code> 的定義如下所示：</p>
+<pre><code class="language-go">// $GOROOT/src/net/http/server.go
+type Handler interface {
+    ServeHTTP(ResponseWriter, *Request)
+}
+
+type HandlerFunc func(ResponseWriter, *Request)
+
+func (f HandlerFunc) ServeHTTP(w ResponseWriter, r *Request) {
+    f(w, r)
+}
+</code></pre>
+<p>經過 <code>HandlerFunc</code> 的適配轉換後，我們可以將其object用作參數，pass給接收 <code>http.Handler</code> 的 <code>http.ListenAndServe</code> 函數，這樣一來，就能夠實現基於interface的組合設計，轉化後<code>greetings</code>就有了<code>ServeHTTP</code>方法。這種設計方式不僅簡化了程式碼的複雜性，也增強了程式的封裝化和可重用性，讓開發者能夠更靈活地應對不同的網路服務需求。</p>
+<h4 id="中間件middleware"><a class="header" href="#中間件middleware">中間件（Middleware）</a></h4>
+<p>中間件實質上是結合了包裝模式和適配器模式。看看這個例子：</p>
+<pre><code class="language-go">func validateAuth(s string) error {
+    if s != "123456" {
+        return fmt.Errorf("%s", "bad auth token")
+    }
+    return nil
+}
+
+func greetings(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, "Welcome!")
+}
+
+func logHandler(h http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        log.Printf("[%s] %q\n", r.Method, r.URL.String())
+        h.ServeHTTP(w, r)
+    })
+}
+
+func authHandler(h http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        err := validateAuth(r.Header.Get("auth"))
+        if err != nil {
+            http.Error(w, "bad auth param", http.StatusUnauthorized)
+            return
+        }
+        h.ServeHTTP(w, r)
+    })
+}
+
+func main() {
+    http.ListenAndServe(":8080", logHandler(authHandler(http.HandlerFunc(greetings))))
+}
+</code></pre>
+<p>這裡的 logHandler 和 authHandler 是中間件，通過適配器函數類型（http.HandlerFunc）將普通函數轉為實現 http.Handler 的類型的object。</p>
+<h3 id="總結-8"><a class="header" href="#總結-8">總結</a></h3>
+<ul>
+<li>了解接口的本質和原則，不為了封裝而封裝。</li>
+<li>善用 Go 語言的組合設計哲學。
+<ul>
+<li><strong>垂直組合</strong>：透過傳統程式語言繼承的方式來垂直增加類型功能。</li>
+<li><strong>水平組合</strong>：將不同 component 但是共用的Method封裝成一個interface，把這個interface最為參數型態，類似傳統程式語言的多型。</li>
+</ul>
+</li>
+<li>透過Go語言的Interface也能實現各種不同的設計模式。
+<ul>
+<li><strong>工廠模式</strong>：靈活創建多種類型同個class的object，例如Logger，不同的Logger object主要差別可能就是寫入的路徑，所以創建不同的Logger適合工廠模式。</li>
+<li><strong>包裝器模式</strong>：增加新功能而不改變原始interface，有點類似Python的decorator可以對class前後進行前置或是後置處理。</li>
+<li><strong>適配器模式</strong>：轉化函數為特定其他但相同簽名的函數，以適配所需函數的Method實現。</li>
+<li><strong>中間件</strong>：增加新功能而不改變原始function功能，有點類似Python的decorator可以對function前後進行前置或是後置處理。</li>
+</ul>
+</li>
+</ul>
+<p>更多Go語言相關的文章，歡迎參閱我的部落格: <a href="https://kaichiachen.github.io/2024/02/16/golang/interface_usage/">https://kaichiachen.github.io/2024/02/16/golang/interface_usage/</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day11---go中最強的的魔法-併發程式執行"><a class="header" href="#day11---go中最強的的魔法-併發程式執行">Day11 - Go中最強的的魔法: 併發程式執行</a></h1>
+<p>當 Google 工程師設計 Go 語言時，他們明確將多核支援和原生併發支援定為其核心設計目標，同時將併發作為 Go 的設計哲學的一部分。Go 語言一經公開發布，其對併發的原生支援便立刻成為開發者們最為關注的特色之一。</p>
+<p>想要掌握 Go 的併發特性，首先需要了解兩個方面：併發的基本概念和 Go 如何實現對併發的支持，包括 goroutine、channel 和 select 等語言特性。</p>
+<p>本篇文章將首先介紹 goroutine 的基礎知識及其使用注意事項，讓讀者對 Go 的併發特性有一個初步的認識，之後將進一步深入探討。</p>
+<p>併發是在設計和實現應用時必須考慮的問題。併發設計將應用分為多個可以獨立執行且互相協作的Component。</p>
+<p>在傳統的多執行緒設計語言中，如 C 或 C++，應用通常是基於多執行緒模型設計的。然而，這些語言並不是為了支援併發而生，並沒有提供太多針對併發的幫助。這些語言主要使用作業系統的執行緒來執行分解後的程式碼片段，並由作業系統負責調度。這種傳統的支援方式存在許多缺點：</p>
+<p><strong>首先是複雜性。</strong></p>
+<p>執行緒的創建相對容易，但退出則困難重重。如果你有 C/C++ 的開發經驗，你會知道，儘管創建執行緒時需要傳入多個參數，這還算是可以接受的。但一旦涉及到執行緒的退出，就必須考慮是否要讓新執行緒與主執行緒分離（detach），或是讓主執行緒等待子執行緒結束並獲取其狀態（join）。另外，還可能需要在新執行緒中設置取消點（cancel point），以確保在被主執行緒取消時能順利終止。</p>
+<p>此外，併發執行緒間的通信困難且易出錯。雖然執行緒間的通信有多種選擇，但使用起來往往複雜。一旦涉及到共享記憶體，就必須使用各種鎖和互斥機制，常常導致死鎖。此外，還需要設置執行緒stack的大小，開發者必須選擇是使用默認設定還是自定義。</p>
+<p><strong>第二是難於規模化（scaling）。</strong></p>
+<p>儘管執行緒的資源占用已經小於Process，但大量創建執行緒仍然不可行。每個執行緒的資源占用不小，作業系統在調度執行緒時也會消耗大量資源，大量的上下文切換（Context Switch）是導致系統Perfromnace降級的主要原因之一。</p>
+<p>許多網絡服務程式由於無法大量創建執行緒，只能選擇在少量執行緒中實現網絡多路復用，使用 epoll/kqueue/IoCompletionPort 這類機制。雖然有 libevent 和 libev 這樣的第三方Library提供幫助，但編寫這類程式仍然非常困難，存在大量的webhook和callback，給開發者帶來了巨大的心理負擔。</p>
+<p>Go 語言以其「原生支持併發」的特性而著稱。相對於基於執行緒的併發設計模型，Go 提供了哪些改進呢？接下來讓我們一探究竟。</p>
+<h3 id="go-的併發解決方案goroutine"><a class="header" href="#go-的併發解決方案goroutine">Go 的併發解決方案：goroutine</a></h3>
+<p>與傳統的作業系統執行緒不同，Go 並沒有選擇它們作為程式的執行單元。而是實現了 goroutine，這是一種由 Go 的運行時（runtime）調度的輕量用戶級執行緒，它為併發程式設計提供了原生的支持。</p>
+<p>goroutine 的優勢包括：</p>
+<ul>
+<li>資源占用少，每個 goroutine 的初始棧大小僅為 2KB；</li>
+<li>由 Go runtime 調度，而不是作業系統，實現了更低的上下文切換成本；</li>
+<li>不通過OS Kernel API，而是直接在語言層面支持。使用 go 關鍵字即可創建 goroutine，執行結束後自動回收，提供了更好的開發體驗；</li>
+<li>內置的 channel 作為 goroutine 間的通信機制，支撐強大的併發設計。</li>
+</ul>
+<p>相對於傳統編程語言，Go 語言從設計之初就將併發作為一個核心考慮因素，讓併發設計的應用能夠更自然地適應環境變化和資源擴展。</p>
+<p>接下來，讓我們進一步探索如何在 Go 中有效使用 goroutine。</p>
+<h3 id="goroutine-的基本用法"><a class="header" href="#goroutine-的基本用法">goroutine 的基本用法</a></h3>
+<p>首先，我們通過 go 關鍵字加上函數或方法來創建 goroutine。創建後的 goroutine 會擁有獨立的程式碼執行workflow，並與其創建者一起由 Go 運行時進行調度。以下是一些創建 goroutine 的程式碼示例：</p>
+<pre><code class="language-go">go fmt.Println("I am a goroutine")
+
+var c = make(chan int)
+go func(a, b int) {
+    c &lt;- a + b
+}(3,4)
+
+// $GOROOT/src/net/http/server.go
+c := srv.newConn(rw)
+go c.serve(connCtx)
+</code></pre>
+<p>可以看到，我們可以基於已有的具名函數或Method創建 goroutine，也可以基於匿名函數創建。知道了如何創建，那我們怎麼終止 goroutine 呢？</p>
+<p>goroutine 的運行成本很低，因此 Go 官方建議盡量多使用 goroutine。在大多數情況下，我們無需擔心控制 goroutine 的終止：一旦執行函數返回，goroutine 就會退出。</p>
+<p>如果主 goroutine（main goroutine）結束了，那整個應用程式也會隨之結束。此外，即使 goroutine 執行的函數有返回值，Go 也會忽略這些返回值。因此，如果需要取得 goroutine 執行結果的返回值，則需考慮其他方法，例如通過 goroutine 間的通信實現。</p>
+<p>接下來，讓我們探討一下 goroutine 間的通信方法。</p>
+<h3 id="goroutine-間的通信"><a class="header" href="#goroutine-間的通信">goroutine 間的通信</a></h3>
+<p>傳統的程式語言（例如 C++、Java、Python 等）不是為了支持併發而設計的，因此它們的併發邏輯多是基於作業系統的執行緒。這些執行緒間的通信，主要利用作業系統提供的API和設計結構，如共享記憶體、Signal、Pipe、消息隊列、socket等。</p>
+<p>在這些通信方式中，最常用也是最有效率的是基於共享記憶體的方式，通常還涉及到作業系統提供的執行緒同步機制（例如鎖和原子操作）。然而，傳統的基於共享記憶體的併發模型難以使用，容易出錯，尤其是在大型或複雜的程式中。開發人員在設計這類程式時不僅要建模執行緒間的通信方式，還要設計執行緒間的同步機制，並考慮多執行緒的記憶體管理、防止死鎖以及最不容易被debug的race-condition等問題。</p>
+<p>這為開發人員帶來了巨大的壓力，使得基於這類傳統併發模型的程式難以編寫、閱讀、理解和維護。一旦程式出現問題，查找 Bug 的過程將非常漫長且艱難。</p>
+<p>而 Go 語言從一開始就致力於解決這些問題，引入了基於 goroutine 的通信keyword——channel。goroutine 可以從 channel 接收輸入數據，處理後再通過 channel 發送結果數據。channel 使得連接和組織大型併發系統變得更簡單清晰，我們不需要再為傳統共享記憶體併發模型中的問題煩惱。</p>
+<p>例如，我們可以使用 channel 來獲取 goroutine 的退出狀態：</p>
+<pre><code class="language-go">func spawn(f func() error) &lt;-chan error {
+    c := make(chan error)
+
+    go func() {
+        c &lt;- f()
+    }()
+
+    return c
+}
+
+func main() {
+    c := spawn(func() error {
+        time.Sleep(2 * time秒)
+        return errors.New("timeout")
+    })
+    fmt.Println(&lt;-c)
+}
+</code></pre>
+<p>這個示例中，在 main goroutine 和子 goroutine 之間建立了一個返回類型為 error 的 channel，子 goroutine 在退出時會將其函數執行的錯誤結果發送到這個 channel 中，main goroutine 通過讀取 channel 的值來獲取子 goroutine 的退出狀態。</p>
+<p>Go 也支持傳統的基於共享記憶體的併發模型，提供了基本的低級別同步方法（主要是 sync 包中的互斥鎖、條件變量、讀寫鎖和原子操作等）。</p>
+<h3 id="總結-9"><a class="header" href="#總結-9">總結</a></h3>
+<ul>
+<li>Go 語言原生支持併發，其設計簡單且資源佔用低，他是user space層面的多執行序而不需要作業系統介入。</li>
+<li>通過 go 關鍵字創建的 goroutine 提供了比傳統執行緒更高的性能。</li>
+<li>內置的 channel 為 goroutine 之間提供了高效的通信方式，簡化了併發程式的設計和數據共享問題。</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day12---goroutine是怎麼工作的"><a class="header" href="#day12---goroutine是怎麼工作的">Day12 - goroutine是怎麼工作的？</a></h1>
+<p>在這篇Go中最強的魔法: 併發程式執行的文章中，我們探討了併發的基本概念以及Go語言中實現併發的機制—Goroutine。這些內容對於剛接觸Go的Gopher來說，可以說是入門級的學習資料。</p>
+<p>但是，你可能會好奇，既然Go不是採用傳統的基於執行緒的併發模型，那Go的運行時是如何管理和調度(Schedule)眾多Goroutine的呢？實際上，這些是Go語言核心開發團隊的關注點，普通開發者通常不需要深入了解。不過深入理解Goroutine的調度原理對於寫出高效能的Go程式碼是非常有幫助的。</p>
+<p>接下來，讓我們一起簡要探索一下Goroutine調度器的工作原理。</p>
+<h3 id="goroutine調度器"><a class="header" href="#goroutine調度器">Goroutine調度器</a></h3>
+<p>談到「調度」，我們首先會想到作業系統如何管理進程和執行緒。作業系統的調度器會把多個執行緒分配到物理CPU上運行。與此相對應，Goroutine的資源消耗非常小。我們之前提到過，每個Goroutine只需2KB的stack空間。並且，Goroutine的調度切換並不需要陷入作業系統核心，因此成本非常低。這使得一個Go程式可以創建成千上萬的Goroutine來實現併發。</p>
+<p>這些Goroutine是如何被調度到CPU上運行的呢？實際上，它們是由一個稱為Goroutine調度器（Goroutine Scheduler）的機制來管理的。但要注意，這裡提到的「CPU」是在引號中，因為從Go程式的視角來看，它與作業系統的交互是有限的。</p>
+<p>實際上，對於作業系統而言，一個Go程式只是一個普通的用戶空間(user space)應用程式。作業系統並不直接識別Goroutine，因此所有的Goroutine調度都由Go自己來完成。這就導致了Go runtime必須在其自身內部管理Goroutine之間對「CPU」資源的競爭。</p>
+<p>那麼，在Go程式中，Goroutine實際上是在競爭什麼資源呢？答案是作業系統執行緒。因此，Goroutine調度器的工作就是把Goroutine根據一定的算法分配到不同的作業系統執行緒中去執行。</p>
+<h3 id="goroutine調度器模型---g-p-m模型"><a class="header" href="#goroutine調度器模型---g-p-m模型">Goroutine調度器模型 - G-P-M模型</a></h3>
+<p>在Go語言的領域中，Goroutine的調度機制、垃圾回收（GC）以及記憶體管理屬於一些較為深奧且複雜的概念。這些主題每一個都可以獨立成章，且隨著Go語言版本的更新，這些主題的實現細節也在不斷進化。本文將嘗試為你揭開基於G-P-M模型的Goroutine調度原理的神秘面紗。如果你對這方面的知識渴望更深入的了解，可以從這裡開始深挖Go的原始碼，探索更多細節。</p>
+<p>首先，讓我們來看看G、P、M這三者的定義，它們在Go語言的原始碼中有詳細的闡述，位置在<code>$GOROOT/src/runtime/runtime2.go</code>。在這個檔案中，你會發現G、P、M這三種結構的定義都非常龐大，每個結構包含了許多程式碼和定義。調度器這塊核心的程式碼相當複雜，考慮到的情況繁多，程式碼之間的「耦合」也十分緊密。不過，通過這些複雜的程式碼，我們還是可以窺見G、P、M各自的主要功能，以下簡要說明：</p>
+<ul>
+<li><strong>G (Goroutine)</strong>：負責儲存Goroutine的運行堆棧(Queue/Heap)、狀態以及任務函數等資訊，G是可被重用的。</li>
+<li><strong>P (邏輯處理器)</strong>：其數量決定了系統能夠同時並行運行的Goroutine的數量，P的主要作用是管理Goroutine Queue、Linked List及一些Cache和狀態。</li>
+<li><strong>M (執行計算資源)</strong>：在綁定了有效的P之後，會進入調度循環。這個循環主要從P的Local Queue或Global Queue中取得Goroutine，切換到相應的運行stack/heap上執行，並在執行完畢後通過goexit進行清理，然後返回M，這一過程會不斷重複。值得注意的是，M本身不保留任何Goroutine的狀態，這也是Goroutine能夠跨M調度的基礎。</li>
+</ul>
+<h3 id="被搶佔的goroutine調度"><a class="header" href="#被搶佔的goroutine調度">被搶佔的Goroutine調度</a></h3>
+<p>接下來，我們來討論當Goroutine在沒有進行系統調用、I/O操作或在channel上阻塞時，調度器是如何進行工作的。在這些情況下，Go語言的運行時會利用搶佔式調度來暫停當前Goroutine，並調度其他可運行的Goroutine。一般來說，除了極端情況下的無限迴圈，只要Goroutine執行了函數調用，Go運行時就有機會對其進行搶佔。</p>
+<p>Go語言在啟動時會運行一個名為sysmon的M（通常被稱為監控線程），這個特殊的M在Go程式運行的整個過程中發揮著關鍵作用，並且它無需綁定P即可運行（以g0的形式出現）。除此之外，當Goroutine在channel操作或網絡I/O上阻塞，或者在系統調用中阻塞時，Go運行時會有特定的調度策略來處理這些情況，確保整個系統的有效運行。</p>
+<h3 id="總結-10"><a class="header" href="#總結-10">總結</a></h3>
+<ul>
+<li>Goroutine調度器是Go語言中實現併發控制的核心，負責將Goroutine有效地分配到CPU資源上。</li>
+<li>G-P-M模型是理解Go中Goroutine調度的基礎，涉及Goroutine、邏輯處理器和執行資源的交互。</li>
+<li>透過深入理解Goroutine的調度機制，開發者可以更好地掌握Go語言的併發模型，寫出更高效、更可靠的程式碼。</li>
+</ul>
+<p>更多Go語言相關的文章，歡迎參考我的部落格: <a href="https://kaichiachen.github.io/2024/02/29/golang/go_goroutine/">https://kaichiachen.github.io/2024/02/29/golang/go_goroutine/</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day13---channel中蘊含的大智慧"><a class="header" href="#day13---channel中蘊含的大智慧">Day13 - channel中蘊含的大智慧</a></h1>
+<p>在探索Go語言的併發模型時，我們會接觸到兩個核心元素：Goroutine和channel。Goroutine是構成Go應用併發架構的基石，而channel則在整個併發模型中扮演了無可替代的角色。透過channel，不僅能夠實現Goroutine之間的數據通信，還能夠達到同步的效果。換句話說，只有當你能夠熟練地運用channel時，才能真正稱得上精通Go的併發設計。</p>
+<p>因此，在本篇文章中，我們將詳細學習channel的基本語法及其在實際開發中的應用。</p>
+<p>使用channel就像操作普通變數一樣簡單。我們可以定義一個channel類型的變數、對其進行賦值、把channel作為參數傳遞給其他函數或方法，甚至可以從函數或方法中return channel作為返回值，或者將一個channel直接發送至另一個channel。這些操作使得channel的應用變得靈活多變，大大提升了開發者在設計和實現併發功能時的便利和效率。</p>
+<p>在談到 Go 語言的 channel 這個概念時，我們可以把它想象成一個用來傳遞數據的管道。這個管道能夠讓不同的 Goroutine 之間進行數據的交流。就像我們平常使用的其他複合資料結構 — array、struct、以及 map 一樣，channel 也是一個非常實用的複合資料結構。具體來說，當我們宣告一個 channel 的時候，必須指明這個 channel 能夠傳遞什麼類型的數據。舉例來說：</p>
+<pre><code class="language-go">var ch chan int
+</code></pre>
+<p>在這行程式碼中，<code>ch</code> 是一個可以傳遞 <code>int</code> 型別數據的 channel 變數。</p>
+<p>如果在宣告的時候沒有初始化 channel，那它的預設值就是 <code>nil</code>，這表示這個 channel 是空的，還沒有準備好傳遞數據。和其他複合資料結構有所不同的是，初始化一個 channel 的方式是使用 Go 語言built-in的 <code>make</code> 函數。例如：</p>
+<pre><code class="language-go">ch1 := make(chan int)
+ch2 := make(chan int, 5)
+</code></pre>
+<p>這段程式碼展示了如何初始化兩個 <code>int</code> 型別的 channel 變數：<code>ch1</code> 和 <code>ch2</code>。值得注意的是，<code>ch1</code> 和 <code>ch2</code> 的初始化方式有細微的差別。</p>
+<p><code>ch1</code> 是一個無緩衝的 channel，意味著每次傳遞數據時都需要有一個接收者同時準備接收數據，否則發送操作會被阻塞。而 <code>ch2</code> 則是一個有緩衝的 channel，它可以存儲最多 5 個 <code>int</code> 型別的數據，讓發送者在沒有立即接收者的情況下也能發送一定數量的數據而不被阻塞。</p>
+<p>接下來我們會進一步探討這兩種 channel 在數據發送和接收時的操作和特性，讓大家能更好地理解它們在實際開發中的應用。</p>
+<h3 id="發送與接收"><a class="header" href="#發送與接收">發送與接收</a></h3>
+<p>在 Go 語言中，<code>&lt;-</code> 操作符是用於 channel 的發送與接收。以下是幾個實際的例子來說明如何操作：</p>
+<pre><code class="language-go">ch1 &lt;- 13    // 把int值13發送到一個無緩衝的channel變數ch1中
+n := &lt;-ch1   // 從同一個無緩衝channel變數ch1接收一個int數值，並存到變數n
+ch2 &lt;- 17    // 把int值17發送到一個有緩衝的channel變數ch2中
+m := &lt;-ch2   // 從這個有緩衝的channel變數ch2接收一個int數值，並存到變數m
+</code></pre>
+<p>使用 channel 時需注意，channel 主要是為了在不同的 Goroutine 之間進行通信。因此，大部分情況下，對 channel 的操作（讀取與寫入）最好放在不同的 Goroutine 中。</p>
+<p>先來了解一下無緩衝 channel 的操作：</p>
+<p>無緩衝 channel 沒有內置的緩衝區，所以其發送和接收操作是同步進行的。這意味著，若操作無緩衝 channel，發送和接收的 Goroutine 必須同時就緒，否則會造成 Goroutine 卡住/等待，形成死鎖。看看下面的例子：</p>
+<pre><code class="language-go">func main() {
+    ch1 := make(chan int)
+    ch1 &lt;- 13 // 若沒有其他 Goroutine，將導致死鎖
+    n := &lt;-ch1
+    println(n)
+}
+</code></pre>
+<p>這段程式碼會引起 fatal error，因為它在單一的 Goroutine 中進行讀寫，導致死鎖。解決這個問題的方法是將發送或接收的操作移到另一個 Goroutine 中：</p>
+<pre><code class="language-go">func main() {
+    ch1 := make(chan int)
+    go func() {
+        ch1 &lt;- 13 // 將發送操作移到新的 Goroutine 中
+    }()
+    n := &lt;-ch1
+    println(n)
+}
+</code></pre>
+<p>這樣可以保證無緩衝 channel 在不同的 Goroutine 中操作，避免死鎖。</p>
+<p>接下來，探討一下有緩衝的 channel：</p>
+<p>有緩衝的 channel 具備內置的緩衝區，因此其發送操作在緩衝區未滿時不會阻塞，接收操作在緩衝區非空時也不會阻塞。但是，當緩衝區滿或空時，相應的操作將會阻塞。看看這個例子：</p>
+<pre><code class="language-go">ch2 := make(chan int, 1)
+n := &lt;-ch2 // 緩衝區空，接收操作阻塞
+
+ch3 := make(chan int, 1)
+ch3 &lt;- 17  // 發送成功，緩衝區未滿
+ch3 &lt;- 27  // 緩衝區滿，再次發送操作阻塞
+</code></pre>
+<p>有緩衝與無緩衝 channel 在實際應用上各有適用場景，具體選擇視需要而定。這裡先暫且介紹到這裡，後續還會有更多有關 channel 的實用範例和詳解。</p>
+<h3 id="單向-channel-的使用說明"><a class="header" href="#單向-channel-的使用說明">單向 Channel 的使用說明</a></h3>
+<p>在 Go 語言中，我們可以透過使用 <code>&lt;-</code> 運算符來創建單向 Channel，包括只發送（send-only）和只接收（recv-only）的 Channel。以下是一些實際的例子來說明如何操作這些 Channel：</p>
+<pre><code class="language-go">ch1 := make(chan&lt;- int, 1) // 宣告一個只發送的 Channel
+ch2 := make(&lt;-chan int, 1) // 宣告一個只接收的 Channel
+
+&lt;-ch1       // 這是無效的操作：不能從一個只發送的 Channel 接收數據
+ch2 &lt;- 13   // 這也是無效的操作：不能向一個只接收的 Channel 發送數據
+</code></pre>
+<p>在實際的應用中，這種只發送或只接收的 Channel 常用於函數的參數或返回值，這有助於限制對 Channel 的操作。例如，在下面的程式碼中：</p>
+<pre><code class="language-go">func produce(ch chan&lt;- int) {
+    for i := 0; i &lt; 10; i++ {
+        ch &lt;- i + 1  // 向 Channel 發送數據
+        time.Sleep(time.Second)  // 每次發送後暫停一秒
+    }
+    close(ch)  // 發送完成後關閉 Channel
+}
+
+func consume(ch &lt;-chan int) {
+    for n := range ch {
+        println(n)  // 從 Channel 接收數據並輸出
+    }
+}
+
+func main() {
+    ch := make(chan int, 5)  // 創建一個可傳輸 int 的雙向 Channel
+    var wg sync.WaitGroup
+    wg.Add(2)
+    go func() {
+        produce(ch)  // 啟動生產者goroutine
+        wg.Done()
+    }()
+
+    go func() {
+        consume(ch)  // 啟動消費者goroutine
+        wg.Done()
+    }()
+
+    wg.Wait()  // 等待所有goroutine執行完畢
+}
+</code></pre>
+<p>在此範例中，<code>produce</code> 函數使用了 <code>chan&lt;- int</code> 類型參數，僅允許向 <code>ch</code> 發送數據，而 <code>consume</code> 函數則使用了 <code>&lt;-chan int</code> 類型參數，僅允許從 <code>ch</code> 接收數據。這種設計明確劃分了函數的職責，有助於避免在程式執行中發生錯誤。</p>
+<p>在上述範例中，我們看到了如何在 Go 語言中透過built-in的 <code>close</code> 函數來關閉 channel。當你執行了 <code>close(ch)</code> 之後，channel 會被正式關閉，這個動作會使所有在等待 channel 傳送資料的程序都接收到一個訊號 — channel 已經關閉。</p>
+<p>當 channel 關閉後，如果你嘗試從這個 channel 接收資料，將會發生以下情形：</p>
+<pre><code class="language-go">n := &lt;-ch      // 當 ch 被關閉時，n 會被賦予 ch 元素類型的零值
+m, ok := &lt;-ch  // 當 ch 被關閉時，m 會被賦予 ch 元素類型的零值，並且 ok 會被設為 false
+for v := range ch { // 當 ch 被關閉後，這個 for range 迴圈就會結束
+    ... ...
+}
+</code></pre>
+<p>這些接收方式讓我們能夠檢查 channel 是否已經關閉。使用“comma, ok”慣用法或透過 for range 迴圈，我們能夠明確知道 channel 的狀態。但是，如果你僅僅使用 <code>n := &lt;-ch</code>，則無法確定 channel 是否已關閉。</p>
+<p>需要特別留意的一點是，關閉 channel 通常是<code>發送端的責任</code>。發送端沒有安全的方式來檢查 channel 是否已經被關閉，並且如果嘗試向一個已經關閉的 channel 發送數據，會觸發 panic 狀況，例如下面的程式碼所示：</p>
+<pre><code class="language-go">ch := make(chan int, 5)
+close(ch)
+ch &lt;- 13 // panic: send on closed channel
+</code></pre>
+<p>這裡提醒你，一旦 channel 被關閉，就不應該再有數據被發送至此 channel，以避免程序崩潰。</p>
+<p>在進行 Go 語言的編程過程中，當面對需要對多個 channel 同時操作的情況，<code>select</code> 就顯得非常有用。<code>select</code> 能夠讓我們在多個 channel 上進行發送或接收操作，這樣的設計使得 Go 能夠更有效地處理並行問題。下面將透過一個例子來詳細解釋 <code>select</code> 的使用方式和基本語法。</p>
+<pre><code class="language-go">select {
+case x := &lt;-ch1:     // 從 channel ch1 接收數據，如果 ch1 有數據可讀，則執行此分支
+  .....
+
+case y, ok := &lt;-ch2: // 從 channel ch2 接收數據，ok 是一個bool值，用來檢查 channel 是否已經被關閉
+                     // 如果 ch2 還開著，根據 y 的值來執行相應的邏輯
+  .....
+
+case ch3 &lt;- z:       // 將值 z 發送到 channel ch3，如果 ch3 可以接收，則進行數據發送
+  .....
+
+default:             // 如果上述所有 channel 的操作都無法進行，則執行 default 分支
+                     // 通常用來處理非阻塞或超時情況，確保 select 能夠有效地繼續執行
+}
+</code></pre>
+<h3 id="select"><a class="header" href="#select">select</a></h3>
+<p>在這個 <code>select</code> 結構中，如果沒有 <code>default</code> 分支且所有的 <code>case</code> 分支因為 channel 阻塞而不能執行，則整個 <code>select</code> 會等待直到至少有一個 channel 可以進行通訊操作。接下來的文章中，我們將進一步探討 <code>select</code> 在實際應用中的巧妙用途和技巧，敬請期待。</p>
+<h3 id="go-語言中無緩衝-channel-的實用指南"><a class="header" href="#go-語言中無緩衝-channel-的實用指南">Go 語言中無緩衝 Channel 的實用指南</a></h3>
+<p>在 Go 語言中，無緩衝 channel 是一種非常有用的通信和同步工具。它們廣泛應用於各種場景中，尤其在處理同步和信號傳遞問題時表現出色。以下是無緩衝 channel 的一些典型使用方式：</p>
+<h4 id="信號傳遞的應用"><a class="header" href="#信號傳遞的應用">信號傳遞的應用</a></h4>
+<p>無緩衝 channel 常用於執行信號傳遞，支持 1 對 1 和 1 對 n 的通信模式。首先，來看一個 1 對 1 的例子：</p>
+<pre><code class="language-go">type signal struct{}
+
+func worker() {
+    println("worker is working...")
+    time.Sleep(1 * time.Second)
+}
+
+func spawn(f func()) &lt;-chan signal {
+    c := make(chan signal)
+    go func() {
+        println("worker start to work...")
+        f()
+        c &lt;- signal{}
+    }()
+    return c
+}
+
+func main() {
+    println("start a worker...")
+    c := spawn(worker)
+    &lt;-c
+    fmt.Println("worker work done!")
+}
+</code></pre>
+<p>在這段程式碼中，<code>spawn</code> 函數會啟動一個 goroutine 來執行傳入的函數，並在完成後通過 channel 發送信號。<code>main</code> 函數調用 <code>spawn</code> 後會等待這個信號，從而同步 <code>worker</code> 的執行狀態。</p>
+<p>無緩衝 channel 也適用於實現 1 對 n 的信號通知機制，例如：</p>
+<pre><code class="language-go">func worker(i int) {
+    fmt.Printf("worker %d: is working...\n", i)
+    time.Sleep(1 * time.Second)
+    fmt.Printf("worker %d: works done\n", i)
+}
+
+type signal struct{}
+func spawnGroup(f func(i int), num int, groupSignal &lt;-chan signal) &lt;-chan signal {
+    c := make(chan signal)
+    var wg sync.WaitGroup
+
+    for i := 0; i &lt; num; i++ {
+        wg.Add(1)
+        go func(i int) {
+            &lt;-groupSignal
+            fmt.Printf("worker %d: start to work...\n", i)
+            f(i)
+            wg.Done()
+        }(i + 1)
+    }
+
+    go func() {
+        wg.Wait()
+        c &lt;- signal{}
+    }()
+    return c
+}
+
+func main() {
+    fmt.Println("start a group of workers...")
+    groupSignal := make(chan signal)
+    c := spawnGroup(worker, 5, groupSignal)
+    time.Sleep(5 * time.Second)
+    fmt.Println("the group of workers start to work...")
+    close(groupSignal)
+    &lt;-c
+    fmt.Println("the group of workers work done!")
+}
+</code></pre>
+<p>這個例子展示了如何同步一組 worker 的開始工作時機。main goroutine 創建一組 worker goroutine，它們會在接收到 groupSignal 的關閉信號後同時開始執行任務。這是通過關閉一個無緩衝 channel 實現的，<code>這種方法可以使所有等待在這個 channel 上的 goroutine 接收到信號</code>，實現有效的 1 對 n 通信。</p>
+<h4 id="使用無緩衝-channel-替代傳統鎖機制"><a class="header" href="#使用無緩衝-channel-替代傳統鎖機制">使用無緩衝 channel 替代傳統鎖機制</a></h4>
+<p>在 Go 語言的世界裡，無緩衝 channel 擁有天然的同步特性，讓我們可以用它來優雅地替代傳統的鎖機制，進而使程式碼更為清晰與直觀。以一個簡單的計數器為例，我們先看看傳統的基於鎖的實作方法：</p>
+<pre><code class="language-go">type counter struct {
+    sync.Mutex
+    i int
+}
+
+var cter counter
+
+func Increase() int {
+    cter.Lock()
+    defer cter.Unlock()
+    cter.i++
+    return cter.i
+}
+
+func main() {
+    var wg sync.WaitGroup
+
+    for i := 0; i &lt; 10; i++ {
+        wg.Add(1)
+        go func(i int) {
+            v := Increase()
+            fmt.Printf("goroutine-%d: current counter value is %d\n", i, v)
+            wg.Done()
+        }(i)
+    }
+
+    wg.Wait()
+}
+</code></pre>
+<p>這段程式碼中，我們使用了互斥鎖來確保計數器的值在多個 Goroutine 中正確增加。每次調用 <code>Increase()</code> 都會上鎖和解鎖，確保計數操作不會發生競爭狀態。</p>
+<p>現在，我們來看看如何利用無緩衝 channel 來達到同樣的效果，但是以一種更符合 Go 設計哲學的方式：“通過通信來共享內存”：</p>
+<pre><code class="language-go">type counter struct {
+    c chan int
+    i int
+}
+
+func NewCounter() *counter {
+    cter := &amp;counter{
+        c: make(chan int),
+    }
+    go func() {
+        for {
+            cter.i++
+            cter.c &lt;- cter.i
+        }
+    }()
+    return cter
+}
+
+func (cter *counter) Increase() int {
+    return &lt;-cter.c
+}
+
+func main() {
+    cter := NewCounter()
+    var wg sync.WaitGroup
+    for i := 0; i &lt; 10; i++ {
+        wg.Add(1)
+        go func(i int) {
+            v := cter.Increase()
+            fmt.Printf("goroutine-%d: current counter value is %d\n", i, v)
+            wg.Done()
+        }(i)
+    }
+    wg.Wait()
+}
+</code></pre>
+<p>在這個版本中，計數器的每次增加操作都由一個獨立的 Goroutine 負責，並通過無緩衝 channel 發送給其他 Goroutine。這樣的設計不僅減少了鎖的使用，也使得程序整體更加符合 Go 的設計理念，提高了程式碼的效率和可讀性。</p>
+<h3 id="帶緩衝-channel-的實踐應用"><a class="header" href="#帶緩衝-channel-的實踐應用">帶緩衝 channel 的實踐應用</a></h3>
+<p>帶緩衝的 channel 相較於無緩衝的 channel，最大的特點在於其async性質。當緩衝區尚未滿載時，執行發送操作的 Goroutine 不會發生阻塞；反之，當緩衝區內有數據存在時，執行接收操作的 Goroutine 也能保持非阻塞狀態。這一點讓帶緩衝的 channel 在特定應用場景中展現出與無緩衝 channel 不同的效能和適用性。接下來，讓我們詳細探討這些應用場景。</p>
+<h4 id="作為消息隊列message-queue使用"><a class="header" href="#作為消息隊列message-queue使用">作為消息隊列(Message Queue)使用</a></h4>
+<p>在多個 Goroutine 之間的通信過程中，帶緩衝的 channel 經常被設定為消息隊列。與無緩衝的 channel 相比，帶緩衝的設計在性能上更加優異，能夠更有效地管理數據流的傳遞。</p>
+<h4 id="作為計數信號量counting-semaphore"><a class="header" href="#作為計數信號量counting-semaphore">作為計數信號量（counting semaphore）</a></h4>
+<p>在 Go 的併發設計模式中，利用帶緩衝的 channel 作為計數信號量是一種常見的實踐。通過控制 channel 中的數據長度，我們可以精確地管理目前活動的 Goroutine 的數量，而 channel 的容量則定義了允許的最大同時活動 Goroutine 數。在此模型中，向 channel 發送數據即代表請求一個信號量，而從 channel 接收數據則意味著釋放一個信號量。</p>
+<p>以下是一個具體的程式碼範例：</p>
+<pre><code class="language-go">var active = make(chan struct{}, 3)
+var jobs = make(chan int, 10)
+
+func main() {
+    go func() {
+        for i := 0; i &lt; 8; i++ {
+            jobs &lt;- (i + 1)
+        }
+        close(jobs)
+    }()
+
+    var wg sync.WaitGroup
+
+    for j := range jobs {
+        wg.Add(1)
+        go func(j int) {
+            active &lt;- struct{}{}
+            log.Printf("handle job: %d\n", j)
+            time.Sleep(2 * time.Second)
+            &lt;-active
+            wg.Done()
+        }(j)
+    }
+    wg.Wait()
+}
+</code></pre>
+<p>在這個示例中，一組 Goroutine 被設計來處理不同的 job，而系統最多允許 3 個 Goroutine 同時處於活動狀態。</p>
+<p>運行結果如下：</p>
+<pre><code class="language-go">2024/03/03 10:08:55 handle job: 1
+2024/03/03 10:08:55 handle job: 4
+2024/03/03 10:08:55 handle job: 8
+2024/03/03 10:08:57 handle job: 5
+2024/03/03 10:08:57 handle job: 7
+2024/03/03 10:08:57 handle job: 6
+2024/03/03 10:08:59 handle job: 3
+2024/03/03 10:08:59 handle job: 2
+</code></pre>
+<p>從這些時間戳記錄可見，雖然程式創建了多個 Goroutine，但在計數信號量的調控下，同時處於活動狀態的 Goroutine 數量被有效地控制在了三個。</p>
+<h3 id="總結-11"><a class="header" href="#總結-11">總結</a></h3>
+<ul>
+<li>Goroutine 是 Go 語言的併發基本單元，channel 則是通信和同步的工具。</li>
+<li>無緩衝 channel 用於同步通信，帶緩衝 channel 用於異步通信。</li>
+<li>無緩衝 channel 適合用於信號傳遞和替代鎖機制。</li>
+<li>帶緩衝 channel 適合用於消息隊列和計數信號量。</li>
+</ul>
+<p>更多Go語言相關的文章，歡迎參考我的部落格: <a href="https://kaichiachen.github.io/2024/03/08/golang/go_channel/">https://kaichiachen.github.io/2024/03/08/golang/go_channel/</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day14---更低級別的go的變數同步技巧---sync"><a class="header" href="#day14---更低級別的go的變數同步技巧---sync">Day14 - 更低級別的Go的變數同步技巧 - sync</a></h1>
+<p>Go 語言的併發模型中，一句由 Rob Pike 所提的經典名言非常關鍵：「不要透過共享記憶體來通信，而是透過通信來共享記憶體（Don’t communicate by sharing memory, share memory by communicating）」。這不僅是一句格言，更深刻地影響了 Go 語言在併發編程中的設計哲學，主要是倡導使用 channel 作為 Goroutine 之間的溝通橋樑。</p>
+<p>儘管 Go 語言在設計上鼓勵使用通信而非共享記憶體的方法來實現併發，但它並未完全排斥傳統的基於共享記憶體的併發模型。例如，Go 的標準庫中的 sync 包就提供了多種低級的同步方法，包括互斥鎖（sync.Mutex）、讀寫鎖（sync.RWMutex）、條件變數（sync.Cond）以及原子操作等工具，這些都是在特定情況下仍然非常有用的工具。</p>
+<h3 id="sync-包低級同步的應用場景"><a class="header" href="#sync-包低級同步的應用場景">sync 包低級同步的應用場景</a></h3>
+<ul>
+<li>在需要高效率的臨界區同步時，低級同步方法如互斥鎖比 channel 更為適合，因為它們的執行成本更低。</li>
+<li>當需要在多個 Goroutine 之間同步訪問某個結構體的內部狀態，但又不希望轉移該結構體對象的所有權時，使用 sync 包的同步方法是一個好選擇。</li>
+</ul>
+<p>在實際應用中，使用 sync 包的互斥鎖和讀寫鎖需要注意一些事項，例如避免對含有鎖的結構進行複製，因為這會導致鎖的行為出現非預期的錯誤。此外，使用互斥鎖時應盡量縮短鎖定時間，以減少對程序效率的影響，並且必須記得在適當時候釋放鎖，避免死鎖的發生。</p>
+<h3 id="使用例子和注意事項"><a class="header" href="#使用例子和注意事項">使用例子和注意事項</a></h3>
+<p>互斥鎖（Mutex）和讀寫鎖（RWMutex）的基本用法如下：</p>
+<pre><code class="language-go">var mu sync.Mutex
+mu.Lock()   // 加鎖
+doSomething()
+mu.Unlock() // 解鎖
+</code></pre>
+<p>這段程式碼展示了一個 Goroutine 如何獨占資源進行操作。當使用互斥鎖時，其他試圖執行 Lock 操作的 Goroutine 將會被阻塞，直到鎖被釋放。</p>
+<p>讀寫鎖則允許多個讀指令同時進行，但寫指令會獨占鎖：</p>
+<pre><code class="language-go">var rwmu sync.RWMutex
+rwmu.RLock()   // 加讀鎖
+readSomething()
+rwmu.RUnlock() // 解讀鎖
+rwmu.Lock()    // 加寫鎖
+changeSomething()
+rwmu.Unlock()  // 解寫鎖
+</code></pre>
+<p>這種鎖的設計允許多個讀者同時讀取數據而不被阻塞，只有當需要修改數據時，寫鎖才會阻止其他讀取或寫入操作，保證數據的一致性。</p>
+<h3 id="synccond條件變數"><a class="header" href="#synccond條件變數">sync.Cond：條件變數</a></h3>
+<p><code>sync.Cond</code> 是 Go 語言中實現條件變數的一種方式，主要用於管理那些需要等待某個特定條件成立的 Goroutines。這個概念可以類比於百米賽跑中運動員等待發令槍的情境。當條件變數所等待的條件被觸發時，原本處於等待狀態的 Goroutines 會接收到通知，繼續他們的任務。</p>
+<p>使用條件變數的好處在於，它能有效避免 Goroutines 進行無意義的連續輪詢，這種輪詢不僅效率低，還會浪費大量系統資源。以下是一個示例，展示如何使用 <code>sync.Cond</code> 達到與無緩衝 channel 相似的效果：</p>
+<pre><code class="language-go">type signal struct{}
+
+var ready bool
+
+func worker(i int) {
+  fmt.Printf("worker %d: is working...\n", i)
+  time.Sleep(1 * time.Second)
+  fmt.Printf("worker %d: works done\n", i)
+}
+
+func spawnGroup(f func(i int), num int, groupSignal *sync.Cond) &lt;-chan signal {
+  c := make(chan signal)
+  var wg sync.WaitGroup
+
+  for i := 0; i &lt; num; i++ {
+    wg.Add(1)
+    go func(i int) {
+      groupSignal.L.Lock()
+      while !ready {
+        groupSignal.Wait()
+      }
+      groupSignal.L.Unlock()
+      fmt.Printf("worker %d: start to work...\n", i)
+      f(i)
+      wg.Done()
+    }(i + 1)
+  }
+
+  go func() {
+    wg.Wait()
+    c &lt;- signal(struct{}{})
+  }()
+  return c
+}
+
+func main() {
+  fmt.Println("start a group of workers...")
+  groupSignal := sync.NewCond(&amp;sync.Mutex{})
+  c := spawnGroup(worker, 5, groupSignal)
+
+  time.Sleep(5 * time.Second) // 模擬 ready 前的準備工作
+  fmt.Println("the group of workers start to work...")
+
+  groupSignal.L.Lock()
+  ready = true
+  groupSignal.Broadcast()
+  groupSignal.L.Unlock()
+
+  &lt;-c
+  fmt.Println("the group of workers work done!")
+}
+</code></pre>
+<h3 id="原子操作atomic-operations"><a class="header" href="#原子操作atomic-operations">原子操作（Atomic Operations）</a></h3>
+<p><code>atomic</code> 包提供了原子操作的接口，這些操作相比普通的指令操作具有不可中斷的特性。舉例來說，一個簡單的整數++操作：</p>
+<pre><code class="language-go">var a int
+a++
+</code></pre>
+<p>這樣的操作需要三條<code>指令</code>來完成：</p>
+<ul>
+<li><strong>LOAD</strong>：將變數從內存加載到 CPU 寄存器；</li>
+<li><strong>ADD</strong>：執行加法指令；</li>
+<li><strong>STORE</strong>：將計算結果存回記憶體。<br />
+這三個步驟在執行過程中都有可能被中斷。然而，原子操作可以保證像一個完整的事務那樣一次性完成，不會被中斷。原子操作的實現依賴於底層硬體的支持，提供了一種比作業系統層面更低級的同步技術。<code>atomic</code> Lib為開發者封裝了這些底層指令，使得實現複雜的併發同步控制變得更加便捷。</li>
+</ul>
+<h3 id="總結-12"><a class="header" href="#總結-12">總結</a></h3>
+<ul>
+<li>sync 包提供了多種低級同步方法，包括互斥鎖、讀寫鎖和條件變數。</li>
+<li>使用互斥鎖和讀寫鎖時要注意避免複製變數，並記得及時解鎖。</li>
+<li>sync.Cond 是條件變數的實現，用於避免 Goroutine 的連續輪詢。</li>
+<li>atomic Lib提供了底層的原子操作支持，適用於實現高級併發同步技術。</li>
+</ul>
+<p>更多Go語言相關的文章，歡迎參閱我的部落格: <a href="https://kaichiachen.github.io/2024/03/20/golang/go_happ_path/">https://kaichiachen.github.io/2024/03/20/golang/go_happ_path/</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day15---模組管理-go-moduels的管理"><a class="header" href="#day15---模組管理-go-moduels的管理">Day15 - 模組管理: Go Moduels的管理</a></h1>
+<p>在開始講解Go Modules之前，讓我們先回顧一下Go語言在模組管理上的發展歷程。Go語言從1.11版開始引入了Go Modules，這是一種新的package管理方式，用來解決之前GOPATH時代的一些痛點。Go Modules允許我們在專案中定義依賴關係，並且能夠在不同版本之間切換，這大大簡化了專案管理。</p>
+<h3 id="一為什麼需要go-modules"><a class="header" href="#一為什麼需要go-modules">一、為什麼需要Go Modules？</a></h3>
+<h4 id="1-解決版本混亂問題"><a class="header" href="#1-解決版本混亂問題">1. 解決版本混亂問題</a></h4>
+<p>在Go Modules之前，Go的專案是基於GOPATH進行管理的。這導致一個大的問題：所有的module都放在同一個地方，很容易發生不同專案之間的版本衝突。Go Modules通過在每個專案中引入<code>go.mod</code>文件來指定依賴module的版本，從而避免了這個問題。</p>
+<h4 id="2-提升開發靈活性"><a class="header" href="#2-提升開發靈活性">2. 提升開發靈活性</a></h4>
+<p>使用Go Modules，我們可以輕鬆地在本地電腦上開發不同版本的專案，而不必擔心影響其他專案。這種隔離性提高了開發效率。</p>
+<h4 id="3-更加清晰的依賴關係"><a class="header" href="#3-更加清晰的依賴關係">3. 更加清晰的依賴關係</a></h4>
+<p>Go專案下的<code>go.mod</code>檔案詳細列出了所有依賴項及其版本，使得依賴關係變得更加透明和可控。</p>
+<h3 id="二如何使用go-modules"><a class="header" href="#二如何使用go-modules">二、如何使用Go Modules？</a></h3>
+<h4 id="1-初始化模組"><a class="header" href="#1-初始化模組">1. 初始化模組</a></h4>
+<p>在一個新的Go專案中，我們可以通過以下指令初始化一個Go模組：</p>
+<pre><code class="language-go">go mod init &lt;module-name&gt;
+</code></pre>
+<p>這將在專案目錄下創建一個<code>go.mod</code>文件，並將當前目錄標記為Go模組的根目錄。</p>
+<h4 id="2-添加依賴"><a class="header" href="#2-添加依賴">2. 添加依賴</a></h4>
+<p>當我們在程式碼中導入一個新的第三方module時，Go會自動將這個module添加到<code>go.mod</code>中：</p>
+<pre><code class="language-go">import "github.com/gin-gonic/gin"
+</code></pre>
+<p>運行以下指令來更新依賴：</p>
+<pre><code class="language-go">go get
+</code></pre>
+<p>這將下載並安裝該module，同時在<code>go.mod</code>中記錄其版本信息。</p>
+<h4 id="3-升級或降級依賴"><a class="header" href="#3-升級或降級依賴">3. 升級或降級依賴</a></h4>
+<p>要升級或降級依賴，我們可以手動修改<code>go.mod</code>文件中的版本號，然後運行以下指令：</p>
+<pre><code class="language-go">go get &lt;module&gt;@&lt;version&gt;
+</code></pre>
+<p>這樣就可以輕鬆地管理依賴module的版本。</p>
+<h4 id="4-移除不再使用的依賴"><a class="header" href="#4-移除不再使用的依賴">4. 移除不再使用的依賴</a></h4>
+<p>隨著專案的發展，一些依賴module可能不再需要。此時可以使用以下指令清理不必要的依賴：</p>
+<pre><code class="language-go">go mod tidy
+</code></pre>
+<p>這個指令會刪除<code>go.mod</code>和<code>go.sum</code>中多餘的依賴。</p>
+<h3 id="三進階技巧"><a class="header" href="#三進階技巧">三、進階技巧</a></h3>
+<h4 id="1-使用私有repo"><a class="header" href="#1-使用私有repo">1. 使用私有Repo</a></h4>
+<p>在現實中，企業內部開發經常需要使用私有的程式碼Repo。Go Modules支持配置私有Repo，通過設置環境變量<code>GOPRIVATE</code>來指定私有模組：</p>
+<pre><code class="language-go">export GOPRIVATE=github.com/yourcompany/*
+</code></pre>
+<p>這樣，Go在下載模組時會跳過公有代理。</p>
+<h4 id="2-debug版本問題"><a class="header" href="#2-debug版本問題">2. debug版本問題</a></h4>
+<p>有時候，版本問題會引起一些麻煩。我們可以使用以下指令來查看和解析依賴關係：</p>
+<pre><code class="language-go">go list -m all
+</code></pre>
+<p>這會列出所有依賴的模組及其版本，幫助我們進行debug。</p>
+<h4 id="3-固定版本"><a class="header" href="#3-固定版本">3. 固定版本</a></h4>
+<p>為了確保專案的穩定性，我們可能需要鎖定某些依賴的版本。可以通過<code>replace</code>指令在<code>go.mod</code>中指定固定版本：</p>
+<pre><code class="language-go">replace (
+  old/module v1.0.0 =&gt; new/module v1.0.0
+)
+</code></pre>
+<p>這樣做能避免在不同環境下出現版本不一致的問題。</p>
+<h3 id="四結論"><a class="header" href="#四結論">四、結論</a></h3>
+<p>Go Modules的出現極大地改善了Go語言的package管理方式。通過使用Go Modules，我們可以更方便地管理專案依賴，保持版本一致性，並且提高開發的靈活性。對於每一個Go開發者來說，熟悉並掌握Go Modules的使用是非常有必要的。</p>
+<p>如果你還沒有使用Go Modules，那麼現在就試試看吧！你會發現它能給你的開發工作帶來多麼大的便利。希望這篇文章能夠幫助你更好地理解和使用Go Modules，讓你的Go開發之旅更加順暢。</p>
+<p>更多Go語言的文章歡迎參閱: <a href="https://kaichiachen.github.io/2024/04/14/golang/go_modules/">https://kaichiachen.github.io/2024/04/14/golang/go_modules/</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day16---單元測試-提高程式碼的質量"><a class="header" href="#day16---單元測試-提高程式碼的質量">Day16 - 單元測試: 提高程式碼的質量</a></h1>
+<p>在程式設計的世界裡，單元測試像是你的程式碼的私人保鏢，每一個保鏢守護著各自一小區塊的程式碼，確保它不會在你不注意的時候崩潰。在這篇文章中，我們將深入探討 Go 語言的單元測試，並了解如何透過測試來提高程式碼的質量。不論你是剛接觸 Go 語言的新手，還是已經有經驗的開發者，希望你們都可以從中獲得一些實用的技巧。</p>
+<h2 id="什麼是單元測試"><a class="header" href="#什麼是單元測試">什麼是單元測試？</a></h2>
+<p>簡單來說，單元測試就是針對程式中最小的可測試單位（通常是一個函式或方法）進行自動化測試。這就像是在驗證你的車子裡的每個零件是否正常運作(一個單元測試一般只測試一個零件)，確保整台車不會在半路拋錨。</p>
+<h2 id="為什麼要進行單元測試"><a class="header" href="#為什麼要進行單元測試">為什麼要進行單元測試？</a></h2>
+<ol>
+<li><strong>提高程式碼質量：</strong> 單元測試可以幫助你找到程式碼中的潛在錯誤，並在開發早期就修復它們。</li>
+<li><strong>減少重複錯誤：</strong> 當發現錯誤並修復後，測試用例將確保這些錯誤不會再次發生。</li>
+<li><strong>簡化重構：</strong> 單元測試為程式碼重構提供了保障，讓你在不改變功能的情況下優化程式碼結構。</li>
+<li><strong>增強信心：</strong> 擁有全面的測試用例可以讓開發者對其程式碼充滿信心，特別是在進行大規模修改時。</li>
+</ol>
+<h2 id="在-go-中編寫單元測試"><a class="header" href="#在-go-中編寫單元測試">在 Go 中編寫單元測試</a></h2>
+<p>Go 語言內建了強大的測試框架，讓單元測試變得簡單易行。只需遵循以下步驟，你就可以開始編寫自己的單元測試。</p>
+<h3 id="1-撰寫測試函式"><a class="header" href="#1-撰寫測試函式">1. 撰寫測試函式</a></h3>
+<p>Go 中的單元測試檔案以 <code>_test.go</code> 結尾，測試函式的命名通常以 <code>Test</code> 開頭。例如，如果我們有一個計算加法的函式 <code>Add</code>，我們可以撰寫以下測試函式：</p>
+<pre><code class="language-go">package main
+
+import "testing"
+
+func TestAdd(t *testing.T) {
+    result := Add(2, 3)
+    expected := 5
+    if result != expected {
+        t.Errorf("Add(2, 3) = %d; want %d", result, expected)
+    }
+}
+</code></pre>
+<h3 id="2-執行測試"><a class="header" href="#2-執行測試">2. 執行測試</a></h3>
+<p>在終端中運行以下命令來執行測試：</p>
+<pre><code class="language-go">go test
+</code></pre>
+<p>這將會執行專案中的所有測試，並顯示測試結果。</p>
+<h3 id="3-使用表table驅動測試"><a class="header" href="#3-使用表table驅動測試">3. 使用表(Table)驅動測試</a></h3>
+<p>表驅動測試是一種常見的測試模式，特別適合於多組輸入和預期輸出相同的情況。以下是一個表驅動測試的範例：</p>
+<pre><code class="language-go">func TestAddTableDriven(t *testing.T) {
+    tests := []struct {
+        a, b, expected int
+    }{
+        {1, 2, 3},
+        {2, 2, 4},
+        {10, 5, 15},
+    }
+
+    for _, tt := range tests {
+        result := Add(tt.a, tt.b)
+        if result != tt.expected {
+            t.Errorf("Add(%d, %d) = %d; want %d", tt.a, tt.b, result, tt.expected)
+        }
+    }
+}
+</code></pre>
+<h3 id="4-測試錯誤情況"><a class="header" href="#4-測試錯誤情況">4. 測試錯誤情況</a></h3>
+<p>單元測試不僅應該測試正常情況，還應該測試異常情況和邊界情況。例如，當傳遞無效輸入時，函式應該返回錯誤：</p>
+<pre><code class="language-go">func TestDivide(t *testing.T) {
+    _, err := Divide(4, 0)
+    if err == nil {
+        t.Error("Expected error for divide by zero, got nil")
+    }
+}
+</code></pre>
+<h2 id="提升單元測試的技巧"><a class="header" href="#提升單元測試的技巧">提升單元測試的技巧</a></h2>
+<ol>
+<li><strong>保持獨立性：</strong> 每個單元測試應該是獨立的，互不依賴。這樣可以避免測試之間的相互干擾。</li>
+<li><strong>使用 Mock：</strong> 當測試需要與外部系統交互時，可以使用 Mock 物件來模擬這些系統，避免測試的依賴性。</li>
+<li><strong>持續集成：</strong> 結合持續集成工具，如 Jenkins 或 GitHub Actions，自動化運行測試，確保每次程式碼變更都不會破壞現有功能。</li>
+<li><strong>覆蓋率報告：</strong> 使用 <code>go test -cover</code> 來生成覆蓋率報告，了解測試覆蓋的程式碼範圍。儘量提高測試覆蓋率，但不要過於執著於 100%。</li>
+<li><strong>測試文件：</strong> 為測試編寫詳細的文件和註解，這對於團隊協作和未來維護非常有幫助。</li>
+</ol>
+<h2 id="結論"><a class="header" href="#結論">結論</a></h2>
+<p>單元測試是一個強大的工具，能夠顯著提高程式碼的質量和可靠性。對於 Go 語言開發者來說，充分利用 Go 的測試框架可以讓你的程式更加穩健。無論是為了修復錯誤還是重構程式碼，單元測試都應該成為開發流程中的一部分。希望這篇文章能幫助你更好地理解Go 語言的單元測試，並從此時此刻為你的專案或團隊添加單元測試吧！</p>
+<p>更多Go語言相關的文章，歡迎參閱我的部落格: <a href="https://kaichiachen.github.io/2024/04/23/golang/go_unit_test/">https://kaichiachen.github.io/2024/04/23/golang/go_unit_test/</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day17---更多環境變數-goos-goarch等等"><a class="header" href="#day17---更多環境變數-goos-goarch等等">Day17 - 更多環境變數: GOOS, GOARCH等等</a></h1>
+<p>在使用 Go 語言開發應用程式時，環境變數扮演著關鍵的角色。它們幫助我們配置編譯器、執行環境、調試資訊等多個方面。理解這些變數的作用，可以讓我們更好地掌控 Go 開發環境，寫出更高效、更具跨平台性的程式。今天，我們就來聊聊一些重要的 Go 環境變數，比如 <code>GOOS</code> 和 <code>GOARCH</code>，以及它們在實際開發中的應用。</p>
+<h2 id="為什麼要了解環境變數"><a class="header" href="#為什麼要了解環境變數">為什麼要了解環境變數？</a></h2>
+<p>首先，環境變數是一種簡單而強大的配置方式，讓我們能夠根據需要調整開發環境。例如，當你需要在 Windows 上開發，但希望你的程式碼最終執行在 Linux 伺服器上時，環境變數可以幫助你在開發過程中模擬不同的作業系統環境。</p>
+<h2 id="常見的-go-環境變數"><a class="header" href="#常見的-go-環境變數">常見的 Go 環境變數</a></h2>
+<h3 id="1-goos"><a class="header" href="#1-goos">1. <code>GOOS</code></a></h3>
+<ul>
+<li><strong>定義：</strong> <code>GOOS</code> 是用來指定目標作業系統的環境變數。</li>
+<li><strong>可選值：</strong> 常見值有 <code>linux</code>、<code>windows</code>、<code>darwin</code>（對應 macOS）等等。</li>
+<li><strong>用途：</strong> 當我們需要交叉編譯時，設定 <code>GOOS</code> 可以讓 Go 編譯器為指定的作業系統生成可執行檔案。</li>
+</ul>
+<h4 id="範例"><a class="header" href="#範例">範例：</a></h4>
+<p>假設我們在 macOS 上開發，但需要生成一個可以在 Linux 上執行的程式。我們可以這樣做：</p>
+<pre><code class="language-go">GOOS=linux go build -o myapp-linux
+</code></pre>
+<p>這樣就會生成一個名為 <code>myapp-linux</code> 的可執行檔案，它可以直接在 Linux 系統上執行。</p>
+<h3 id="2-goarch"><a class="header" href="#2-goarch">2. <code>GOARCH</code></a></h3>
+<ul>
+<li><strong>定義：</strong> <code>GOARCH</code> 用來指定目標系統的架構。</li>
+<li><strong>可選值：</strong> 常見值有 <code>amd64</code>、<code>386</code>、<code>arm</code>、<code>arm64</code> 等。</li>
+<li><strong>用途：</strong> 這個變數特別有用於需要支持不同處理器架構的應用程式開發中。</li>
+</ul>
+<h4 id="範例-1"><a class="header" href="#範例-1">範例：</a></h4>
+<p>如果我們想要為 Raspberry Pi 編譯 Go 應用程式，我們可以這樣做：</p>
+<pre><code class="language-go">GOOS=linux GOARCH=arm go build -o myapp-arm
+</code></pre>
+<p>這將生成一個適用於 ARM 架構的可執行檔案，可以在 Raspberry Pi 上執行。</p>
+<h3 id="3-gopath"><a class="header" href="#3-gopath">3. <code>GOPATH</code></a></h3>
+<ul>
+<li><strong>定義：</strong> <code>GOPATH</code> 是 Go 工作區的路徑，包含三個子目錄：<code>src</code>、<code>pkg</code>、和 <code>bin</code>。</li>
+<li><strong>用途：</strong> <code>GOPATH</code> 用於管理第三方套件和工具。如果你的專案不在 <code>GOPATH</code> 目錄下，那麼你就需要設定這個變數以包含你的專案路徑。</li>
+</ul>
+<h4 id="範例-2"><a class="header" href="#範例-2">範例：</a></h4>
+<pre><code class="language-go">export GOPATH=$HOME/go
+</code></pre>
+<p>設定好 <code>GOPATH</code> 後，你的 Go 專案應該放在 <code>$HOME/go/src</code> 目錄中。</p>
+<h3 id="4-goroot"><a class="header" href="#4-goroot">4. <code>GOROOT</code></a></h3>
+<ul>
+<li><strong>定義：</strong> <code>GOROOT</code> 是 Go 編譯器和工具鏈的安裝目錄。</li>
+<li><strong>用途：</strong> 在大多數情況下，<code>GOROOT</code> 是不需要手動設定的，因為 Go 會自動偵測安裝位置。但在某些情況下（例如多個 Go 版本並存時），你可能需要手動設定。</li>
+</ul>
+<h4 id="範例-3"><a class="header" href="#範例-3">範例：</a></h4>
+<pre><code class="language-go">export GOROOT=/usr/local/go
+</code></pre>
+<h3 id="5-gomod"><a class="header" href="#5-gomod">5. <code>GOMOD</code></a></h3>
+<ul>
+<li><strong>定義：</strong> <code>GOMOD</code> 代表當前專案的 <code>go.mod</code> 文件的路徑。</li>
+<li><strong>用途：</strong> 當你想確認當前的工作目錄是否在一個 Go 模組中時，這個變數非常有用。</li>
+</ul>
+<h4 id="範例-4"><a class="header" href="#範例-4">範例：</a></h4>
+<p>在終端中執行：</p>
+<pre><code class="language-go">go env GOMOD
+</code></pre>
+<p>會返回當前模組的 <code>go.mod</code> 文件路徑。</p>
+<h2 id="總結-13"><a class="header" href="#總結-13">總結</a></h2>
+<ol>
+<li>跨平台與跨架構編譯：</li>
+</ol>
+<ul>
+<li>使用 GOOS 和 GOARCH 環境變數，可以為不同作業系統（如 Linux、Windows）和硬體架構（如 amd64、arm）進行交叉編譯，生成適用於不同平台的可執行檔案。</li>
+<li>範例指令：GOOS=linux GOARCH=arm go build -o myapp-arm 可生成適用於 Linux 和 ARM 架構的應用程式。</li>
+</ul>
+<ol start="2">
+<li>工作空間與模組管理：</li>
+</ol>
+<ul>
+<li>GOPATH 定義了 Go 工作空間的路徑，用於管理專案和第三方套件。在Module下，GOMOD 用於標識當前專案的模組文件 go.mod，便於模組化管理。</li>
+<li>設定範例：export GOPATH=$HOME/go 會將工作區設定在 $HOME/go 下。</li>
+</ul>
+<ol start="3">
+<li>編譯器與工具鏈配置：</li>
+</ol>
+<ul>
+<li>GOROOT 指定了 Go 編譯器和工具鏈的安裝目錄，通常不需手動設定，但在多版本並存時可能需要手動指定。</li>
+<li>設定範例：export GOROOT=/usr/local/go 用於手動設定 Go 工具鏈的路徑。</li>
+</ul>
+<p>更多Go語言的文章歡迎參閱我的部落格: <a href="https://kaichiachen.github.io/2024/04/30/golang/go_env_var/">https://kaichiachen.github.io/2024/04/30/golang/go_env_var/</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day18---go語言的基本性能分析"><a class="header" href="#day18---go語言的基本性能分析">Day18 - Go語言的基本性能分析</a></h1>
+<p>在現代程式開發中，性能分析是提升程式效率和可靠性的重要一環。對於 Go 語言來說，它以其卓越的性能和簡單的語法受到眾多開發者的青睞。然而，要充分發揮 Go 的性能潛力，我們需要深入了解如何進行性能分析，找出潛在的性能瓶頸並加以優化。本篇文章將介紹 Go 語言中進行性能分析的基本方法和工具，幫助你寫出高效的 Go 程式。</p>
+<h2 id="什麼是性能分析"><a class="header" href="#什麼是性能分析">什麼是性能分析？</a></h2>
+<p>性能分析是通過各種工具和技術，測量程式在不同條件下的表現，以找出性能瓶頸並加以改善的過程。它包括兩個基本概念：<strong>Profile</strong> 和 <strong>Trace</strong>。</p>
+<h3 id="profile"><a class="header" href="#profile">Profile</a></h3>
+<p>Profile 是性能分析中一種測量和記錄應用程式各個部分資源使用狀況的方法。它主要集中在以下方面：</p>
+<ul>
+<li><strong>CPU Profile：</strong> 記錄 CPU 的使用情況，分析各個函式的 CPU 耗時。</li>
+<li><strong>Memory Profile：</strong> 記錄記憶體分配和釋放的狀況，分析記憶體使用的瓶頸。</li>
+<li><strong>Block Profile：</strong> 監控 Go 的 goroutines 由於通道和互斥鎖而阻塞的情況。</li>
+</ul>
+<p>透過這些 Profile，我們可以找到哪些部分的程式碼最耗時、最耗資源，並進行優化。</p>
+<h3 id="trace"><a class="header" href="#trace">Trace</a></h3>
+<p>Trace 是對程式運行狀態進行更詳細的跟蹤和分析。它提供了程式的時間線視圖，幫助我們了解：</p>
+<ul>
+<li>程式執行過程中的事件序列。</li>
+<li>goroutine 的創建和切換。</li>
+<li>系統調用和網絡、檔案 I/O 操作的耗時。</li>
+</ul>
+<p>Trace 更加適合分析併行程式中 goroutine 的調度情況，找出潛在的race-condition問題和執行瓶頸。</p>
+<h2 id="為什麼需要性能分析"><a class="header" href="#為什麼需要性能分析">為什麼需要性能分析？</a></h2>
+<p>在開發過程中，我們常常會遇到以下問題：</p>
+<ol>
+<li><strong>程式執行速度變慢：</strong> 程式隨著功能增多，可能出現速度下降的情況。</li>
+<li><strong>資源消耗過高：</strong> CPU 和記憶體使用率超標，可能導致系統負載增加。</li>
+<li><strong>性能瓶頸：</strong> 某些程式碼區塊可能是性能瓶頸，拖慢整體應用。</li>
+</ol>
+<p>性能分析可以幫助我們解決這些問題，找出問題的根本原因，從而進行針對性的優化。</p>
+<h2 id="go-語言的性能分析工具"><a class="header" href="#go-語言的性能分析工具">Go 語言的性能分析工具</a></h2>
+<p>Go 提供了多種工具來進行性能分析，其中最常用的包括 <code>pprof</code>、<code>trace</code> 和 <code>race detector</code>。下面我們來詳細介紹這些工具的使用方法。</p>
+<h3 id="1-pprof"><a class="header" href="#1-pprof">1. pprof</a></h3>
+<p><code>pprof</code> 是 Go 內建的性能分析工具，用於收集和分析 CPU 和記憶體的使用狀況。以下是使用 <code>pprof</code> 進行性能分析的步驟：</p>
+<h4 id="cpu-分析"><a class="header" href="#cpu-分析">CPU 分析</a></h4>
+<ol>
+<li>
+<p><strong>添加分析程式碼：</strong></p>
+<p>在你的 Go 程式中，加入以下程式碼來啟動 CPU 分析：</p>
+<pre><code class="language-go">import (
+    "os"
+    "runtime/pprof"
+)
+
+func main() {
+    f, _ := os.Create("cpu.prof")
+    pprof.StartCPUProfile(f)
+    defer pprof.StopCPUProfile()
+
+    // 你的程式碼
+}
+</code></pre>
+</li>
+<li>
+<p><strong>運行應用：</strong></p>
+<p>使用 <code>go run</code> 命令運行你的應用，這將生成 <code>cpu.prof</code> 檔案。</p>
+</li>
+<li>
+<p><strong>分析檔案：</strong></p>
+<p>使用 <code>go tool pprof</code> 命令查看分析結果：</p>
+<pre><code class="language-go">go tool pprof cpu.prof
+</code></pre>
+<p>這會打開互動式界面，你可以使用 <code>top</code>、<code>list</code> 等命令查看最耗時的函式。</p>
+</li>
+</ol>
+<h4 id="記憶體分析"><a class="header" href="#記憶體分析">記憶體分析</a></h4>
+<ol>
+<li>
+<p><strong>添加記憶體分析程式碼：</strong></p>
+<p>同樣，在你的程式中加入程式碼以啟動記憶體分析：</p>
+<pre><code class="language-go">import "runtime/pprof"
+
+func main() {
+    f, _ := os.Create("mem.prof")
+    pprof.WriteHeapProfile(f)
+    f.Close()
+
+    // 你的程式碼...
+}
+</code></pre>
+</li>
+<li>
+<p><strong>運行程式並分析：</strong></p>
+<p>跟 CPU 分析類似，生成 <code>mem.prof</code> 檔案後，使用 <code>go tool pprof</code> 進行分析。</p>
+</li>
+</ol>
+<h3 id="2-trace"><a class="header" href="#2-trace">2. Trace</a></h3>
+<p><code>trace</code> 是 Go 的另一個強大工具，用於生成程式執行的詳細時間軸，適合分析race-condition狀況和性能瓶頸。</p>
+<h4 id="使用方法"><a class="header" href="#使用方法">使用方法</a></h4>
+<ol>
+<li>
+<p><strong>生成 trace 檔案：</strong></p>
+<p>在程式中添加以下程式碼：</p>
+<pre><code class="language-go">import (
+    "runtime/trace"
+    "os"
+)
+
+func main() {
+    f, _ := os.Create("trace.out")
+    trace.Start(f)
+    defer trace.Stop()
+
+    // 你的程式碼
+}
+</code></pre>
+</li>
+<li>
+<p><strong>運行並分析：</strong></p>
+<p>使用 <code>go tool trace</code> 命令來分析 trace 檔案：</p>
+<pre><code class="language-go">go run your_program.go
+go tool trace trace.out
+</code></pre>
+<p>這會在瀏覽器中打開一個圖形界面，顯示程式的執行流程和race-condition狀況。</p>
+</li>
+</ol>
+<h3 id="3-race-detector"><a class="header" href="#3-race-detector">3. Race Detector</a></h3>
+<p><code>race detector</code> 用於檢測程式中的變數race-condition問題，這在多執行緒應用中尤為重要。</p>
+<h4 id="使用方法-1"><a class="header" href="#使用方法-1">使用方法</a></h4>
+<ol>
+<li>
+<p><strong>啟用 race 檢測：</strong></p>
+<p>在運行應用時加上 <code>-race</code> 標誌：</p>
+<pre><code class="language-go">go run -race your_program.go
+</code></pre>
+</li>
+<li>
+<p><strong>查看輸出：</strong></p>
+<p>如果檢測到race-condition狀況，控制台將輸出相關警告和race-condition發生的位置。</p>
+</li>
+</ol>
+<h2 id="性能優化建議"><a class="header" href="#性能優化建議">性能優化建議</a></h2>
+<ul>
+<li><strong>減少記憶體分配：</strong> 使用pool技術（如 <code>sync.Pool</code>）減少頻繁的記憶體分配和釋放。</li>
+<li><strong>優化算法：</strong> 使用更有效率的算法和資料結構，減少計算量。</li>
+<li><strong>並行處理：</strong> 利用 Go 的 <code>goroutine</code> 和 <code>channel</code> 執行併行處理，提升多核 CPU 的利用率。</li>
+<li><strong>避免不必要的鎖：</strong> 在多執行緒環境中，過多的鎖會降低性能，應避免不必要的鎖定操作。</li>
+</ul>
+<h2 id="總結-14"><a class="header" href="#總結-14">總結</a></h2>
+<ol>
+<li>Profile 和 Trace 基本概念：</li>
+</ol>
+<ul>
+<li>Profile 用於測量和記錄應用程式各部分的資源使用情況，包括 CPU 和記憶體使用狀況，以幫助找出性能瓶頸。</li>
+<li>Trace 提供詳細的程式執行時間線和事件序列，適合分析併行程式中的race-condition問題和調度情況。</li>
+</ul>
+<ol start="2">
+<li>性能分析工具：</li>
+</ol>
+<ul>
+<li>pprof： 用於收集和分析 CPU 和記憶體的使用狀況，找出程式中最耗時的部分。</li>
+<li>trace： 用於生成程式執行的詳細時間軸，幫助分析race-condition狀況。</li>
+<li>race detector： 檢測程式中的變數race-condition問題，確保多執行緒應用的正確性。</li>
+</ul>
+<ol start="3">
+<li>性能優化建議：</li>
+</ol>
+<ul>
+<li>減少不必要的記憶體分配，優化算法和資料結構，提高並行處理效率，並避免不必要的鎖，從而提升程式的整體性能。</li>
+</ul>
+<p>這些工具和方法能夠幫助開發者更好地理解和優化 Go 程式的性能，確保應用高效穩定地運行。</p>
+<p>更多Go語言相關的文章，歡迎參考我的部落格: <a href="https://kaichiachen.github.io/2024/05/03/golang/go_performance_analysis/">https://kaichiachen.github.io/2024/05/03/golang/go_performance_analysis/</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day19---記憶體管理-垃圾回收機制"><a class="header" href="#day19---記憶體管理-垃圾回收機制">Day19 - 記憶體管理: 垃圾回收機制</a></h1>
+<p>在程式開發的過程中，記憶體管理是一個非常重要的議題。如果記憶體管理不當，可能會導致程式崩潰或效能下降。在 Go 語言中，記憶體管理的關鍵就在於它的垃圾回收（Garbage Collection，簡稱 GC）機制。垃圾回收能自動管理記憶體，減輕開發者的負擔，讓我們更專注於程式的邏輯與功能開發。今天，我們就來深入了解一下 Go 語言的垃圾回收機制，以及它是如何提高程式效能的。同時，作為一個擅長 Python 的程式語言愛好者，我們也將比較 Go 與 Python 在垃圾回收方面的不同。</p>
+<h2 id="什麼是垃圾回收"><a class="header" href="#什麼是垃圾回收">什麼是垃圾回收？</a></h2>
+<p>簡單來說，垃圾回收是一種自動管理記憶體的技術。它負責回收不再使用的記憶體空間，防止記憶體洩漏。這就像有個勤快的清潔工，不停地清理不再需要的雜物，讓房間保持整潔有序。</p>
+<h3 id="垃圾回收的基本流程"><a class="header" href="#垃圾回收的基本流程">垃圾回收的基本流程</a></h3>
+<ol>
+<li><strong>標記階段（Mark）：</strong> 垃圾回收器會遍歷所有的變數，找出那些仍然被引用的物件，並將它們標記為“活的”。</li>
+<li><strong>清除階段（Sweep）：</strong> 清除階段會釋放掉那些沒有被標記的物件，回收它們所佔用的記憶體空間。</li>
+<li><strong>壓縮階段（Compaction，可選）：</strong> 這個階段會整理記憶體，將分散的空間合併成連續的區塊，以提高記憶體的使用效率。</li>
+</ol>
+<h2 id="go-語言的垃圾回收機制"><a class="header" href="#go-語言的垃圾回收機制">Go 語言的垃圾回收機制</a></h2>
+<p>Go 語言使用一種稱為「非分代三色標記-清除」的垃圾回收機制。這種機制的特點是，垃圾回收的過程與程式執行是同時進行的（即併發），這樣可以減少程式執行中斷的時間。</p>
+<h3 id="三色標記法"><a class="header" href="#三色標記法">三色標記法</a></h3>
+<p>Go 的垃圾回收使用三色標記法來追蹤物件的狀態：</p>
+<ul>
+<li><strong>白色（White）：</strong> 尚未被檢查的物件。</li>
+<li><strong>灰色（Gray）：</strong> 已被檢查且仍需遞迴檢查的物件。</li>
+<li><strong>黑色（Black）：</strong> 已被檢查且不再需要檢查的物件。</li>
+</ul>
+<p>在標記階段，所有物件一開始都是白色的。垃圾回收器從根物件（如全域變數和堆疊上的變數）開始，將這些物件標記為灰色。然後，它會依次處理灰色物件，將它們引用的物件標記為灰色，並將自己標記為黑色。當所有灰色物件都被處理完畢後，白色物件即為不再使用的垃圾。</p>
+<h3 id="併發垃圾回收"><a class="header" href="#併發垃圾回收">併發垃圾回收</a></h3>
+<p>Go 的垃圾回收器是併發進行的，也就是說，它在程式執行的同時進行垃圾回收工作。這樣做的好處是能夠減少應用程式的停頓時間，讓使用者感覺程式更加流暢。當然，這也帶來了一定的挑戰，因為需要在垃圾回收與程式邏輯之間保持資料的一致性。</p>
+<h2 id="python-與-go-的垃圾回收機制比較"><a class="header" href="#python-與-go-的垃圾回收機制比較">Python 與 Go 的垃圾回收機制比較</a></h2>
+<p>Python 也是一種廣泛使用的程式語言，其垃圾回收機制與 Go 有一些不同之處。下面我們來看看這兩種語言的垃圾回收機制有何不同。</p>
+<h3 id="python-的垃圾回收"><a class="header" href="#python-的垃圾回收">Python 的垃圾回收</a></h3>
+<p>Python 使用兩種策略來管理記憶體：<strong>引用計數（Reference Counting）</strong> 和 <strong>循環垃圾回收（Cycle Garbage Collection）</strong>。</p>
+<ol>
+<li>
+<p><strong>引用計數：</strong></p>
+<p>Python 主要依賴引用計數來管理記憶體。每個物件都有一個計數器，用來記錄有多少引用指向它。當計數器變為零時，物件所佔用的記憶體會立即被釋放。</p>
+<ul>
+<li><strong>優點</strong>：引用計數能夠立即釋放不再使用的物件，降低記憶體使用。</li>
+<li><strong>缺點</strong>：無法處理循環引用，這可能會導致記憶體洩漏。</li>
+</ul>
+</li>
+<li>
+<p><strong>循環垃圾回收：</strong></p>
+<p>為了解決引用計數的缺點，Python 還引入了循環垃圾回收器。這個機制會定期檢查物件的引用Graph，找出那些有循環引用的物件，並釋放它們。</p>
+</li>
+</ol>
+<h3 id="go-與-python-的差異"><a class="header" href="#go-與-python-的差異">Go 與 Python 的差異</a></h3>
+<ul>
+<li><strong>併發性：</strong> Go 的垃圾回收器是併發的，這讓它能夠在程式執行時進行垃圾回收，減少停頓時間。而 Python 的垃圾回收器則是單執行緒的，可能會在回收時暫停程式執行。</li>
+<li><strong>記憶體管理：</strong> Go 使用非分代的三色標記-清除法，更加適合長時間運行的伺服器應用。而 Python 使用分代垃圾回收策略，適合多變數、小物件的處理。</li>
+<li><strong>語言特性：</strong> Python 的動態性和高層抽象使得記憶體管理較為簡單，但可能導致一些性能問題；Go 則傾向於提供更高效的記憶體管理，但要求開發者在設計上更加謹慎。</li>
+</ul>
+<h2 id="垃圾回收對效能的影響"><a class="header" href="#垃圾回收對效能的影響">垃圾回收對效能的影響</a></h2>
+<p>雖然垃圾回收能夠自動管理記憶體，減輕開發者的負擔，但它也會對程式的效能產生影響。</p>
+<ol>
+<li><strong>延遲（Latency）：</strong> 雖然 Go 的垃圾回收器盡量減少延遲，但仍然可能在某些情況下出現短暫的卡頓，特別是在回收大量記憶體時。</li>
+<li><strong>記憶體佔用（Memory Footprint）：</strong> 垃圾回收器需要額外的記憶體來追蹤物件狀態，這可能導致整體記憶體佔用增加。</li>
+<li><strong>CPU 開銷（CPU Overhead）：</strong> 垃圾回收需要消耗 CPU 資源，這可能會與程式的正常運行產生競爭。</li>
+</ol>
+<h2 id="如何優化垃圾回收的效能"><a class="header" href="#如何優化垃圾回收的效能">如何優化垃圾回收的效能</a></h2>
+<p>為了減少垃圾回收對效能的影響，我們可以採取以下幾種優化策略：</p>
+<ol>
+<li><strong>減少記憶體分配：</strong> 儘量重用物件，避免不必要的記憶體分配和釋放。<br />
+例如，使用物件池（object pool）來管理可重用的物件，減少垃圾回收器的工作量。</li>
+</ol>
+<pre><code class="language-go">var bufferPool = sync.Pool{
+    New: func() interface{} {
+        return make([]byte, 1024)
+    },
+}
+
+func process(data []byte) {
+    buf := bufferPool.Get().([]byte)
+    defer bufferPool.Put(buf)
+
+    // 使用 buf 進行處理
+}
+</code></pre>
+<ol>
+<li>
+<p><strong>減少長壽命物件：</strong><br />
+儘量縮短物件的生命週期，特別是那些佔用大量記憶體的物件。<br />
+考慮將大型資料結構分解成小的模塊，根據需要動態加載和釋放。</p>
+</li>
+<li>
+<p><strong>提高記憶體局部性：</strong> 優化資料結構，讓相互關聯的資料儘量靠近，增加緩存命中率。</p>
+<p>例如，對於頻繁使用的資料，可以將其緊湊地儲存在連續的記憶體中。</p>
+</li>
+<li>
+<p><strong>配置 GOGC 參數：</strong> <code>GOGC</code> 是 Go 的一個環境變數，用於調整垃圾回收的頻率。默認值是 100，表示在Queue的大小增加 100% 時觸發垃圾回收。</p>
+<p>如果你的應用不太依賴即時的記憶體回收，可以增加 <code>GOGC</code> 的值以減少回收次數：</p>
+<pre><code class="language-go">export GOGC=200
+</code></pre>
+</li>
+</ol>
+<h2 id="總結-15"><a class="header" href="#總結-15">總結</a></h2>
+<ol>
+<li><strong>Go 的併發垃圾回收</strong>：</li>
+</ol>
+<ul>
+<li>Go 語言使用「非分代三色標記-清除」垃圾回收機制，採用併發方式運行垃圾回收，減少程式停頓時間，適合長時間運行的伺服器應用。</li>
+</ul>
+<ol start="2">
+<li><strong>Go 與 Python 的垃圾回收差異</strong>：</li>
+</ol>
+<ul>
+<li>Python 使用引用計數和循環垃圾回收，主要依賴單執行緒運行。相比之下，Go 的併發垃圾回收更適合多執行緒應用，能有效降低程式延遲。</li>
+</ul>
+<ol start="3">
+<li><strong>垃圾回收的效能優化策略</strong>：</li>
+</ol>
+<ul>
+<li>減少不必要的記憶體分配，重用物件，縮短物件生命週期，提高記憶體局部性，並合理調整 GOGC 參數以優化程式效能。</li>
+</ul>
+<p>更多Go語言相關的文章歡迎參閱我的部落格: <a href="https://kaichiachen.github.io/2024/05/16/golang/go_gc/">https://kaichiachen.github.io/2024/05/16/golang/go_gc/</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day20---go專案的高效開發技巧"><a class="header" href="#day20---go專案的高效開發技巧">Day20 - Go專案的高效開發技巧</a></h1>
+<p>Go 語言以其簡潔的語法、高效的性能和出色的併發支持，成為許多開發者心中的首選。然而，在實際的開發中，為了讓專案順利進行，我們不僅需要了解語言本身，還需要掌握一些高效的開發技巧。這篇文章將介紹幾個在 Go 專案開發中常用的技巧，幫助你在開發過程中更有效率、更有條理地進行工作。</p>
+<h2 id="1-理解-go-modules-和依賴管理"><a class="header" href="#1-理解-go-modules-和依賴管理">1. 理解 Go Modules 和依賴管理</a></h2>
+<p>在開始任何 Go 專案之前，了解並正確使用 Go Modules 是至關重要的。Go Modules 是 Go 官方提供的package管理工具，讓你可以輕鬆管理專案中的第三方Library。</p>
+<h3 id="如何使用-go-modules"><a class="header" href="#如何使用-go-modules">如何使用 Go Modules</a></h3>
+<ul>
+<li>
+<p><strong>初始化專案：</strong></p>
+<p>使用 <code>go mod init</code> 命令初始化你的 Go 專案：</p>
+<pre><code class="language-go">go mod init myproject
+</code></pre>
+<p>這將創建一個 <code>go.mod</code> 檔案，用於記錄專案的Library依賴關係。</p>
+</li>
+<li>
+<p><strong>添加module：</strong></p>
+<p>在專案中引用新的包時，Go 會自動更新 <code>go.mod</code> 和 <code>go.sum</code> 檔案。你也可以使用 <code>go get</code> 命令來手動添加Modules：</p>
+<pre><code class="language-go">go get github.com/gin-gonic/gin
+</code></pre>
+</li>
+<li>
+<p><strong>更新依賴的Library：</strong></p>
+<p>使用 <code>go get -u</code> 來更新專案中的Library：</p>
+<pre><code class="language-go">go get -u all
+</code></pre>
+</li>
+</ul>
+<p>這些命令讓我們能夠輕鬆管理專案的Modules，確保程式碼的穩定性和一致性。</p>
+<h2 id="2-使用高效的編輯器與插件"><a class="header" href="#2-使用高效的編輯器與插件">2. 使用高效的編輯器與插件</a></h2>
+<p>選擇一個適合的編輯器並善用其插件，能大大提高你的開發效率。Visual Studio Code (VS Code) 和 GoLand 是兩個非常受歡迎的選擇。</p>
+<h3 id="visual-studio-code"><a class="header" href="#visual-studio-code">Visual Studio Code</a></h3>
+<ul>
+<li>
+<p><strong>安裝 Go Plugin：</strong></p>
+<p>使用 VS Code 時，可以安裝官方的 Go 插件，它提供了語法高亮、程式碼自動完成、錯誤檢查等功能。<br />
+安裝插件後，還可以設置自動格式化程式碼，保證程式碼風格一致。</p>
+</li>
+<li>
+<p><strong>程式碼片段（Snippets）：</strong></p>
+<p>利用程式碼片段來快速輸入常用的程式碼塊，例如函數模板、for 迴圈等，提升開發速度。</p>
+</li>
+</ul>
+<h3 id="goland"><a class="header" href="#goland">GoLand</a></h3>
+<ul>
+<li>
+<p><strong>強大的重構工具：</strong></p>
+<p>GoLand 提供了強大的程式碼重構功能，讓你能夠輕鬆修改函數名稱、變數名稱等，並自動更新相關程式碼。</p>
+</li>
+<li>
+<p><strong>程式碼分析與錯誤檢查：</strong></p>
+<p>GoLand 內建的程式碼分析工具能夠幫助你發現潛在的問題，提供改進建議，提高程式碼品質。</p>
+</li>
+</ul>
+<h2 id="3-善用-go-的內建工具"><a class="header" href="#3-善用-go-的內建工具">3. 善用 Go 的內建工具</a></h2>
+<p>Go 提供了一系列內建工具來提高開發效率，我們可以充分利用這些工具來進行程式碼檢查、測試和性能分析。</p>
+<h3 id="go-fmt"><a class="header" href="#go-fmt">go fmt</a></h3>
+<p><code>go fmt</code> 是 Go 語言的格式化工具，能夠自動格式化程式碼，讓程式碼風格統一。</p>
+<pre><code class="language-go">go fmt ./...
+</code></pre>
+<p>這條命令會格式化專案中的所有 Go 檔案，保證程式碼的一致性。</p>
+<h3 id="go-vet"><a class="header" href="#go-vet">go vet</a></h3>
+<p><code>go vet</code> 是一個靜態程式碼分析工具，能夠檢查程式碼中潛在的錯誤或不符合慣例的寫法。</p>
+<pre><code class="language-go">go vet ./...
+</code></pre>
+<p>定期使用 <code>go vet</code> 來檢查程式碼，可以幫助你發現潛在的問題，提升程式碼品質。</p>
+<h3 id="go-test"><a class="header" href="#go-test">go test</a></h3>
+<p><code>go test</code> 是 Go 語言內建的測試工具，用於執行單元測試。</p>
+<ul>
+<li>
+<p><strong>編寫測試：</strong></p>
+<p>編寫測試函數時，將函數名命名為 <code>TestXXX</code> 的形式，並將其放在 <code>_test.go</code> 檔案中。</p>
+<pre><code class="language-go">func TestAdd(t *testing.T) {
+    result := Add(2, 3)
+    if result != 5 {
+        t.Errorf("Expected 5, got %d", result)
+    }
+}
+</code></pre>
+</li>
+<li>
+<p><strong>運行測試：</strong></p>
+<p>使用 <code>go test</code> 命令運行測試：</p>
+<pre><code class="language-go">go test ./...
+</code></pre>
+<p>這將運行專案中的所有測試函數，並輸出測試結果。</p>
+</li>
+</ul>
+<h3 id="go-build"><a class="header" href="#go-build">go build</a></h3>
+<p><code>go build</code> 是 Go 的編譯工具，用於生成可執行的檔案。</p>
+<ul>
+<li>
+<p><strong>交叉編譯：</strong></p>
+<p>如果需要在不同平台上運行程式，可以使用交叉編譯：</p>
+<pre><code class="language-go">GOOS=linux GOARCH=amd64 go build -o myapp-linux
+</code></pre>
+<p>這條命令將生成適用於 Linux 平台的可執行檔案。</p>
+</li>
+</ul>
+<h2 id="4-使用版本控制系統"><a class="header" href="#4-使用版本控制系統">4. 使用版本控制系統</a></h2>
+<p>使用版本控制系統（如 Git）是開發專案時的最佳實踐，能夠幫助你追蹤程式碼變更、協作開發和回退到之前的版本。</p>
+<h3 id="git-的基本操作"><a class="header" href="#git-的基本操作">Git 的基本操作</a></h3>
+<ul>
+<li>
+<p><strong>初始化 Git Repo：</strong></p>
+<p>在專案目錄中初始化 Git Repo：</p>
+<pre><code class="language-go">git init
+</code></pre>
+</li>
+<li>
+<p><strong>提交程式碼：</strong></p>
+<p>使用 <code>git add</code> 和 <code>git commit</code> 將程式碼變更提交到Repo：</p>
+<pre><code class="language-go">git add .
+git commit -m "Initial commit"
+</code></pre>
+</li>
+<li>
+<p><strong>分支管理：</strong></p>
+<p>創建新分支進行開發，並合併回main branch：</p>
+<pre><code class="language-go">git checkout -b feature/new-feature
+# 進行開發
+git checkout main
+git merge feature/new-feature
+</code></pre>
+</li>
+</ul>
+<p>這些基本操作讓你能夠輕鬆管理程式碼版本，協作開發，提升工作效率。</p>
+<h2 id="總結-16"><a class="header" href="#總結-16">總結</a></h2>
+<ol>
+<li>管理與工具使用：</li>
+</ol>
+<ul>
+<li>利用 Go Modules 進行Library管理，保證專案的穩定性。善用 Go 的內建工具，如 go fmt、go vet 和 go test 來自動格式化程式碼、檢查潛在錯誤並進行測試，確保程式碼品質。</li>
+</ul>
+<ol start="2">
+<li>開發環境與版本控制：</li>
+</ol>
+<ul>
+<li>選擇合適的開發工具如 Visual Studio Code 或 GoLand，利用其Plugin提升開發效率。使用版本控制系統如 Git 進行程式碼管理，追蹤變更和協作開發，提升專案開發的效率和可維護性。</li>
+</ul>
+<p>更多Go語言相關的文章歡迎參閱我的部落格: <a href="https://kaichiachen.github.io/2024/05/21/golang/go_high_performance_dev/">https://kaichiachen.github.io/2024/05/21/golang/go_high_performance_dev/</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day21---用fx進行依賴注入dependency-injection"><a class="header" href="#day21---用fx進行依賴注入dependency-injection">Day21 - 用Fx進行依賴注入(Dependency Injection)</a></h1>
+<h2 id="什麼是依賴注入"><a class="header" href="#什麼是依賴注入">什麼是依賴注入?</a></h2>
+<p>首先，什麼是依賴注入呢？依賴注入（Dependency Injection，簡稱DI）是一種設計模式，主要用來解決物件之間的依賴性問題。當一個物件需要使用另一個物件時，我們通常會在這個物件的內部去創建它所需的依賴物件。這樣一來，物件之間就會產生緊密的耦合性，使得程式碼變得不靈活，也很難進行測試和維護。</p>
+<p>依賴注入的目的是將依賴物件的創建責任轉移給外部系統，通過單例模式或構造函數(constructor)來將依賴注入到需要的物件中。這樣一來，我們可以更方便地替換或擴展物件的依賴，也能更容易進行單元測試，因為可以輕鬆地注入模擬物件（mock objects）。</p>
+<h3 id="傳統的依賴注入"><a class="header" href="#傳統的依賴注入">傳統的依賴注入</a></h3>
+<p>在進入主題之前，我們來看一個不使用任何依賴注入框架的範例：</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+type Database struct {
+    Name string
+}
+
+func (db *Database) Connect() {
+    fmt.Println("Connecting to database:", db.Name)
+}
+
+type Server struct {
+    Database *Database
+}
+
+func (s *Server) Start() {
+    s.Database.Connect()
+    fmt.Println("Server started!")
+}
+
+func main() {
+    db := &amp;Database{Name: "MySQL"}
+    server := &amp;Server{Database: db}
+    server.Start()
+}
+</code></pre>
+<p>在這個範例中，我們有一個<code>Database</code>的struct，它模擬了連接到資料庫的功能。<code>Server</code>則依賴於<code>Database</code>來執行其操作。在<code>main</code>函數中，我們手動創建<code>Database</code>和<code>Server</code>，並將<code>Database</code>作為依賴注入到<code>Server</code>中。</p>
+<p>這個範例雖然簡單易懂，但當我們的專案規模變大、依賴物件變得複雜時，手動管理這些依賴會變得相當麻煩。這時候，我們就需要一個更高效的方式來處理依賴注入，而這正是Fx出現的原因。</p>
+<h2 id="什麼是fx"><a class="header" href="#什麼是fx">什麼是Fx？</a></h2>
+<p>Fx 是一個用於 Go 語言的依賴注入框架，它基於 Uber 的開源專案開發，旨在簡化和標準化 Go 應用程式的初始化過程。Fx 通過自動管理物件的生命週期，幫助開發者集中精力在業務邏輯上，而不必煩惱於如何管理各種依賴關係。</p>
+<p>Fx 的核心概念是使用依賴注入來管理應用程式中的各種物件和資源。它可以自動解析依賴關係，並確保在合適的時候創建和銷毀物件。這樣的好處是我們不必手動編寫繁瑣的初始化程式碼，還可以更方便地進行測試。</p>
+<h3 id="用fx進行依賴注入"><a class="header" href="#用fx進行依賴注入">用Fx進行依賴注入</a></h3>
+<p>讓我們來看看如何用 Fx 來改寫之前的範例。</p>
+<pre><code class="language-go">package main
+
+import (
+    "go.uber.org/fx"
+    "fmt"
+)
+
+type Database struct {
+    Name string
+}
+
+func NewDatabase() *Database {
+    return &amp;Database{Name: "MySQL"}
+}
+
+func (db *Database) Connect() {
+    fmt.Println("Connecting to database:", db.Name)
+}
+
+type Server struct {
+    Database *Database
+}
+
+func NewServer(db *Database) *Server {
+    return &amp;Server{Database: db}
+}
+
+func (s *Server) Start() {
+    s.Database.Connect()
+    fmt.Println("Server started!")
+}
+
+func main() {
+    app := fx.New(
+        fx.Provide(NewDatabase),
+        fx.Provide(NewServer),
+        fx.Invoke(func(s *Server) {
+            s.Start()
+        }),
+    )
+    app.Run()
+}
+</code></pre>
+<p>在這個範例中，我們使用了 Fx 來管理<code>Database</code>和<code>Server</code>的創建和注入。<code>fx.Provide</code>函數用來註冊依賴，它告訴 Fx 如何創建特定的物件。而<code>fx.Invoke</code>函數則用來在應用程式啟動時執行特定的操作。</p>
+<p>Fx 的好處是，它自動處理了物件的創建和銷毀，並確保依賴物件按照正確的順序被創建。這不僅讓程式碼更加簡潔，也降低了錯誤的發生機率。</p>
+<h2 id="結論-1"><a class="header" href="#結論-1">結論</a></h2>
+<ol>
+<li>依賴注入（DI）的概念：解決物件之間的依賴問題，透過外部注入依賴，減少程式碼耦合，提升靈活性和測試便利性。</li>
+<li>Fx 的優勢：Fx 是一個Go的依賴注入框架，自動管理物件的創建與銷毀，簡化初始化過程，讓程式碼更容易維護和測試。</li>
+</ol>
+<p>Fx 不僅簡化了應用程式的初始化過程，也讓程式碼變得更容易測試和維護。如果你正在尋找一個高效的方式來處理 Go 專案中的依賴問題，那麼 Fx 是我強力推薦的工具！</p>
+<p>更多Go語言相關的文章，歡迎關注我的部落格: <a href="https://kaichiachen.github.io/2024/06/01/golang/go_dependency_injection/">https://kaichiachen.github.io/2024/06/01/golang/go_dependency_injection/</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day22---使用-golang-打造-web-應用程式"><a class="header" href="#day22---使用-golang-打造-web-應用程式">Day22 - 使用 Golang 打造 Web 應用程式</a></h1>
+<h2 id="1-簡介"><a class="header" href="#1-簡介">1. 簡介</a></h2>
+<p>Golang（或 Go 語言）是由 Google 開發的一種高效能、並發性強且語法簡潔的程式語言，非常適合用來開發 Web 應用程式。本文將帶你從零開始，手把手教你如何使用 Go 語言打造一個基本的 Web 應用程式，並且會穿插一些實用的小技巧，讓你快速上手。</p>
+<h2 id="2-為什麼選擇-golang"><a class="header" href="#2-為什麼選擇-golang">2. 為什麼選擇 Golang？</a></h2>
+<ul>
+<li><strong>高效能</strong>：Golang 編譯後的程式是原生的機器碼，速度飛快，不像 JavaScript 這種需要經過中介層解釋執行的語言。</li>
+<li><strong>簡單易學</strong>：Go 語法簡潔，容易閱讀且容易維護，學起來不會太痛苦。</li>
+<li><strong>併發性強</strong>：內建的 Goroutines 讓你輕鬆實現高併發的程式設計，不需要搞懂複雜的線程管理。</li>
+<li><strong>強大的社群與工具</strong>：Golang 有豐富的第三方套件、工具與文件，學習曲線非常友善。</li>
+</ul>
+<h2 id="3-環境準備"><a class="header" href="#3-環境準備">3. 環境準備</a></h2>
+<p>在開始之前，你需要安裝 Golang 和一個適合的編輯器，例如 VS Code。確保 Golang 安裝成功，可以用以下指令檢查版本：</p>
+<pre><code class="language-go">go version
+</code></pre>
+<h2 id="4-開始打造-web-應用程式"><a class="header" href="#4-開始打造-web-應用程式">4. 開始打造 Web 應用程式</a></h2>
+<p>首先，我們來建立一個簡單的 Web 伺服器，這個伺服器會聆聽特定的端口，並回傳一段簡單的訊息。</p>
+<h3 id="step-1-建立專案資料夾"><a class="header" href="#step-1-建立專案資料夾">Step 1: 建立專案資料夾</a></h3>
+<p>在你的工作目錄下建立一個新的資料夾，並且進入這個資料夾。</p>
+<pre><code class="language-go">mkdir go-web-app
+cd go-web-app
+</code></pre>
+<h3 id="step-2-初始化-go-模組"><a class="header" href="#step-2-初始化-go-模組">Step 2: 初始化 Go 模組</a></h3>
+<p>初始化你的 Go 專案，這會在資料夾中生成一個 <code>go.mod</code> 檔案，負責管理套件。</p>
+<pre><code class="language-go">go mod init go-web-app
+</code></pre>
+<h3 id="step-3-寫一個基本的-web-伺服器"><a class="header" href="#step-3-寫一個基本的-web-伺服器">Step 3: 寫一個基本的 Web 伺服器</a></h3>
+<p>建立一個檔案 <code>main.go</code>，然後在裡面寫入以下程式碼：</p>
+<pre><code class="language-go">package main
+
+import (
+    "fmt"
+    "net/http"
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, "Hello, Go Web Server!")
+}
+
+func main() {
+    http.HandleFunc("/", handler)
+    fmt.Println("伺服器已啟動，正在監聽 :8080 端口...")
+    http.ListenAndServe(":8080", nil)
+}
+</code></pre>
+<h3 id="step-4-執行伺服器"><a class="header" href="#step-4-執行伺服器">Step 4: 執行伺服器</a></h3>
+<p>在終端機輸入以下指令來執行你的 Web 伺服器：</p>
+<pre><code class="language-go">go run main.go
+</code></pre>
+<p>打開瀏覽器並輸入 <code>http://localhost:8080</code>，你會看到瀏覽器顯示「Hello, Go Web Server!」，這表示你的伺服器已經成功運作了！</p>
+<h2 id="5-加入更多功能"><a class="header" href="#5-加入更多功能">5. 加入更多功能</a></h2>
+<p>現在我們有了一個基本的 Web 伺服器，接下來我們可以嘗試加入更多功能，例如路由、靜態檔案處理或是資料庫連接等。</p>
+<h3 id="加入路由"><a class="header" href="#加入路由">加入路由</a></h3>
+<p>讓我們來加入更多的路由，來處理不同的請求路徑。</p>
+<pre><code class="language-go">func aboutHandler(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, "這是關於我們的頁面")
+}
+
+func main() {
+    http.HandleFunc("/", handler)
+    http.HandleFunc("/about", aboutHandler)
+    fmt.Println("伺服器已啟動，正在監聽 :8080 端口...")
+    http.ListenAndServe(":8080", nil)
+}
+</code></pre>
+<p>現在當你訪問 <code>http://localhost:8080/about</code> 時，會看到「這是關於我們的頁面」的訊息。</p>
+<h3 id="靜態檔案處理"><a class="header" href="#靜態檔案處理">靜態檔案處理</a></h3>
+<p>如果你想要提供靜態資源（如圖片、CSS、JS），可以這樣做：</p>
+<pre><code class="language-go">http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+</code></pre>
+<p>這樣，你只需要將靜態資源放入 <code>static</code> 資料夾，就可以透過 <code>/static</code> 路徑訪問。</p>
+<h3 id="連接資料庫"><a class="header" href="#連接資料庫">連接資料庫</a></h3>
+<p>Go 支援多種資料庫，這裡簡單示範如何使用 <code>database/sql</code> 連接 MySQL：</p>
+<pre><code class="language-go">import (
+    "database/sql"
+    _ "github.com/go-sql-driver/mysql"
+)
+
+func connectDB() (*sql.DB, error) {
+    db, err := sql.Open("mysql", "user:password@tcp(127.0.0.1:3306)/dbname")
+    if err != nil {
+        return nil, err
+    }
+    return db, nil
+}
+</code></pre>
+<p>透過以上方式，你可以輕鬆連接 MySQL 資料庫，並進一步操作資料。</p>
+<h2 id="6-部署應用程式"><a class="header" href="#6-部署應用程式">6. 部署應用程式</a></h2>
+<p>當你完成了開發和測試，可以將應用程式部署到雲端，常見的選擇包括 Docker 容器化後部署到 Kubernetes、Heroku 或是 Google Cloud Platform。</p>
+<h2 id="7-小結"><a class="header" href="#7-小結">7. 小結</a></h2>
+<p>Golang 是一個非常適合用來開發 Web 應用程式的語言，不僅效能卓越，還有簡單的語法和強大的併發能力。透過這篇文章，你應該已經掌握了如何從頭打造一個基本的 Go Web 應用程式，並了解如何加入更多功能。希望這篇文章對你有幫助，讓你能夠更輕鬆地進入 Golang 的世界！</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day23---那些uber幫我們開發的好用-library"><a class="header" href="#day23---那些uber幫我們開發的好用-library">Day23 - 那些Uber幫我們開發的好用 Library</a></h1>
+<h2 id="1-簡介-1"><a class="header" href="#1-簡介-1">1. 簡介</a></h2>
+<p>如果你是 Go 語言的開發者，那麼你一定聽過 Uber！這家公司不僅在交通行業中大放異彩，更是 Go 生態系統的重要貢獻者。他們釋出了一系列開源 Library，讓開發者可以更快、更輕鬆地構建應用程式。本文將介紹幾個 Uber 開發的好用 Go Library，包括 <code>zap</code>、<code>fx</code>、<code>atomic</code>，讓你在開發時事半功倍！</p>
+<h2 id="2-zap高效能的日誌工具"><a class="header" href="#2-zap高效能的日誌工具">2. Zap：高效能的日誌工具</a></h2>
+<h3 id="什麼是-zap"><a class="header" href="#什麼是-zap">什麼是 Zap？</a></h3>
+<p><code>zap</code> 是一個高效能的日誌記錄器，專為需要低延遲、高頻率記錄日誌的應用設計。它使用結構化的日誌格式，讓你的日誌既易讀又方便過濾和查找。</p>
+<h3 id="為什麼使用-zap"><a class="header" href="#為什麼使用-zap">為什麼使用 Zap？</a></h3>
+<ul>
+<li><strong>超快性能</strong>：比其他流行的 Go 日誌庫快 10 倍以上。</li>
+<li><strong>結構化日誌</strong>：支持 JSON 格式，讓日誌資料更有條理。</li>
+<li><strong>靈活的 Log Level</strong>：可設定不同的日誌層級，方便過濾不必要的訊息。</li>
+</ul>
+<h3 id="如何使用-zap"><a class="header" href="#如何使用-zap">如何使用 Zap？</a></h3>
+<p>安裝 zap：</p>
+<pre><code class="language-go">go get go.uber.org/zap
+</code></pre>
+<p>簡單示範如何使用：</p>
+<pre><code class="language-go">package main
+
+import (
+    "go.uber.org/zap"
+)
+
+func main() {
+    logger, _ := zap.NewProduction()
+    defer logger.Sync() // 確保日誌訊息被寫入
+
+    logger.Info("Hello, Zap!",
+        zap.String("lang", "Go"),
+        zap.Int("version", 1))
+}
+</code></pre>
+<p>程式會生成結構化的日誌，看起來簡單又清楚。這樣的日誌不但讓 debug 更容易，也讓你在排查問題時可以快速鎖定重點。</p>
+<h2 id="3-fx一站式依賴注入工具"><a class="header" href="#3-fx一站式依賴注入工具">3. Fx：一站式依賴注入工具</a></h2>
+<h3 id="什麼是-fx"><a class="header" href="#什麼是-fx">什麼是 Fx？</a></h3>
+<p><code>fx</code> 是一個為 Go 應用設計的依賴注入工具，它簡化了依賴管理與生命週期控制，幫助你專注於業務邏輯的開發。使用 <code>fx</code>，可以省去手動初始化物件、錯誤處理等瑣碎的細節。</p>
+<h3 id="為什麼使用-fx"><a class="header" href="#為什麼使用-fx">為什麼使用 Fx？</a></h3>
+<ul>
+<li><strong>快速組裝應用程式</strong>：將不同的 component 輕鬆組合在一起。</li>
+<li><strong>內建健康檢查與生命週期管理</strong>：內建的 <code>Start</code> 和 <code>Stop</code> 方法，讓應用程式的啟動與停止更可靠。</li>
+<li><strong>模組化設計</strong>：可輕鬆拆分大型應用程式，讓程式碼更易於維護。</li>
+</ul>
+<h3 id="如何使用-fx"><a class="header" href="#如何使用-fx">如何使用 Fx？</a></h3>
+<p>安裝 fx：</p>
+<pre><code class="language-go">go get go.uber.org/fx
+</code></pre>
+<p>使用 <code>fx</code> 的基本範例：</p>
+<pre><code class="language-go">package main
+
+import (
+    "fmt"
+    "go.uber.org/fx"
+)
+
+func NewLogger() *zap.Logger {
+    logger, _ := zap.NewProduction()
+    return logger
+}
+
+func NewApp(l *zap.Logger) {
+    l.Info("Fx App is running!")
+}
+
+func main() {
+    app := fx.New(
+        fx.Provide(NewLogger),
+        fx.Invoke(NewApp),
+    )
+    app.Run()
+}
+</code></pre>
+<p>以上範例中，<code>fx</code> 自動管理 logger 的創建並注入到應用中，整體的程式碼更加乾淨且易於維護。更多Fx使用的細節和範例，可以參考我的部落格: <a href="https://kaichiachen.github.io/2024/06/01/golang/go_dependency_injection/">https://kaichiachen.github.io/2024/06/01/golang/go_dependency_injection/</a></p>
+<h2 id="4-atomic輕鬆管理原子操作"><a class="header" href="#4-atomic輕鬆管理原子操作">4. Atomic：輕鬆管理原子操作</a></h2>
+<h3 id="什麼是-atomic"><a class="header" href="#什麼是-atomic">什麼是 Atomic？</a></h3>
+<p><code>atomic</code> 是一個簡單易用的套件，用於實現原子操作，主要目的是幫助 Go 開發者更安全地處理多執行緒的變數操作。當面對並發操作時，原子操作能保證數據的一致性和安全性。</p>
+<h3 id="為什麼使用-atomic"><a class="header" href="#為什麼使用-atomic">為什麼使用 Atomic？</a></h3>
+<ul>
+<li><strong>簡單易用</strong>：只需幾行程式碼，就能實現安全的並發操作。</li>
+<li><strong>性能優越</strong>：比起傳統的 <code>sync.Mutex</code>，在處理單個變數的情況下更高效。</li>
+<li><strong>多型態支援</strong>：支援 int、float、bool 等多種型態的原子操作。</li>
+</ul>
+<h3 id="如何使用-atomic"><a class="header" href="#如何使用-atomic">如何使用 Atomic？</a></h3>
+<p>安裝 atomic：</p>
+<pre><code class="language-go">go get go.uber.org/atomic
+</code></pre>
+<p><code>atomic</code> 的基本使用範例：</p>
+<pre><code class="language-go">package main
+
+import (
+    "fmt"
+    "go.uber.org/atomic"
+)
+
+func main() {
+    var counter atomic.Int32
+    counter.Inc() // 原子增量
+    fmt.Println("Counter:", counter.Load()) // 載入當前值
+}
+</code></pre>
+<p>透過 <code>atomic</code>，你可以輕鬆完成多執行緒間的數據同步，避免傳統鎖機制帶來的性能瓶頸。</p>
+<h2 id="5-結語"><a class="header" href="#5-結語">5. 結語</a></h2>
+<p>Uber 開發的這些 Library，不僅方便易用，還能顯著提升開發效率。<code>zap</code> 讓日誌記錄變得更快更清晰；<code>fx</code> 幫助你輕鬆管理依賴，快速組裝應用程式；而 <code>atomic</code> 則提供了簡單且安全的原子操作支援。無論你是新手還是資深開發者，都能從中獲益良多。試著在你的下一個專案中使用這些工具，相信會讓你的開發體驗大大提升！</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day24---go-module-的設計思想以及如何動手寫一個-module-貢獻到-github"><a class="header" href="#day24---go-module-的設計思想以及如何動手寫一個-module-貢獻到-github">Day24 - Go Module 的設計思想以及如何動手寫一個 module 貢獻到 GitHub</a></h1>
+<h2 id="go-module-的設計思想"><a class="header" href="#go-module-的設計思想">Go Module 的設計思想</a></h2>
+<p>Go 模組（Go Module）是 Go 語言的官方套件管理系統，它旨在簡化依賴管理和版本控制。讓我們一起來看看 Go Module 的設計思想和如何動手寫一個 module 並貢獻到 GitHub！</p>
+<h3 id="為什麼需要-go-module"><a class="header" href="#為什麼需要-go-module">為什麼需要 Go Module？</a></h3>
+<p>在 Go 語言的早期，依賴管理主要依賴於 GOPATH 和 vendor 目錄。這種方式雖然有效，但缺乏版本控制，會導致版本衝突和依賴混亂。Go Module 的引入解決了這些問題，提供了更好的版本控制、模組管理和簡化的依賴配置。</p>
+<h3 id="go-module-的核心設計思想"><a class="header" href="#go-module-的核心設計思想">Go Module 的核心設計思想</a></h3>
+<ol>
+<li>
+<p><strong>模組化管理</strong>：</p>
+<ul>
+<li>Go Module 引入了模組（module）概念，每個模組包含一組相關的 Go 程式碼和依賴。這樣可以更好地管理和隔離不同的套件。</li>
+</ul>
+</li>
+<li>
+<p><strong>版本控制</strong>：</p>
+<ul>
+<li>每個模組有一個 <code>go.mod</code> 文件來管理版本。這個文件記錄了模組的名稱、版本和依賴，確保專案的重現性。</li>
+</ul>
+</li>
+<li>
+<p><strong>語意化版本（SemVer）</strong>：</p>
+<ul>
+<li>Go Module 遵循語意化版本控制（Semantic Versioning）。這意味著模組的版本號反映了 API 的變更，讓用戶可以預測版本升級的影響。</li>
+</ul>
+</li>
+<li>
+<p><strong>模組檢索和緩存</strong>：</p>
+<ul>
+<li>Go Module 使用 Go Proxy 服務來檢索和緩存模組。這不僅提高了依賴的可靠性，還加快了下載速度。</li>
+</ul>
+</li>
+<li>
+<p><strong>版本衝突解決</strong>：</p>
+<ul>
+<li>Go Module 支援版本衝突解決和依賴消解。它會選擇一個最適合的版本，避免不同依賴間的衝突。</li>
+</ul>
+</li>
+</ol>
+<h2 id="如何動手寫一個-go-module-並貢獻到-github"><a class="header" href="#如何動手寫一個-go-module-並貢獻到-github">如何動手寫一個 Go Module 並貢獻到 GitHub</a></h2>
+<h3 id="步驟一設置-go-module"><a class="header" href="#步驟一設置-go-module">步驟一：設置 Go Module</a></h3>
+<ol>
+<li>
+<p><strong>創建新的專案目錄</strong>：</p>
+<pre><code class="language-go">mkdir mymodule
+cd mymodule
+</code></pre>
+</li>
+<li>
+<p><strong>初始化 Go Module</strong>：</p>
+<pre><code class="language-go">go mod init github.com/username/mymodule
+</code></pre>
+<ul>
+<li>這條命令會創建一個 <code>go.mod</code> 文件，其中 <code>github.com/username/mymodule</code> 是模組的名稱。</li>
+</ul>
+</li>
+</ol>
+<h3 id="步驟二撰寫-go-程式碼"><a class="header" href="#步驟二撰寫-go-程式碼">步驟二：撰寫 Go 程式碼</a></h3>
+<ol>
+<li>
+<p><strong>創建一個新的 Go 文件</strong>：</p>
+<pre><code class="language-go">// math.go
+package mymodule
+
+// Add 函數用於加法運算
+func Add(a int, b int) int {
+    return a + b
+}
+</code></pre>
+</li>
+<li>
+<p><strong>撰寫單元測試</strong>：</p>
+<pre><code class="language-go">// math_test.go
+package mymodule
+
+import "testing"
+
+func TestAdd(t *testing.T) {
+    result := Add(1, 2)
+    if result != 3 {
+        t.Errorf("Add(1, 2) = %d; want 3", result)
+    }
+}
+</code></pre>
+</li>
+</ol>
+<h3 id="步驟三測試模組"><a class="header" href="#步驟三測試模組">步驟三：測試模組</a></h3>
+<ol>
+<li>
+<p><strong>執行單元測試</strong>：</p>
+<pre><code class="language-go">go test
+</code></pre>
+<ul>
+<li>確保測試通過，這樣可以保證你的模組運作正常。</li>
+</ul>
+</li>
+</ol>
+<h3 id="步驟四將模組推送到-github"><a class="header" href="#步驟四將模組推送到-github">步驟四：將模組推送到 GitHub</a></h3>
+<ol>
+<li>
+<p><strong>創建 Git 存儲庫</strong>：</p>
+<ul>
+<li>在 GitHub 上創建一個新的儲存庫，如 <code>mymodule</code>。</li>
+</ul>
+</li>
+<li>
+<p><strong>初始化 Git 並提交代碼</strong>：</p>
+<pre><code class="language-go">git init
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin https://github.com/username/mymodule.git
+git push -u origin main
+</code></pre>
+</li>
+</ol>
+<h3 id="步驟五使用模組"><a class="header" href="#步驟五使用模組">步驟五：使用模組</a></h3>
+<ol>
+<li><strong>在另一個專案中使用你的模組</strong>：
+<ul>
+<li>
+<p>創建一個新的 Go 專案，並在 <code>go.mod</code> 文件中添加你的模組作為依賴：</p>
+<pre><code class="language-go">go mod edit -require=github.com/username/mymodule@v0.0.1
+</code></pre>
+</li>
+<li>
+<p>使用你的模組：</p>
+<pre><code class="language-go">package main
+
+import (
+    "fmt"
+    "github.com/username/mymodule"
+)
+
+func main() {
+    fmt.Println(mymodule.Add(2, 3))
+}
+</code></pre>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="小結"><a class="header" href="#小結">小結</a></h3>
+<p>Go Module 的設計大大改善了 Go 語言的依賴管理，讓開發者能夠輕鬆地管理版本和依賴。通過上述步驟，你可以創建自己的 Go 模組，並將它貢獻到 GitHub 上，與其他開發者共享你的工作。希望這篇文章能夠幫助你更好地理解和使用 Go Module！</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day25---為何go語言能在containermicroservice以及區塊鏈中大放異彩"><a class="header" href="#day25---為何go語言能在containermicroservice以及區塊鏈中大放異彩">Day25 - 為何Go語言能在Container、Microservice以及區塊鏈中大放異彩？</a></h1>
+<p>Go語言，簡稱Golang，自2009年誕生以來，已經成為軟體開發界的超級新星，尤其在Container（如Docker）、Microservice（微服務），以及區塊鏈技術中大放異彩。那麼，Go語言到底有什麼獨到之處，使它能在這些領域中脫穎而出？本文將從Go語言的特性、實務應用，以及與其他語言的比較等方面來探討這個問題。</p>
+<h2 id="1-簡潔的語法設計"><a class="header" href="#1-簡潔的語法設計">1. 簡潔的語法設計</a></h2>
+<p>Go語言由Google的三位大師Rob Pike、Ken Thompson和Robert Griesemer設計，他們的目標是解決C/C++語言的複雜性問題。Go語法簡單、清晰，讓人一眼就能看懂。這使得Go特別適合快速開發和維護，在Container和Microservice中，程式碼的可讀性與開發速度尤為重要。</p>
+<p><strong>例子：</strong><br />
+在Docker開發中，Go語言簡化了系統級程式設計的複雜度，幫助開發者更快速地實現功能。</p>
+<h2 id="2-強大的併發能力"><a class="header" href="#2-強大的併發能力">2. 強大的併發能力</a></h2>
+<p>Go語言的併發模型基於Goroutine與Channel，這使得Go能夠在低資源消耗下處理大量並行任務。在Microservice架構中，各個服務之間的併發執行是關鍵，而Go的Goroutine提供了比傳統Thread更輕量的解決方案。</p>
+<p><strong>實際應用：</strong><br />
+在微服務架構中，服務之間經常需要同時處理大量請求，Go語言的併發處理能力幫助提高了系統的效率與穩定性。</p>
+<h2 id="3-靜態型別與內建垃圾回收"><a class="header" href="#3-靜態型別與內建垃圾回收">3. 靜態型別與內建垃圾回收</a></h2>
+<p>Go語言是靜態型別語言，但又不像Java那樣繁瑣。它在編譯階段就能檢查錯誤，降低了Runtime Bug的出現機率。同時，Go內建垃圾回收機制，不需要手動管理記憶體，減少了記憶體洩漏的風險，這在需要高穩定性的區塊鏈技術中尤其重要。</p>
+<p><strong>區塊鏈中的應用：</strong><br />
+Go語言被以太坊（Ethereum）等多個區塊鏈項目採用，因為它能保證系統的健壯性和高效性。</p>
+<h2 id="4-高效的編譯速度與單一可執行文件"><a class="header" href="#4-高效的編譯速度與單一可執行文件">4. 高效的編譯速度與單一可執行文件</a></h2>
+<p>Go語言的編譯速度極快，並能將所有代碼、依賴包編譯成單一的可執行文件。這使得軟體的部署變得更簡單，特別是在Container技術中，一個單一的執行文件意味著更少的依賴、更快的啟動速度和更少的出錯機會。</p>
+<p><strong>在Docker中的應用：</strong><br />
+Docker本身就是用Go語言開發的，並且Go的編譯特性讓Docker可以輕鬆地打包和部署應用程式。</p>
+<h2 id="5-強大的標準函式庫"><a class="header" href="#5-強大的標準函式庫">5. 強大的標準函式庫</a></h2>
+<p>Go語言擁有一套功能強大且豐富的標準函式庫，涵蓋網路、I/O操作、字串處理、加密等多個方面，讓開發者可以快速上手，而不用花時間找第三方套件。在Microservice開發中，Go的標準庫提供了強大的支援，使服務間的通訊與資料處理更加便利。</p>
+<p><strong>標準庫的應用場景：</strong><br />
+在區塊鏈或是微服務中，開發者可以利用Go的標準庫輕鬆實現HTTP服務、JSON處理等，讓開發流程更順暢。</p>
+<h2 id="6-跨平台與強大的生態系統"><a class="header" href="#6-跨平台與強大的生態系統">6. 跨平台與強大的生態系統</a></h2>
+<p>Go的跨平台特性讓它能夠輕鬆編譯成適用於不同作業系統的執行檔，這大大減少了開發和部署的麻煩。再加上豐富的第三方工具，如Go Module、GoDoc、GoVet等，使Go的生態系統日漸完善。</p>
+<p><strong>生態系統的優勢：</strong><br />
+微服務的世界中，各服務可能分佈在不同的平台上，Go的跨平台能力讓它無縫銜接各類環境，是開發者們的理想選擇。</p>
+<h2 id="7-穩定性與安全性"><a class="header" href="#7-穩定性與安全性">7. 穩定性與安全性</a></h2>
+<p>Go語言自推出以來，語法與特性的變動非常小，保持了穩定性，這對企業級應用至關重要。此外，Go語言天生具備較高的安全性，避免了如指標操作錯誤等常見的漏洞。</p>
+<p><strong>區塊鏈應用中的安全性：</strong><br />
+區塊鏈對安全性的要求極高，Go語言的簡單性與嚴謹性保證了程式碼的安全，減少了潛在的安全風險。</p>
+<h2 id="8-活躍的社群與支持"><a class="header" href="#8-活躍的社群與支持">8. 活躍的社群與支持</a></h2>
+<p>Go擁有一個活躍的開發者社群，線上資源豐富，無論是官方文檔、技術論壇還是開源專案，Go語言的學習曲線都比其他系統語言更平緩。這讓新手也能快速上手，並在遇到問題時得到即時的幫助。</p>
+<h2 id="結論-2"><a class="header" href="#結論-2">結論</a></h2>
+<p>Go語言能夠在Container、Microservice和區塊鏈中大放異彩，並非僅僅是運氣好，它是由其簡潔的語法、強大的併發處理、跨平台能力及穩定性等多方面優勢所支撐的。隨著這些技術的持續發展，Go語言將在未來扮演更加重要的角色。如果你還沒開始學習Go，那麼現在正是最佳時機！</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day26---用go來寫一個高併行http壓力測試工具"><a class="header" href="#day26---用go來寫一個高併行http壓力測試工具">Day26 - 用Go來寫一個高併行HTTP壓力測試工具</a></h1>
+<p>你可能聽說過很多壓力測試工具，比如Apache JMeter、Locust、Siege等等，但有沒有想過用Go語言自己寫一個簡單又強大的高併行HTTP壓力測試工具呢？Go語言的併發特性，特別是Goroutine的輕量級併發機制，讓它成為編寫高效壓力測試工具的絕佳選擇。今天，我們就來看看如何用Go寫一個自己的HTTP壓力測試工具，並瞭解Goroutine如何在超多I/O併行場景中大放異彩。</p>
+<h2 id="1-go語言的併發特性"><a class="header" href="#1-go語言的併發特性">1. Go語言的併發特性</a></h2>
+<p>Go語言最強大的武器之一就是它的併發處理能力，特別是Goroutine。與傳統的Thread（線程）相比，Goroutine更加輕量，每個Goroutine僅佔用幾KB的記憶體，使我們可以輕鬆創建數千甚至數萬個Goroutine來處理高併發任務。這使得Go非常適合處理大量I/O操作，比如HTTP請求、網路通訊等。</p>
+<h3 id="goroutine的特點"><a class="header" href="#goroutine的特點">Goroutine的特點</a></h3>
+<ul>
+<li><strong>輕量級</strong>：每個Goroutine僅佔用極少的資源。</li>
+<li><strong>易用性</strong>：使用<code>go</code>關鍵字即可創建一個新的Goroutine，沒有複雜的配置。</li>
+<li><strong>併發性</strong>：天生支援多核處理器，能夠充分利用現代CPU的性能。</li>
+</ul>
+<h2 id="2-設計http壓力測試工具的思路"><a class="header" href="#2-設計http壓力測試工具的思路">2. 設計HTTP壓力測試工具的思路</a></h2>
+<p>我們的目標是創建一個簡單的HTTP壓力測試工具，它能夠：</p>
+<ul>
+<li>發送大量並行HTTP請求到指定的URL。</li>
+<li>記錄每個請求的響應時間和狀態碼。</li>
+<li>簡單的統計結果顯示，如成功次數、失敗次數、平均響應時間等。</li>
+</ul>
+<h3 id="工具的主要流程"><a class="header" href="#工具的主要流程">工具的主要流程</a></h3>
+<ol>
+<li>接收目標URL、請求次數和併發數量等參數。</li>
+<li>使用Goroutine發送HTTP請求。</li>
+<li>收集響應數據並進行統計。</li>
+</ol>
+<h2 id="3-實作範例"><a class="header" href="#3-實作範例">3. 實作範例</a></h2>
+<p>接下來，我們來看看如何用Go實現這個工具：</p>
+<pre><code class="language-go">package main
+
+import (
+    "fmt"
+    "net/http"
+    "sync"
+    "time"
+)
+
+// 壓力測試參數
+const (
+    targetURL      = "http://example.com" // 測試目標URL
+    totalRequests  = 1000                 // 總請求數
+    concurrency    = 100                  // 併發數量
+)
+
+// 統計數據
+var (
+    successCount int
+    failureCount int
+    totalTime    time.Duration
+    mutex        sync.Mutex
+)
+
+func main() {
+    // 計時開始
+    start := time.Now()
+
+    // 使用WaitGroup等待所有請求完成
+    var wg sync.WaitGroup
+    requestChan := make(chan struct{}, concurrency) // 控制併發數量
+
+    for i := 0; i &lt; totalRequests; i++ {
+        requestChan &lt;- struct{}{} // 將請求加入併發控制管道
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            sendRequest()
+            &lt;-requestChan // 完成請求後釋放chain
+        }()
+    }
+
+    wg.Wait()
+    elapsed := time.Since(start)
+
+    // 輸出結果
+    fmt.Printf("Total Requests: %d\n", totalRequests)
+    fmt.Printf("Success Count: %d\n", successCount)
+    fmt.Printf("Failure Count: %d\n", failureCount)
+    fmt.Printf("Total Time: %v\n", elapsed)
+    fmt.Printf("Average Time per Request: %v\n", totalTime/time.Duration(successCount+failureCount))
+}
+
+// 發送HTTP請求的函式
+func sendRequest() {
+    start := time.Now()
+    resp, err := http.Get(targetURL)
+    duration := time.Since(start)
+
+    // 保護統計數據
+    mutex.Lock()
+    totalTime += duration
+    if err != nil || resp.StatusCode != http.StatusOK {
+        failureCount++
+    } else {
+        successCount++
+    }
+    mutex.Unlock()
+}
+</code></pre>
+<h3 id="範例程式說明"><a class="header" href="#範例程式說明">範例程式說明：</a></h3>
+<ol>
+<li><strong>併發控制</strong>：使用Go的<code>sync.WaitGroup</code>來等待所有的請求完成，並使用channel來控制併發數量，避免Goroutine數量過多導致記憶體不足。</li>
+<li><strong>數據保護</strong>：使用<code>sync.Mutex</code>來保護統計變數的安全，防止數據競爭。</li>
+<li><strong>性能統計</strong>：收集每個請求的執行時間並統計成功與失敗次數。</li>
+</ol>
+<h2 id="4-go的優勢"><a class="header" href="#4-go的優勢">4. Go的優勢</a></h2>
+<p>透過這個例子，我們可以看出Go語言在高併發場景中的優勢：</p>
+<ul>
+<li><strong>超高併發</strong>：Goroutine幾乎是零成本的輕量級併發單位，能輕鬆處理大量HTTP請求。</li>
+<li><strong>簡潔的語法</strong>：Go語言的語法簡單直接，開發這樣的工具幾乎沒有任何語言障礙。</li>
+<li><strong>穩定性</strong>：Go語言的編譯器和標準庫極為穩定，讓壓力測試工具在長時間運行中依然保持穩定。</li>
+</ul>
+<h2 id="結論-3"><a class="header" href="#結論-3">結論</a></h2>
+<p>Go語言以其高效的併發模型，讓我們能輕鬆寫出高性能的HTTP壓力測試工具。無論是系統測試、API性能測試，還是日常開發，Go的輕量併發特性都能大大提高我們的開發效率。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day27---如何用go寫process-pool-thread-pool和goroutine-pool"><a class="header" href="#day27---如何用go寫process-pool-thread-pool和goroutine-pool">Day27 - 如何用Go寫process pool, thread pool和goroutine pool</a></h1>
+<p>當我們在開發程式的時候，常常需要執行大量的任務。這些任務有時候可以是I/O密集型（像是網路請求、檔案讀寫），也可能是CPU密集型（像是複雜的計算）。如果我們讓所有的任務都在主執行緒裡面依序跑，這樣不僅效能差，還可能導致我們的程式在處理慢的任務時卡住。所以，這時候我們會想要有一個 <strong>pool</strong> 來幫我們管理這些任務的執行。</p>
+<p>這篇文章會帶你了解什麼是 <code>process pool</code>、<code>thread pool</code> 和 <code>goroutine pool</code>，以及如何在Go語言中實現它們。</p>
+<hr />
+<h3 id="1-process-pool"><a class="header" href="#1-process-pool">1. Process Pool</a></h3>
+<h4 id="什麼是-process-pool"><a class="header" href="#什麼是-process-pool">什麼是 Process Pool？</a></h4>
+<p><code>Process pool</code> 是一組預先創建好的 <code>process</code>，用來執行多個任務。每個 <code>process</code> 獨立於其他 <code>process</code>，擁有自己的記憶體空間和資源，並且不會共享資料。由於這些 <code>process</code> 是預先創建的，因此我們可以避免重複創建和銷毀 <code>process</code> 的開銷，從而提升效能。</p>
+<h4 id="go-語言中如何實現-process-pool"><a class="header" href="#go-語言中如何實現-process-pool">Go 語言中如何實現 Process Pool？</a></h4>
+<p>在Go語言中，標準函式庫並沒有直接支援 <code>process pool</code>，但我們可以透過 <code>os/exec</code> 套件來創建和管理 <code>process</code>。假設我們有一個簡單的範例，想讓多個 <code>process</code> 同時執行一個外部命令：</p>
+<pre><code class="language-go">package main
+
+import (
+	"fmt"
+	"os/exec"
+	"sync"
+)
+
+func worker(id int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	cmd := exec.Command("echo", fmt.Sprintf("Process %d", id))
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Printf("Process %d failed: %s\n", id, err)
+		return
+	}
+	fmt.Printf("Process %d finished: %s\n", id, output)
+}
+
+func main() {
+	var wg sync.WaitGroup
+	processCount := 5
+	for i := 1; i &lt;= processCount; i++ {
+		wg.Add(1)
+		go worker(i, &amp;wg)
+	}
+	wg.Wait()
+}
+</code></pre>
+<p>在這個範例中，我們創建了5個 <code>process</code>，並讓它們同時執行 <code>echo</code> 命令。</p>
+<h3 id="2-thread-pool"><a class="header" href="#2-thread-pool">2. Thread Pool</a></h3>
+<h4 id="什麼是-thread-pool"><a class="header" href="#什麼是-thread-pool">什麼是 Thread Pool？</a></h4>
+<p><code>Thread pool</code> 是一組預先創建好的 <code>thread</code>，這些 <code>thread</code> 可以用來執行多個任務。與 <code>process</code> 不同的是，<code>thread</code> 是共享同一個記憶體空間的，因此它們之間的通訊和資料共享相對容易。但要小心的是，<code>thread</code> 之間共享資料也會導致同步問題（例如 race condition），這時我們就需要使用鎖來避免這些問題。</p>
+<h4 id="go-語言中如何實現-thread-pool"><a class="header" href="#go-語言中如何實現-thread-pool">Go 語言中如何實現 Thread Pool？</a></h4>
+<p>雖然Go語言沒有直接的 <code>thread pool</code>，但我們可以透過 <code>goroutine</code> 來達到類似的效果。<code>goroutine</code> 是Go語言的輕量級執行緒，我們可以將多個任務分配給多個 <code>goroutine</code> 來執行。這裡是一個簡單的 <code>thread pool</code> 模擬範例：</p>
+<pre><code class="language-go">package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func worker(id int, jobs &lt;-chan int, results chan&lt;- int) {
+	for j := range jobs {
+		fmt.Printf("Worker %d processing job %d\n", id, j)
+		time.Sleep(time.Second) // 模擬工作
+		results &lt;- j * 2 // 模擬計算結果
+	}
+}
+
+func main() {
+	const workerCount = 3
+	const jobCount = 5
+
+	jobs := make(chan int, jobCount)
+	results := make(chan int, jobCount)
+
+	// 創建worker pool
+	for w := 1; w &lt;= workerCount; w++ {
+		go worker(w, jobs, results)
+	}
+
+	// 發送任務到jobs通道
+	for j := 1; j &lt;= jobCount; j++ {
+		jobs &lt;- j
+	}
+	close(jobs)
+
+	// 接收結果
+	for a := 1; a &lt;= jobCount; a++ {
+		fmt.Printf("Result: %d\n", &lt;-results)
+	}
+}
+</code></pre>
+<p>在這個範例中，我們創建了一個簡單的 <code>worker pool</code>，每個 <code>worker</code> 從 <code>jobs</code> 通道中接收任務，並將結果送回 <code>results</code> 通道。</p>
+<h3 id="3-goroutine-pool"><a class="header" href="#3-goroutine-pool">3. Goroutine Pool</a></h3>
+<h4 id="什麼是-goroutine-pool"><a class="header" href="#什麼是-goroutine-pool">什麼是 Goroutine Pool？</a></h4>
+<p><code>Goroutine pool</code> 是Go語言特有的概念，類似於 <code>thread pool</code>，但它是使用 <code>goroutine</code> 來實現的。<code>goroutine</code> 是Go語言中的輕量級執行單位，每個 <code>goroutine</code> 只佔用少量的記憶體（大約2KB），因此我們可以創建大量的 <code>goroutine</code> 來同時執行任務。</p>
+<p>不過，如果我們不控制 <code>goroutine</code> 的數量，創建過多的 <code>goroutine</code> 也會導致記憶體不足，或是效能下降。因此，我們需要一個 <code>goroutine pool</code> 來限制同時執行的 <code>goroutine</code> 數量。</p>
+<h4 id="go-語言中如何實現-goroutine-pool"><a class="header" href="#go-語言中如何實現-goroutine-pool">Go 語言中如何實現 Goroutine Pool？</a></h4>
+<p>這裡是一個簡單的 <code>goroutine pool</code> 範例，我們使用一個緩衝通道來限制同時執行的 <code>goroutine</code> 數量：</p>
+<pre><code class="language-go">package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func worker(id int) {
+	fmt.Printf("Worker %d starting\n", id)
+	time.Sleep(time.Second) // 模擬工作
+	fmt.Printf("Worker %d done\n", id)
+}
+
+func main() {
+	const poolSize = 3
+	const jobCount = 5
+
+	sem := make(chan struct{}, poolSize)
+
+	for i := 1; i &lt;= jobCount; i++ {
+		sem &lt;- struct{}{} // 塞入一個空結構體，來限制 goroutine 數量
+		go func(id int) {
+			defer func() { &lt;-sem }() // 完成後釋放
+			worker(id)
+		}(i)
+	}
+
+	// 等待所有goroutine完成
+	for i := 0; i &lt; poolSize; i++ {
+		sem &lt;- struct{}{}
+	}
+}
+</code></pre>
+<p>在這個範例中，我們透過 <code>sem</code>（一個緩衝通道）來控制同時執行的 <code>goroutine</code> 數量，確保最多同時只有3個 <code>goroutine</code> 在執行任務。</p>
+<hr />
+<h3 id="結論-4"><a class="header" href="#結論-4">結論</a></h3>
+<p><code>process pool</code>、<code>thread pool</code> 和 <code>goroutine pool</code> 各有其應用場景。在Go語言中，雖然我們無法直接使用 <code>process</code> 和 <code>thread</code>，但 <code>goroutine</code> 的設計使得我們可以更輕鬆地處理並行任務。當然，使用 <code>goroutine</code> 也要小心控制數量，避免創建過多 <code>goroutine</code> 造成記憶體耗盡的問題。</p>
+<p>透過這篇文章的範例，相信你已經對如何在Go語言中實現這些 <code>pool</code> 有了基本的概念。你可以根據自己的應用場景，選擇合適的解決方案來提升程式的效能。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day28---go和rust的比較"><a class="header" href="#day28---go和rust的比較">Day28 - Go和Rust的比較</a></h1>
+<h2 id="go-go-和-rust-的比較"><a class="header" href="#go-go-和-rust-的比較">[Go] Go 和 Rust 的比較</a></h2>
+<p>在最近幾年，<code>Go</code> 和 <code>Rust</code> 這兩個編譯式語言變得越來越熱門。它們各有擁護者，都被稱為現代的高效程式語言，並且在不同的應用領域都佔有一席之地。這篇文章會用簡單易懂的語言來比較這兩個語言，幫助你了解它們之間的差異，並幫助你決定哪個語言更適合你的需求。</p>
+<hr />
+<h3 id="1-語言的設計理念"><a class="header" href="#1-語言的設計理念">1. 語言的設計理念</a></h3>
+<h4 id="go-語言的設計理念"><a class="header" href="#go-語言的設計理念">Go 語言的設計理念</a></h4>
+<p>Go 是由 Google 開發，主要目的是為了解決大型分散式系統的開發問題。它強調簡單、易學，並且提供強大的並發處理能力（<code>goroutine</code> 是一大特色）。Go 的語法非常簡單，程式碼可讀性很高，讓開發者能夠快速上手並高效開發。</p>
+<p>Go 的一大優勢是編譯速度極快，而且內建垃圾回收（Garbage Collection），這使得開發者不需要擔心記憶體管理問題。Go 的併發模型是基於 <code>CSP</code>（Communicating Sequential Processes）的，這使得 Go 非常適合用來開發高併發的應用程式，比如後端服務、微服務架構等。</p>
+<h4 id="rust-語言的設計理念"><a class="header" href="#rust-語言的設計理念">Rust 語言的設計理念</a></h4>
+<p>Rust 由 Mozilla 推出，主要目的是為了提供一個高效、同時具備系統層級語言特性的語言。Rust 非常注重<strong>記憶體安全</strong>，並且提供了不依賴垃圾回收的所有權系統（Ownership）。這意味著，Rust 在效能上可以媲美 C 和 C++，但卻能避免許多低階語言中常見的記憶體錯誤，比如空指針、野指針和數據競爭等問題。</p>
+<p>Rust 尤其適合用在那些對效能和安全性要求極高的場景，比如嵌入式系統、遊戲開發或是操作系統核心等。Rust 雖然比較難學，但它的學習曲線隨著社群的壯大和工具鏈的改進，正在變得越來越友善。</p>
+<h3 id="2-語法簡單度"><a class="header" href="#2-語法簡單度">2. 語法簡單度</a></h3>
+<h4 id="go簡單易學"><a class="header" href="#go簡單易學">Go：簡單易學</a></h4>
+<p>Go 語法可以用「極簡」來形容，設計者刻意減少了語言中的複雜特性，比如不支援類別繼承、泛型（Go 1.18 才加入泛型）、隱式轉型等等。這樣的設計是為了讓開發者更專注於問題本身，而不是被語法困住。比如 Go 中不會出現傳統的 try-catch，而是透過返回錯誤值的方式來處理錯誤。</p>
+<p>範例：</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello, Go!")
+}
+</code></pre>
+<p>這個程式只用幾行就可以完成基本輸出，對新手相當友好。</p>
+<h4 id="rust強大但複雜"><a class="header" href="#rust強大但複雜">Rust：強大但複雜</a></h4>
+<p>Rust 的語法比 Go 複雜得多，因為它允許開發者更細緻地控制記憶體。Rust 的所有權系統需要一點時間適應，尤其是「借用檢查器」這個概念可能會讓剛入門的人感到困惑。不過，一旦掌握了這套系統，你就能夠寫出效能極高且安全的程式。</p>
+<p>範例：</p>
+<pre><code class="language-go">fn main() {
+    println!("Hello, Rust!");
+}
+</code></pre>
+<p>表面上看起來這段程式和 Go 差不多，但當涉及到變數的借用（<code>borrowing</code>）、所有權轉移（<code>ownership</code>）等概念時，Rust 的複雜度會顯現出來。</p>
+<h3 id="3-記憶體管理"><a class="header" href="#3-記憶體管理">3. 記憶體管理</a></h3>
+<h4 id="go垃圾回收"><a class="header" href="#go垃圾回收">Go：垃圾回收</a></h4>
+<p>Go 內建垃圾回收機制，這意味著開發者不需要手動管理記憶體，這樣可以讓程式開發變得更簡單。Go 的垃圾回收機制會在後台自動釋放不再使用的記憶體，這樣可以避免記憶體洩漏的問題，但同時也可能帶來性能上的開銷。</p>
+<h4 id="rust所有權系統"><a class="header" href="#rust所有權系統">Rust：所有權系統</a></h4>
+<p>Rust 則是完全依賴所有權系統進行記憶體管理，這使得它不需要垃圾回收。Rust 編譯器會在編譯階段檢查所有的變數所有權，確保沒有資源被重複釋放或未釋放。這樣的記憶體管理方式能夠在不犧牲效能的情況下確保程式的安全性。</p>
+<p>舉例來說，在 Rust 中，每個變數只能有一個所有者，當這個變數超出作用域時，記憶體會被自動釋放。</p>
+<h3 id="4-併發處理"><a class="header" href="#4-併發處理">4. 併發處理</a></h3>
+<h4 id="go天然支援併發"><a class="header" href="#go天然支援併發">Go：天然支援併發</a></h4>
+<p>Go 的併發模型非常簡單直觀，它使用 <code>goroutine</code> 來進行併發操作，並且透過 <code>channel</code> 來實現不同 <code>goroutine</code> 之間的溝通。<code>goroutine</code> 是一種非常輕量級的併發單位，數千個 <code>goroutine</code> 可能只佔用少量記憶體。Go 的併發模式基於 <code>CSP</code>（Communicating Sequential Processes），這讓開發者可以更輕鬆地撰寫併發程式碼。</p>
+<p>範例：</p>
+<pre><code class="language-go">go func() {
+    fmt.Println("Hello from Goroutine!")
+}()
+</code></pre>
+<p>只需加上一個 <code>go</code> 關鍵字，就可以輕鬆啟動一個 <code>goroutine</code>。</p>
+<h4 id="rust強大的併發模型"><a class="header" href="#rust強大的併發模型">Rust：強大的併發模型</a></h4>
+<p>Rust 也支援併發處理，但它的設計理念是「安全的併發」。Rust 透過所有權系統和編譯器的檢查，確保你在進行多執行緒操作時不會發生資料競爭。Rust 使用 <code>thread</code> 來處理併發，並提供了 <code>async/await</code> 來簡化非同步操作。</p>
+<p>範例：</p>
+<pre><code class="language-go">use std::thread;
+
+thread::spawn(|| {
+    println!("Hello from Rust thread!");
+}).join().unwrap();
+</code></pre>
+<p>Rust 的併發模型比 Go 複雜一些，但也提供了更高的安全性。</p>
+<h3 id="5-生態系統和工具鏈"><a class="header" href="#5-生態系統和工具鏈">5. 生態系統和工具鏈</a></h3>
+<h4 id="go成熟的生態和快速編譯"><a class="header" href="#go成熟的生態和快速編譯">Go：成熟的生態和快速編譯</a></h4>
+<p>Go 擁有一個非常成熟且龐大的生態系統，特別是在後端服務和雲端應用領域。它的標準庫提供了強大的網路、文件處理和同步功能，並且編譯速度非常快。Go 也有一個強大的工具鏈，像是 <code>go fmt</code> 可以自動格式化程式碼，<code>go test</code> 用於測試，還有 <code>go mod</code> 用來管理模組。</p>
+<h4 id="rust快速增長的生態"><a class="header" href="#rust快速增長的生態">Rust：快速增長的生態</a></h4>
+<p>Rust 的生態系統雖然相對年輕，但增長速度驚人。Cargo 是 Rust 的包管理工具，它不僅可以輕鬆管理依賴，還能夠自動執行測試、編譯和文檔生成等功能。Rust 的工具鏈非常強大，但它的編譯速度相對 Go 慢一些，這是由於 Rust 的所有權檢查等特性所導致的。</p>
+<h3 id="6-適用場景"><a class="header" href="#6-適用場景">6. 適用場景</a></h3>
+<ul>
+<li><strong>Go</strong>：適合快速開發分散式系統、雲端服務、微服務和後端API。它的快速編譯和簡單的併發模型讓它成為後端開發的利器。</li>
+<li><strong>Rust</strong>：適合高效能要求的應用程式，比如系統層級開發、遊戲引擎、嵌入式系統和安全性要求高的程式。Rust 提供的記憶體安全和高效能使它成為這些領域的理想選擇。</li>
+</ul>
+<hr />
+<h3 id="結論-5"><a class="header" href="#結論-5">結論</a></h3>
+<p>Go 和 Rust 各有千秋，Go 以其簡單、快速和併發處理能力著稱，適合需要快速開發、維護簡單的專案；Rust 則強調效能和安全性，非常適合需要進行細緻記憶體管理的高效能應用程式。最終選擇哪個語言，取決於你開發專案的需求。如果你要開發雲端應用、微服務，Go 可能是更好的選擇；如果你需要開發效能要求高且安全性關鍵的程式，Rust 是不二之選。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day29---go-語言適合寫什麼-ai-應用程式"><a class="header" href="#day29---go-語言適合寫什麼-ai-應用程式">Day29 - Go 語言適合寫什麼 AI 應用程式？</a></h1>
+<p>Go 語言（Golang）是由 Google 開發的一種編譯型語言，擁有簡單的語法、快速的執行效率和優秀的併發能力。Go 在許多領域中已經展示了它的優勢，尤其是微服務、雲端應用和區塊鏈。但你可能會好奇：Go 適合用來開發 AI 應用嗎？這篇文章會深入探討 Go 語言的特性，並介紹它在 AI 應用中的潛在用途。</p>
+<hr />
+<h3 id="1-go-語言的特性簡介"><a class="header" href="#1-go-語言的特性簡介">1. Go 語言的特性簡介</a></h3>
+<p>在深入 AI 應用前，我們先來看看 Go 語言有哪些能幫助我們開發 AI 應用的特性：</p>
+<ul>
+<li><strong>簡單易學</strong>：Go 的語法非常簡單，讓開發者可以專注於問題本身，而不會陷入複雜的語法細節。</li>
+<li><strong>高效併發</strong>：Go 原生支援輕量級的併發處理，透過 <code>goroutine</code>，可以簡單啟動數以千計的輕量執行緒，非常適合需要大量資料處理的應用。</li>
+<li><strong>高性能編譯語言</strong>：作為編譯型語言，Go 的執行效率非常高，特別是在處理需要大量計算的應用時表現出色。</li>
+<li><strong>豐富的標準庫與社群支援</strong>：Go 擁有豐富的標準庫，並且越來越多開源的 AI 庫正在湧現，這讓 AI 開發變得更加容易。</li>
+</ul>
+<hr />
+<h3 id="2-go-語言適合的-ai-應用場景"><a class="header" href="#2-go-語言適合的-ai-應用場景">2. Go 語言適合的 AI 應用場景</a></h3>
+<p>雖然 Go 語言不像 Python 那樣在 AI 領域有強大的工具鏈，但它的獨特優勢讓它在某些 AI 應用場景中表現得非常優異。</p>
+<h4 id="1-微服務架構的-ai-應用"><a class="header" href="#1-微服務架構的-ai-應用">(1) <strong>微服務架構的 AI 應用</strong></a></h4>
+<p>AI 應用程式越來越常以微服務架構運行，因為這樣可以讓不同的模型或演算法被封裝成獨立的服務，方便維護和擴展。而 Go 正是微服務開發的利器。</p>
+<p><strong>為什麼適合？</strong><br />
+Go 天生適合開發後端服務，像是 API 服務和資料處理器。Go 的輕量併發（<code>goroutine</code>）允許我們處理大量的請求，同時保持高效的資源使用，這對 AI 服務而言尤為重要。舉例來說，當你的 AI 模型需要大量數據來進行預測時，Go 的併發能力能夠迅速地處理來自多個用戶的請求，並同步回傳結果。</p>
+<p>範例應用：</p>
+<ul>
+<li><strong>推薦系統</strong>：當需要從多個來源提取資料並進行即時推薦時，Go 的速度和併發能力非常適合這類型的應用。</li>
+<li><strong>聊天機器人 API</strong>：在聊天機器人應用中，需要即時回應大量使用者，Go 的快速回應能力讓它非常適合。</li>
+</ul>
+<h4 id="2-高性能分布式-ai-應用"><a class="header" href="#2-高性能分布式-ai-應用">(2) <strong>高性能分布式 AI 應用</strong></a></h4>
+<p>Go 在開發分布式系統和雲端應用中表現出色，這對於需要橫向擴展的 AI 系統來說非常重要。比如，處理大量資料進行模型訓練，或是進行分布式推理計算時，Go 能提供非常好的併發處理性能。</p>
+<p><strong>為什麼適合？</strong><br />
+當你在開發需要處理大量資料的分布式 AI 系統時，Go 的高併發和快速編譯速度將會發揮很大的優勢。這些特性能夠讓你的 AI 系統在多個節點上運行，並高效地進行資料交換與模型計算。區塊鏈技術中的智能合約應用就是一個例子，Go 被廣泛應用於 Hyperledger 和 Ethereum 這類區塊鏈平台上，用來處理去中心化的 AI 應用。</p>
+<p>範例應用：</p>
+<ul>
+<li><strong>分散式機器學習訓練</strong>：將機器學習模型訓練分散到多個節點上，Go 可以幫助你快速且安全地處理節點間的資料交換。</li>
+<li><strong>區塊鏈 AI 應用</strong>：如在區塊鏈網路上執行 AI 預測模型，Go 在智能合約與分散式計算中可以發揮很大作用。</li>
+</ul>
+<h4 id="3-實時數據處理和流處理"><a class="header" href="#3-實時數據處理和流處理">(3) <strong>實時數據處理和流處理</strong></a></h4>
+<p>在一些 AI 應用中，像是物聯網 (IoT) 相關的應用，需要實時處理大量來自感測器或設備的資料。這時候，Go 的高併發和即時回應特性讓它成為 AI 實時應用的理想選擇。</p>
+<p><strong>為什麼適合？</strong><br />
+Go 非常擅長處理大量的資料流，並能夠在不浪費系統資源的情況下保證應用的穩定性。在實時數據處理的場景中，我們經常需要即時收集資料並快速分析。Go 的 <code>goroutine</code> 和 <code>channel</code> 能夠高效處理這些實時流資料，並通過併發模型保證每個數據包都得到及時的處理。</p>
+<p>範例應用：</p>
+<ul>
+<li><strong>實時監控系統</strong>：用於分析來自不同設備的感測數據，如交通流量、環境監控等，AI 模型可以用來即時預測或偵測異常。</li>
+<li><strong>金融交易數據分析</strong>：Go 可以幫助構建高效的實時數據流處理系統，將來自市場的數據即時送入 AI 模型進行預測和分析。</li>
+</ul>
+<hr />
+<h3 id="3-go-ai-開發工具與庫"><a class="header" href="#3-go-ai-開發工具與庫">3. Go AI 開發工具與庫</a></h3>
+<p>雖然 Go 在 AI 領域的工具鏈不如 Python 豐富，但隨著 Go 的社群壯大，越來越多的開發者推出了專為 AI 設計的工具和庫。這些工具能夠讓 Go 在 AI 開發中更加得心應手。</p>
+<h4 id="1-gorgonia"><a class="header" href="#1-gorgonia">(1) <strong>Gorgonia</strong></a></h4>
+<p>Gorgonia 是一個用 Go 寫的數值計算和深度學習框架，它類似於 Python 的 TensorFlow 和 PyTorch。Gorgonia 支援張量操作、反向傳播（backpropagation）和自動微分，讓你可以用 Go 開發深度學習模型。對於那些希望使用 Go 進行機器學習的開發者來說，Gorgonia 提供了一個非常好的選擇。</p>
+<h4 id="2-golearn"><a class="header" href="#2-golearn">(2) <strong>GoLearn</strong></a></h4>
+<p>GoLearn 是一個機器學習庫，提供了常見的機器學習演算法，比如決策樹、隨機森林和 KNN（k-Nearest Neighbors）。GoLearn 的 API 簡單直觀，讓開發者可以快速構建和測試機器學習模型。它非常適合用於需要輕量機器學習解決方案的應用。</p>
+<h4 id="3-gonum"><a class="header" href="#3-gonum">(3) <strong>gonum</strong></a></h4>
+<p>Gonum 是一個科學計算庫，提供了強大的矩陣運算和數值計算能力。對於那些需要進行數據分析或數學運算的 AI 應用來說，gonum 是非常實用的工具。</p>
+<hr />
+<h3 id="結論-6"><a class="header" href="#結論-6">結論</a></h3>
+<p>雖然 Go 語言在 AI 領域的生態系統不如 Python 成熟，但它在特定場景中有著無可替代的優勢。Go 的高併發能力讓它非常適合開發需要處理大量請求的 AI 微服務；高效的編譯速度和單一可執行文件讓 AI 應用的部署變得更加簡單；而強大的分布式系統支援則讓它在大規模 AI 推理和數據處理中表現出色。</p>
+<p>總結來說，Go 語言適合作為 AI 應用的「基礎設施層」，負責高效的數據處理、服務部署和併發管理，而模型訓練等核心 AI 計算則可以交由 Python 等更專業的工具來完成。兩者搭配使用，能夠發揮出最大的效能。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="day30---結語"><a class="header" href="#day30---結語">Day30 - 結語</a></h1>
+<p>經過這30篇文章的分享，我們已經一同探索了Go語言的設計思想、架構模式以及它在現代程式開發中的應用。從最初的語法基礎，到後來的並發模式設計，我們一步步了解了Go語言如何在簡潔性與高效性之間取得平衡。</p>
+<h3 id="go語言的核心思想"><a class="header" href="#go語言的核心思想">Go語言的核心思想</a></h3>
+<p>Go語言的設計理念強調簡單、直接以及可預測的行為。相比於其他語言，Go刪除了許多複雜的功能，比如類別繼承、泛型等，專注於提供高效能和易於維護的程式結構。這樣的設計使Go在處理大型分佈式系統和微服務時，表現出眾。</p>
+<p>回顧過去的內容，我們談到了Go語言最具特色的幾個方面：</p>
+<ol>
+<li><strong>Goroutine 與並發模型</strong>：Go語言的並發模型為我們帶來了極大的靈活性，使得同時處理多個任務變得簡單。在這系列中，我們討論了如何使用Goroutine來優化系統效能，並讓程式在高併發的情況下依然保持穩定。</li>
+<li><strong>錯誤處理機制</strong>：Go避免了像try-catch這樣的複雜結構，而選擇了簡單直接的錯誤處理方式。這樣的選擇不僅讓程式碼可讀性更好，也讓開發者更加關注每一步的處理邏輯。</li>
+<li><strong>模組化設計與依賴管理</strong>：Go modules的引入，解決了過去依賴管理中的諸多問題，並使得大型專案中的模組化設計變得更加方便。</li>
+</ol>
+<h3 id="微服務與go"><a class="header" href="#微服務與go">微服務與Go</a></h3>
+<p>Go語言尤其適合用來開發微服務架構。微服務要求程式具備快速啟動、低內存占用以及高並發處理能力，而這些都是Go語言的強項。加上內建的HTTP伺服器支持，使得Go成為了後端開發的理想選擇之一。在微服務的世界裡，速度和效能至關重要，Go語言在這方面的表現十分突出。</p>
+<p>此外，Go語言的跨平台特性也讓它能夠輕鬆在不同系統中部署。無論是Linux、Windows還是MacOS，Go都能無縫運行，這讓微服務架構的部署變得更加靈活。</p>
+<h3 id="區塊鏈與go"><a class="header" href="#區塊鏈與go">區塊鏈與Go</a></h3>
+<p>區塊鏈技術的快速崛起讓Go語言有了更多的應用場景。許多知名的區塊鏈專案，比如以太坊的分支版本Geth，都是使用Go語言開發的。這主要歸功於Go語言的高效能和內存管理，這些特點在處理大量交易資料的區塊鏈系統中顯得尤為重要。</p>
+<h3 id="總結-17"><a class="header" href="#總結-17">總結</a></h3>
+<p>這30篇文章不僅帶我們深入了解了Go語言的設計思想，更展示了它在各種現代技術中的廣泛應用。從微服務到區塊鏈，再到併發處理，Go語言的強大讓我們在面對複雜的系統需求時，依然能夠保持高效、穩定。</p>
+<p>這一系列的文章，旨在幫助每一位開發者更好地理解Go語言，並在實際專案中靈活運用。儘管我們已經深入探討了許多Go的核心特性，但這只是Go語言世界的一部分。隨著時間的推移，Go語言仍會不斷發展，我們也將繼續探索它更多的潛能。</p>
+<p>最後，對於每一位正在學習或已經在使用Go的開發者，未來的技術世界充滿挑戰和機遇。而Go語言，作為一個不斷進步的工具，將繼續幫助我們在各種複雜的開發環境中，找到最優雅、最簡潔的解決方案。</p>
+<p>謝謝你們一路以來的閱讀與支持，期待在未來的技術旅程中，我們能一起發現更多關於Go語言的精彩應用！</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,366 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Day 10 - Interface的使用技巧 - Go語言設計與架構之美</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Go語言設計與架構之美</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://ithelp.ithome.com.tw/users/20130271/ironman/7195" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="day-10---interface的使用技巧"><a class="header" href="#day-10---interface的使用技巧">Day 10 - Interface的使用技巧</a></h1>
+<p>這篇文章要來聊聊如何運用Interface改善我們的程式專案，換句話說，我們講的是Go語言中interface的使用模式和習慣。</p>
+<p>首先得強調一點，那就是「適度封裝」。換句話說，我們不是為了封裝而封裝。我們之前提到過，接口其實就是一種封裝的手段，主要目的是為了解耦。所以，重點是我們應該在真正需要的時候才使用接口。</p>
+<p>大部分情況下，接口都能對應用設計帶來好處。但如何恰當地使用interface來優化我們的程式設計呢？這就要從Go語言的「組合」設計哲學說起了。</p>
+<h3 id="一切皆組合"><a class="header" href="#一切皆組合">一切皆組合</a></h3>
+<p>Go語言的創始人Rob Pike有句名言：如果說C++和Java是講究類型層次和分類的語言，那Go語言則是專注於組合的語言。想像Go應用就像一台機器，組合的藝術就在於如何把分散於各個包中的零件有效組合起來。這是Go的核心設計理念之一，而「正交性」則讓這種設計更加方便實現。</p>
+<p>所謂正交性，其實是個幾何學上的概念，意指兩條直線在直角交會。在程式設計中，這表示兩個或多個元素之間的相互獨立，互不影響。這種設計使得當一個元素改變時，不會牽連到其他元素。</p>
+<h4 id="垂直組合"><a class="header" href="#垂直組合">垂直組合</a></h4>
+<p>在傳統的面向對象語言中，如C++，通常透過繼承來建立一個類型體系。但在Go語言中，我們不使用繼承，而是採用「組合」來賦予單一類型更多的功能，這種方法有點類似於硬體升級時的垂直擴充。因為這不涉及繼承，所以新類型與被嵌入的類型之間不存在「父子關係」，它們之間的關聯僅由方法名來決定。更多關於垂直組合(繼承)可以參考我之前寫的這篇文章Method: 怎麼用變數模擬繼承</p>
+<h4 id="水平組合"><a class="header" href="#水平組合">水平組合</a></h4>
+<p>當通過垂直組合確立了類型之後，我們如何將這些獨立的component連結成一個完整的應用呢？來看一個具體的例子：</p>
+<p>假設我們要寫一個函數，負責把數據寫到硬碟上：</p>
+<pre><code class="language-go">func Save(f *os.File, data []byte) error
+</code></pre>
+<p>上面函數用*os.File來定位數據要寫入的目標。但這樣設計有幾個問題。首先，它很難進行測試，因為*os.File涉及到實際的file descripter，我們必須操作實體文件來測試這個函數，這非常不方便。</p>
+<p>其次，Save函數直接指定*os.File最為參數型態限制了它的可擴充性。如果我們想改為向網路儲存寫數據，就必須修改這個函數的參數型態，這會影響到所有使用這個函數的程式碼。</p>
+<p>那麼，如何改進Save函數的設計呢？我們可以嘗試使用interface。以下是新版Save函數的原型：</p>
+<pre><code class="language-go">func Save(w io.Writer, data []byte) error
+</code></pre>
+<p>這裡，我們用io.Writer接口替代了*os.File。這種設計遵循了interface分離的原則，因為io.Writer只包含一個Write方法，恰恰是Save函數所需要的。</p>
+<p>如此一來，新版的Save函數不僅可以向硬碟寫入數據，也能向網路儲存(NAS)寫入數據，並支持任何實現了Write方法的類型，這大大提升了其可擴充性。而且，這也使得測試變得簡單，只需使用bytes.NewBuffer創建一個*bytes.Buffer，傳入Save函數，完成測試後比對數據即可。</p>
+<h3 id="interface的其他設計模式"><a class="header" href="#interface的其他設計模式">Interface的其他設計模式</a></h3>
+<p>Go語言中有幾種常見的接口設計模式：</p>
+<h4 id="工廠模式"><a class="header" href="#工廠模式">工廠模式</a></h4>
+<p>這種模式在原生的Library sync、log和bufio中都有使用。以log中的New函數為例：</p>
+<pre><code class="language-go">type Logger struct {
+    mu     sync.Mutex
+    prefix string
+    flag   int
+    out    io.Writer
+}
+
+func New(out io.Writer, prefix string, flag int) *Logger {
+    return &amp;Logger{out: out, prefix: prefix, flag: flag}
+}
+</code></pre>
+<h4 id="包裝器模式"><a class="header" href="#包裝器模式">包裝器模式</a></h4>
+<p>這種模式用於對輸入數據進行過濾或變換。一個典型的例子是Go標準庫<code>io</code>中的<code>LimitReader</code>函數：</p>
+<pre><code class="language-go">func LimitReader(r Reader, n int64) Reader { 
+    // Do something
+    reader := &amp;LimitedReader{r, n}
+    // Do something
+    return reader 
+}
+
+type LimitedReader struct {
+    R Reader
+    N int64
+}
+
+func (l *LimitedReader) Read(p []byte) (n int, err error) {
+    // ...
+}
+</code></pre>
+<p><code>LimitReader</code>是一個新的Reader，在init <code>io.Reader</code>前後對Read函數做客製化包裝。</p>
+<h4 id="適配器模式"><a class="header" href="#適配器模式">適配器模式</a></h4>
+<p>這種模式的核心是適配函數的類型轉換。最常見的例子是<code>http.HandlerFunc</code>：</p>
+<pre><code class="language-go">func greetings(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, "Welcome!")
+}
+
+func main() {
+    http.ListenAndServe(":8080", http.HandlerFunc(greetings))
+}
+</code></pre>
+<p>這個例子展示了怎麼透過 <code>http.HandlerFunc</code> 這個適配器函數類型，將一般的 <code>greetings</code> 函數迅速轉換成符合 <code>http.Handler</code> interface的類型。在 Go 語言的 <code>http</code> Library中，<code>http.HandlerFunc</code> 的定義如下所示：</p>
+<pre><code class="language-go">// $GOROOT/src/net/http/server.go
+type Handler interface {
+    ServeHTTP(ResponseWriter, *Request)
+}
+
+type HandlerFunc func(ResponseWriter, *Request)
+
+func (f HandlerFunc) ServeHTTP(w ResponseWriter, r *Request) {
+    f(w, r)
+}
+</code></pre>
+<p>經過 <code>HandlerFunc</code> 的適配轉換後，我們可以將其object用作參數，pass給接收 <code>http.Handler</code> 的 <code>http.ListenAndServe</code> 函數，這樣一來，就能夠實現基於interface的組合設計，轉化後<code>greetings</code>就有了<code>ServeHTTP</code>方法。這種設計方式不僅簡化了程式碼的複雜性，也增強了程式的封裝化和可重用性，讓開發者能夠更靈活地應對不同的網路服務需求。</p>
+<h4 id="中間件middleware"><a class="header" href="#中間件middleware">中間件（Middleware）</a></h4>
+<p>中間件實質上是結合了包裝模式和適配器模式。看看這個例子：</p>
+<pre><code class="language-go">func validateAuth(s string) error {
+    if s != "123456" {
+        return fmt.Errorf("%s", "bad auth token")
+    }
+    return nil
+}
+
+func greetings(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, "Welcome!")
+}
+
+func logHandler(h http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        log.Printf("[%s] %q\n", r.Method, r.URL.String())
+        h.ServeHTTP(w, r)
+    })
+}
+
+func authHandler(h http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        err := validateAuth(r.Header.Get("auth"))
+        if err != nil {
+            http.Error(w, "bad auth param", http.StatusUnauthorized)
+            return
+        }
+        h.ServeHTTP(w, r)
+    })
+}
+
+func main() {
+    http.ListenAndServe(":8080", logHandler(authHandler(http.HandlerFunc(greetings))))
+}
+</code></pre>
+<p>這裡的 logHandler 和 authHandler 是中間件，通過適配器函數類型（http.HandlerFunc）將普通函數轉為實現 http.Handler 的類型的object。</p>
+<h3 id="總結"><a class="header" href="#總結">總結</a></h3>
+<ul>
+<li>了解接口的本質和原則，不為了封裝而封裝。</li>
+<li>善用 Go 語言的組合設計哲學。
+<ul>
+<li><strong>垂直組合</strong>：透過傳統程式語言繼承的方式來垂直增加類型功能。</li>
+<li><strong>水平組合</strong>：將不同 component 但是共用的Method封裝成一個interface，把這個interface最為參數型態，類似傳統程式語言的多型。</li>
+</ul>
+</li>
+<li>透過Go語言的Interface也能實現各種不同的設計模式。
+<ul>
+<li><strong>工廠模式</strong>：靈活創建多種類型同個class的object，例如Logger，不同的Logger object主要差別可能就是寫入的路徑，所以創建不同的Logger適合工廠模式。</li>
+<li><strong>包裝器模式</strong>：增加新功能而不改變原始interface，有點類似Python的decorator可以對class前後進行前置或是後置處理。</li>
+<li><strong>適配器模式</strong>：轉化函數為特定其他但相同簽名的函數，以適配所需函數的Method實現。</li>
+<li><strong>中間件</strong>：增加新功能而不改變原始function功能，有點類似Python的decorator可以對function前後進行前置或是後置處理。</li>
+</ul>
+</li>
+</ul>
+<p>更多Go語言相關的文章，歡迎參閱我的部落格: <a href="https://kaichiachen.github.io/2024/02/16/golang/interface_usage/">https://kaichiachen.github.io/2024/02/16/golang/interface_usage/</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="day09.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="day11.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="day09.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="day11.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

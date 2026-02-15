@@ -1,0 +1,305 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Day8 - Interface即類型的使用定義 - Go語言設計與架構之美</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Go語言設計與架構之美</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://ithelp.ithome.com.tw/users/20130271/ironman/7195" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="day8---interface即類型的使用定義"><a class="header" href="#day8---interface即類型的使用定義">Day8 - Interface即類型的使用定義</a></h1>
+<p>在 Go 語言中，<code>interface</code> 是一組方法的集合，透過 <code>type</code> 和 <code>interface</code> 關鍵字來定義。這些方法的集合唯一確定了這個 <code>interface</code> 類型所表示的契約。讓我們來看看一個典型的 <code>interface</code> 類型 <code>MyInterface</code> 的定義：</p>
+<pre><code class="language-go">type MyInterface interface {
+    M1(int) error
+    M2(io.Writer, ...string)
+}
+</code></pre>
+<p>從這個定義中，我們可以看到，<code>interface</code> 類型 <code>MyInterface</code> 包含了兩個方法：<code>M1</code> 和 <code>M2</code>。Go 語言要求 <code>interface</code> 類型聲明中的方法必須是具名的，並且方法名字在這個 <code>interface</code> 類型的方法集合中必須唯一。從 Go 1.14 版本開始，Go 允許嵌入的不同 <code>interface</code> 類型的方法集合存在交集，但前提是交集中的方法不僅名字一樣，連方法簽名（參數列表和返回值列表）也必須一致，否則 Go 編譯器會報錯。</p>
+<p>例如，以下示例中 <code>Interface3</code> 嵌入了 <code>Interface1</code> 和 <code>Interface2</code>，但它們之間的 <code>M1</code> 方法簽名不同，導致編譯出錯：</p>
+<pre><code class="language-go">type Interface1 interface {
+    M1()
+}
+type Interface2 interface {
+    M1(string) 
+    M2()
+}
+
+type Interface3 interface {
+    Interface1
+    Interface2 // 編譯器報錯：duplicate method M1
+    M3()
+}
+</code></pre>
+<p>Go 語言也可以定義空 <code>interface</code> 類型，代表沒有定義任何方法集合的 <code>interface</code>：</p>
+<pre><code class="language-go">type EmptyInterface interface {}
+</code></pre>
+<p>如果一個變數的類型是空 <code>interface</code> 類型，由於空 <code>interface</code> 類型的方法集合為空，這意味著<strong>任何類型都實現了空 <code>interface</code> 的方法集合</strong>。所以我們可以將任何類型的值賦值給空 <code>interface</code> 類型的變數。例如：</p>
+<pre><code class="language-go">var i interface{} = 15 // ok
+i = "hello, golang" // ok
+type T struct{}
+var t T
+i = t  // ok
+i = &amp;t // ok
+</code></pre>
+<p>空 <code>interface</code> 類型能夠接受任意類型變數值，使它成為 Go 在引入泛型之前唯一具備“泛型”能力的語法元素。包括 Go 標準庫在內的一些通用資料結構與算法的實現，都使用了空 <code>interface</code> <code>interface{}</code> 作為參數元素的類型，這樣我們就無需為每種支持的元素類型單獨編寫程式碼或方法。</p>
+<p>Go 語言還支持從 <code>interface</code> 類型變數“還原”其右值的類型與值信息，這個過程稱為“Type Assertion”。Type Assertion 通常使用以下語法形式：</p>
+<pre><code class="language-go">v, ok := i.(T)
+</code></pre>
+<p>其中 <code>i</code> 是某個 <code>interface</code> 類型變數。如果 <code>T</code> 是一個非 <code>interface</code> 類型且 <code>T</code> 是想要還原的類型，這句程式碼的含義是“斷言”儲存在 <code>interface</code> 類型變數 <code>i</code> 中的值的類型為 <code>T</code>。</p>
+<p>如果 <code>interface</code> 類型變數 <code>i</code> 之前被賦予的值確為 <code>T</code> 類型的值，這個語句執行後，左側 <code>comma, ok</code> 語句中的變數 <code>ok</code> 的值將為 <code>true</code>，變數 <code>v</code> 的類型為 <code>T</code>，其值為之前賦予給 <code>i</code> 的值。如果 <code>i</code> 之前被賦予的值不是 <code>T</code> 類型，這個語句執行後，變數 <code>ok</code> 的值為 <code>false</code>，變數 <code>v</code> 的類型仍然是 <code>T</code>，但其值是類型 <code>T</code> 的初始值。</p>
+<p>好了，到這裡關於 <code>interface</code> 類型的基礎語法我們已經全部講完了。有了這個基礎後，我們再來看看 Go 語言 <code>interface</code> 定義的慣例，也就是盡量定義“小 <code>interface</code>”。</p>
+<h3 id="盡量定義小-interface"><a class="header" href="#盡量定義小-interface">盡量定義“小 <code>interface</code>”</a></h3>
+<p><code>interface</code> 類型的背後，是透過將類型的行為封裝成契約，建立雙方共同遵守的約定，從而降低耦合度。和生活中的契約有繁有簡、形式多樣一樣，程式碼間的契約也有大小之分。而 Go 選擇了簡單的形式，主要體現在以下兩點上：</p>
+<h4 id="隱式契約無需顯示立即生效"><a class="header" href="#隱式契約無需顯示立即生效">隱式契約，無需顯示，立即生效</a></h4>
+<p>在 Go 語言中，<code>interface</code> 類型與其實現者之間的關係是隱式的，不需要像其他語言（如 Java）那樣要求實現者顯式聲明 <code>implements</code>。實現者只需要實現 <code>interface</code> 方法集合中的全部方法，便自動生效。</p>
+<h4 id="更傾向於小契約"><a class="header" href="#更傾向於小契約">更傾向於“小契約”</a></h4>
+<p>這點也不難理解。若契約太繁雜，就會束縛手腳，缺少靈活性。因此 Go 選擇了“小契約”，表現在程式碼上就是盡量定義小 <code>interface</code>，即方法個數在 1~3 個之間的 <code>interface</code>。Go 語言之父 Rob Pike 曾說過，“<code>interface</code> 越大，封裝程度越弱”，這也是 Go 社群傾向於定義小 <code>interface</code> 的原因之一。</p>
+<h5 id="小-interface-的優點"><a class="header" href="#小-interface-的優點">小 <code>interface</code> 的優點</a></h5>
+<ul>
+<li><strong><code>interface</code> 越小，封裝程度越高</strong><br />
+封裝程度越高，對應的集合空間就越大；封裝程度越低，也就是越具像化，更接近事物真實面貌，對應的集合空間越小。</li>
+<li><strong>小 <code>interface</code> 易於實現和測試</strong><br />
+小<code>interface</code>擁有較少的Method，一般情況下只有一個Method。所以要想滿足這一<code>interface</code>，我們只需要實現一個Method或者少數幾個Method就可以了，這顯然要比實現擁有較多Method的<code>interface</code>要容易得多。尤其是在單元測試環節，構建類型去實現只有少量Method的<code>interface</code>要比實現擁有較多Method的<code>interface</code>付出的勞動要少許多。</li>
+<li><strong>小 <code>interface</code> 表示職責單一，易於複用和組合</strong><br />
+寫程式時，如果有眾多候選<code>interface</code>類型供我們選擇，我們會怎麼選擇呢？顯然，我們會選擇那些新<code>interface</code>類型需要的契約職責，同時也要求不要引入我們不需要的契約職責。在這樣的情況下，擁有單一或少數Method的小<code>interface</code>便更有可能成為我們的目標，而那些擁有較多Method的大<code>interface</code>，可能會因引入了諸多不需要的契約職責而被放棄。由此可見，小<code>interface</code>更契合 Go 的組合思想，也更容易發揮出組合的威力。</li>
+</ul>
+<h3 id="如何定義小-interface"><a class="header" href="#如何定義小-interface">如何定義小 <code>interface</code></a></h3>
+<p>保持簡單有時比複雜更難。小 <code>interface</code> 雖好，但如何定義出小 <code>interface</code> 是每個 Gopher 面前的一道難題。雖然這道題沒有標準答案，但有一些建議可供參考：</p>
+<ol>
+<li><strong>首先，先封裝出 <code>interface</code>，不管大小</strong>：在定義小 <code>interface</code> 之前，我們需要深入理解問題領域，聚焦封裝並發現 <code>interface</code>。初期，先不要介意 <code>interface</code> 裡的方法數量，因為對問題域的理解是循序漸進的。在第一版程式碼中直接定義出小 <code>interface</code> 可能不現實。例如，標準庫中的 <code>io.Reader</code> 和 <code>io.Writer</code> 也不是 Go 剛誕生時就有的，而是在發現對網路、文件、其他資料處理的實現十分相似後才封裝出來的。</li>
+<li><strong>將大 <code>interface</code> 拆分為小 <code>interface</code></strong>：有了 <code>interface</code> 後，我們會在程式碼中各處使用 <code>interface</code>。一段時間後，分析哪些場合使用了 <code>interface</code> 的哪些方法，是否可以將這些方法提取出來，放入一個新的小 <code>interface</code> 中。</li>
+<li><strong>注意 <code>interface</code> 的單一職責</strong>：被拆分成的小 <code>interface</code> 是否需要進一步拆分，以滿足單一職責原則，如同 <code>io.Reader</code> 一樣。如果需要，就進一步拆分，提升封裝程度。</li>
+</ol>
+<h3 id="總結"><a class="header" href="#總結">總結</a></h3>
+<ul>
+<li><strong><code>interface</code> 是方法的集合</strong>：用來定義類型的行為契約。</li>
+<li><strong>Go 中的 <code>interface</code> 是隱式實現的</strong>：不需要顯式聲明 <code>implements</code>。</li>
+<li><strong>小 <code>interface</code> 更具靈活性和複用性</strong>：方法數量在 1~3 個之間。</li>
+<li><strong>將大 <code>interface</code> 拆分為小 <code>interface</code></strong>：聚焦單一職責，提升封裝程度，符合高內聚、低耦合的精神。</li>
+</ul>
+<p>這些建議和技巧將幫助你在 Go 語言中有效地使用 <code>interface</code>，寫出更具高內聚、低耦合的程式碼。</p>
+<p>更多Go語言相關的文章，歡迎關注我的部落格: <a href="https://kaichiachen.github.io/2024/01/31/golang/go_interface/">https://kaichiachen.github.io/2024/01/31/golang/go_interface/</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="day07.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="day09.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="day07.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="day09.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

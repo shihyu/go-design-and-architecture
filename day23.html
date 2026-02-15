@@ -1,0 +1,335 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Day23 - 那些Uber幫我們開發的好用 Library - Go語言設計與架構之美</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Go語言設計與架構之美</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://ithelp.ithome.com.tw/users/20130271/ironman/7195" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="day23---那些uber幫我們開發的好用-library"><a class="header" href="#day23---那些uber幫我們開發的好用-library">Day23 - 那些Uber幫我們開發的好用 Library</a></h1>
+<h2 id="1-簡介"><a class="header" href="#1-簡介">1. 簡介</a></h2>
+<p>如果你是 Go 語言的開發者，那麼你一定聽過 Uber！這家公司不僅在交通行業中大放異彩，更是 Go 生態系統的重要貢獻者。他們釋出了一系列開源 Library，讓開發者可以更快、更輕鬆地構建應用程式。本文將介紹幾個 Uber 開發的好用 Go Library，包括 <code>zap</code>、<code>fx</code>、<code>atomic</code>，讓你在開發時事半功倍！</p>
+<h2 id="2-zap高效能的日誌工具"><a class="header" href="#2-zap高效能的日誌工具">2. Zap：高效能的日誌工具</a></h2>
+<h3 id="什麼是-zap"><a class="header" href="#什麼是-zap">什麼是 Zap？</a></h3>
+<p><code>zap</code> 是一個高效能的日誌記錄器，專為需要低延遲、高頻率記錄日誌的應用設計。它使用結構化的日誌格式，讓你的日誌既易讀又方便過濾和查找。</p>
+<h3 id="為什麼使用-zap"><a class="header" href="#為什麼使用-zap">為什麼使用 Zap？</a></h3>
+<ul>
+<li><strong>超快性能</strong>：比其他流行的 Go 日誌庫快 10 倍以上。</li>
+<li><strong>結構化日誌</strong>：支持 JSON 格式，讓日誌資料更有條理。</li>
+<li><strong>靈活的 Log Level</strong>：可設定不同的日誌層級，方便過濾不必要的訊息。</li>
+</ul>
+<h3 id="如何使用-zap"><a class="header" href="#如何使用-zap">如何使用 Zap？</a></h3>
+<p>安裝 zap：</p>
+<pre><code class="language-go">go get go.uber.org/zap
+</code></pre>
+<p>簡單示範如何使用：</p>
+<pre><code class="language-go">package main
+
+import (
+    "go.uber.org/zap"
+)
+
+func main() {
+    logger, _ := zap.NewProduction()
+    defer logger.Sync() // 確保日誌訊息被寫入
+
+    logger.Info("Hello, Zap!",
+        zap.String("lang", "Go"),
+        zap.Int("version", 1))
+}
+</code></pre>
+<p>程式會生成結構化的日誌，看起來簡單又清楚。這樣的日誌不但讓 debug 更容易，也讓你在排查問題時可以快速鎖定重點。</p>
+<h2 id="3-fx一站式依賴注入工具"><a class="header" href="#3-fx一站式依賴注入工具">3. Fx：一站式依賴注入工具</a></h2>
+<h3 id="什麼是-fx"><a class="header" href="#什麼是-fx">什麼是 Fx？</a></h3>
+<p><code>fx</code> 是一個為 Go 應用設計的依賴注入工具，它簡化了依賴管理與生命週期控制，幫助你專注於業務邏輯的開發。使用 <code>fx</code>，可以省去手動初始化物件、錯誤處理等瑣碎的細節。</p>
+<h3 id="為什麼使用-fx"><a class="header" href="#為什麼使用-fx">為什麼使用 Fx？</a></h3>
+<ul>
+<li><strong>快速組裝應用程式</strong>：將不同的 component 輕鬆組合在一起。</li>
+<li><strong>內建健康檢查與生命週期管理</strong>：內建的 <code>Start</code> 和 <code>Stop</code> 方法，讓應用程式的啟動與停止更可靠。</li>
+<li><strong>模組化設計</strong>：可輕鬆拆分大型應用程式，讓程式碼更易於維護。</li>
+</ul>
+<h3 id="如何使用-fx"><a class="header" href="#如何使用-fx">如何使用 Fx？</a></h3>
+<p>安裝 fx：</p>
+<pre><code class="language-go">go get go.uber.org/fx
+</code></pre>
+<p>使用 <code>fx</code> 的基本範例：</p>
+<pre><code class="language-go">package main
+
+import (
+    "fmt"
+    "go.uber.org/fx"
+)
+
+func NewLogger() *zap.Logger {
+    logger, _ := zap.NewProduction()
+    return logger
+}
+
+func NewApp(l *zap.Logger) {
+    l.Info("Fx App is running!")
+}
+
+func main() {
+    app := fx.New(
+        fx.Provide(NewLogger),
+        fx.Invoke(NewApp),
+    )
+    app.Run()
+}
+</code></pre>
+<p>以上範例中，<code>fx</code> 自動管理 logger 的創建並注入到應用中，整體的程式碼更加乾淨且易於維護。更多Fx使用的細節和範例，可以參考我的部落格: <a href="https://kaichiachen.github.io/2024/06/01/golang/go_dependency_injection/">https://kaichiachen.github.io/2024/06/01/golang/go_dependency_injection/</a></p>
+<h2 id="4-atomic輕鬆管理原子操作"><a class="header" href="#4-atomic輕鬆管理原子操作">4. Atomic：輕鬆管理原子操作</a></h2>
+<h3 id="什麼是-atomic"><a class="header" href="#什麼是-atomic">什麼是 Atomic？</a></h3>
+<p><code>atomic</code> 是一個簡單易用的套件，用於實現原子操作，主要目的是幫助 Go 開發者更安全地處理多執行緒的變數操作。當面對並發操作時，原子操作能保證數據的一致性和安全性。</p>
+<h3 id="為什麼使用-atomic"><a class="header" href="#為什麼使用-atomic">為什麼使用 Atomic？</a></h3>
+<ul>
+<li><strong>簡單易用</strong>：只需幾行程式碼，就能實現安全的並發操作。</li>
+<li><strong>性能優越</strong>：比起傳統的 <code>sync.Mutex</code>，在處理單個變數的情況下更高效。</li>
+<li><strong>多型態支援</strong>：支援 int、float、bool 等多種型態的原子操作。</li>
+</ul>
+<h3 id="如何使用-atomic"><a class="header" href="#如何使用-atomic">如何使用 Atomic？</a></h3>
+<p>安裝 atomic：</p>
+<pre><code class="language-go">go get go.uber.org/atomic
+</code></pre>
+<p><code>atomic</code> 的基本使用範例：</p>
+<pre><code class="language-go">package main
+
+import (
+    "fmt"
+    "go.uber.org/atomic"
+)
+
+func main() {
+    var counter atomic.Int32
+    counter.Inc() // 原子增量
+    fmt.Println("Counter:", counter.Load()) // 載入當前值
+}
+</code></pre>
+<p>透過 <code>atomic</code>，你可以輕鬆完成多執行緒間的數據同步，避免傳統鎖機制帶來的性能瓶頸。</p>
+<h2 id="5-結語"><a class="header" href="#5-結語">5. 結語</a></h2>
+<p>Uber 開發的這些 Library，不僅方便易用，還能顯著提升開發效率。<code>zap</code> 讓日誌記錄變得更快更清晰；<code>fx</code> 幫助你輕鬆管理依賴，快速組裝應用程式；而 <code>atomic</code> 則提供了簡單且安全的原子操作支援。無論你是新手還是資深開發者，都能從中獲益良多。試著在你的下一個專案中使用這些工具，相信會讓你的開發體驗大大提升！</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="day22.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="day24.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="day22.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="day24.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

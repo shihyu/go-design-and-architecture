@@ -1,0 +1,325 @@
+<!DOCTYPE HTML>
+<html lang="zh-TW" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Day21 - 用Fx進行依賴注入(Dependency Injection) - Go語言設計與架構之美</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Go語言設計與架構之美</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://ithelp.ithome.com.tw/users/20130271/ironman/7195" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="day21---用fx進行依賴注入dependency-injection"><a class="header" href="#day21---用fx進行依賴注入dependency-injection">Day21 - 用Fx進行依賴注入(Dependency Injection)</a></h1>
+<h2 id="什麼是依賴注入"><a class="header" href="#什麼是依賴注入">什麼是依賴注入?</a></h2>
+<p>首先，什麼是依賴注入呢？依賴注入（Dependency Injection，簡稱DI）是一種設計模式，主要用來解決物件之間的依賴性問題。當一個物件需要使用另一個物件時，我們通常會在這個物件的內部去創建它所需的依賴物件。這樣一來，物件之間就會產生緊密的耦合性，使得程式碼變得不靈活，也很難進行測試和維護。</p>
+<p>依賴注入的目的是將依賴物件的創建責任轉移給外部系統，通過單例模式或構造函數(constructor)來將依賴注入到需要的物件中。這樣一來，我們可以更方便地替換或擴展物件的依賴，也能更容易進行單元測試，因為可以輕鬆地注入模擬物件（mock objects）。</p>
+<h3 id="傳統的依賴注入"><a class="header" href="#傳統的依賴注入">傳統的依賴注入</a></h3>
+<p>在進入主題之前，我們來看一個不使用任何依賴注入框架的範例：</p>
+<pre><code class="language-go">package main
+
+import "fmt"
+
+type Database struct {
+    Name string
+}
+
+func (db *Database) Connect() {
+    fmt.Println("Connecting to database:", db.Name)
+}
+
+type Server struct {
+    Database *Database
+}
+
+func (s *Server) Start() {
+    s.Database.Connect()
+    fmt.Println("Server started!")
+}
+
+func main() {
+    db := &amp;Database{Name: "MySQL"}
+    server := &amp;Server{Database: db}
+    server.Start()
+}
+</code></pre>
+<p>在這個範例中，我們有一個<code>Database</code>的struct，它模擬了連接到資料庫的功能。<code>Server</code>則依賴於<code>Database</code>來執行其操作。在<code>main</code>函數中，我們手動創建<code>Database</code>和<code>Server</code>，並將<code>Database</code>作為依賴注入到<code>Server</code>中。</p>
+<p>這個範例雖然簡單易懂，但當我們的專案規模變大、依賴物件變得複雜時，手動管理這些依賴會變得相當麻煩。這時候，我們就需要一個更高效的方式來處理依賴注入，而這正是Fx出現的原因。</p>
+<h2 id="什麼是fx"><a class="header" href="#什麼是fx">什麼是Fx？</a></h2>
+<p>Fx 是一個用於 Go 語言的依賴注入框架，它基於 Uber 的開源專案開發，旨在簡化和標準化 Go 應用程式的初始化過程。Fx 通過自動管理物件的生命週期，幫助開發者集中精力在業務邏輯上，而不必煩惱於如何管理各種依賴關係。</p>
+<p>Fx 的核心概念是使用依賴注入來管理應用程式中的各種物件和資源。它可以自動解析依賴關係，並確保在合適的時候創建和銷毀物件。這樣的好處是我們不必手動編寫繁瑣的初始化程式碼，還可以更方便地進行測試。</p>
+<h3 id="用fx進行依賴注入"><a class="header" href="#用fx進行依賴注入">用Fx進行依賴注入</a></h3>
+<p>讓我們來看看如何用 Fx 來改寫之前的範例。</p>
+<pre><code class="language-go">package main
+
+import (
+    "go.uber.org/fx"
+    "fmt"
+)
+
+type Database struct {
+    Name string
+}
+
+func NewDatabase() *Database {
+    return &amp;Database{Name: "MySQL"}
+}
+
+func (db *Database) Connect() {
+    fmt.Println("Connecting to database:", db.Name)
+}
+
+type Server struct {
+    Database *Database
+}
+
+func NewServer(db *Database) *Server {
+    return &amp;Server{Database: db}
+}
+
+func (s *Server) Start() {
+    s.Database.Connect()
+    fmt.Println("Server started!")
+}
+
+func main() {
+    app := fx.New(
+        fx.Provide(NewDatabase),
+        fx.Provide(NewServer),
+        fx.Invoke(func(s *Server) {
+            s.Start()
+        }),
+    )
+    app.Run()
+}
+</code></pre>
+<p>在這個範例中，我們使用了 Fx 來管理<code>Database</code>和<code>Server</code>的創建和注入。<code>fx.Provide</code>函數用來註冊依賴，它告訴 Fx 如何創建特定的物件。而<code>fx.Invoke</code>函數則用來在應用程式啟動時執行特定的操作。</p>
+<p>Fx 的好處是，它自動處理了物件的創建和銷毀，並確保依賴物件按照正確的順序被創建。這不僅讓程式碼更加簡潔，也降低了錯誤的發生機率。</p>
+<h2 id="結論"><a class="header" href="#結論">結論</a></h2>
+<ol>
+<li>依賴注入（DI）的概念：解決物件之間的依賴問題，透過外部注入依賴，減少程式碼耦合，提升靈活性和測試便利性。</li>
+<li>Fx 的優勢：Fx 是一個Go的依賴注入框架，自動管理物件的創建與銷毀，簡化初始化過程，讓程式碼更容易維護和測試。</li>
+</ol>
+<p>Fx 不僅簡化了應用程式的初始化過程，也讓程式碼變得更容易測試和維護。如果你正在尋找一個高效的方式來處理 Go 專案中的依賴問題，那麼 Fx 是我強力推薦的工具！</p>
+<p>更多Go語言相關的文章，歡迎關注我的部落格: <a href="https://kaichiachen.github.io/2024/06/01/golang/go_dependency_injection/">https://kaichiachen.github.io/2024/06/01/golang/go_dependency_injection/</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="day20.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="day22.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="day20.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="day22.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>
