@@ -1,0 +1,11 @@
+[book]
+authors = ["kaichiaboy"]
+language = "zh-TW"
+multilingual = false
+src = "src"
+title = "Go語言設計與架構之美"
+
+[output.html]
+default-theme = "light"
+preferred-dark-theme = "navy"
+git-repository-url = "https://ithelp.ithome.com.tw/users/20130271/ironman/7195"
