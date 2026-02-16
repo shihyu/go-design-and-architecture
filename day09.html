@@ -269,6 +269,49 @@ func main() {
 <li><strong>比較行為</strong>：當兩個接口變數進行比較時，Go 不僅比較 <code>data</code> pointer，還要比較他們的類型pointer（<code>eface._type</code> 或 <code>iface.tab._type</code>）。只有當這兩部分都相同時，兩個接口變數才視為相等。</li>
 </ul>
 <p>再回到開頭的問題，是不是已經豁然開朗了？<code>returnsError</code> 函數返回的 <code>error</code> 接口類型變數 <code>err</code> 的數據pointer雖然為空，但其類型（<code>iface.tab</code>）不為空，而是 <code>*MyError</code> 對應的類型，這樣 <code>err</code> 與 <code>nil</code>（0x0, 0x0）相比自然不相等，這就是問題的答案。</p>
+<pre><code> nil Interface 問題的記憶體結構圖解：
+
+ ═══════════════════════════════════════════════════
+ 真正的 nil interface：
+ ┌───────────┬───────────┐
+ │  tab: nil │ data: nil │    == nil ✓
+ │  (0x0)    │ (0x0)     │
+ └───────────┴───────────┘
+
+ ═══════════════════════════════════════════════════
+ returnsError() 返回的 error（var p *MyError = nil）：
+
+ 函數內部：                     返回後賦值給 error 接口：
+ ┌──────────────┐              ┌────────────┬───────────┐
+ │  p (*MyError)│              │ tab        │ data: nil │
+ │  值 = nil    │  ──return──▶ │ (*MyError) │ (0x0)     │
+ └──────────────┘              └─────┬──────┴───────────┘
+                                     │
+                                     ▼
+                               ┌───────────┐
+                               │ itab 結構  │
+                               │ type:      │
+                               │ *MyError   │  ← 不是 nil！
+                               └───────────┘
+
+ 比較 err != nil：
+ ┌────────────┬───────────┐     ┌───────────┬───────────┐
+ │ tab: 有值  │ data: nil │  ≠  │ tab: nil  │ data: nil │
+ │ (*MyError) │ (0x0)     │     │ (0x0)     │ (0x0)     │
+ └────────────┴───────────┘     └───────────┴───────────┘
+        err                            nil
+
+ 結論：tab ≠ nil，所以 err != nil 為 true！
+
+ ═══════════════════════════════════════════════════
+ 正確的寫法（直接返回 nil）：
+ func returnsError() error {
+     if bad() {
+         return &amp;ErrBad
+     }
+     return nil  // ← 直接返回 nil，tab 和 data 都為 nil
+ }
+</code></pre>
 <h3 id="總結"><a class="header" href="#總結">總結</a></h3>
 <ul>
 <li><strong>接口的靜態特性</strong>：保障了類型的正確性和編譯期的類型檢查。</li>

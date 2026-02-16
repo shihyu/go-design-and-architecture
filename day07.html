@@ -279,7 +279,52 @@ func main() {
 <p>是不是很驚喜？這段程序不但沒有引發編譯器報錯，還可以正常運行並輸出正確的結果！</p>
 <p>這段程式碼似乎在告訴我們：<code>Read</code> 方法和 <code>Add</code> 方法就是類型 <code>S</code> 方法集合中的方法。其實，這兩個方法來自於struct類型 <code>S</code> 的兩個嵌入attribute <code>Reader</code> 和 <code>MyInt</code>。struct類型 <code>S</code> “繼承”了 <code>Reader</code> attribute的方法 <code>Read</code> 的實現，也“繼承”了 <code>*MyInt</code> 的 <code>Add</code> 方法的實現。注意，我這裡的“繼承”用了引號，說明這並不是真正的繼承，而是 Go 語言的一種“障眼法”。</p>
 <p>這種“障眼法”的工作機制是這樣的：當我們通過struct類型 <code>S</code> 的變量 <code>s</code> 呼叫 <code>Read</code> 方法時，Go 發現struct類型 <code>S</code> 自身並沒有定義 <code>Read</code> 方法，於是 Go 會查看 <code>S</code> 的嵌入attribute對應的類型是否定義了 <code>Read</code> 方法。這時，<code>Reader</code> attribute就被找了出來，之後 <code>s.Read</code> 的呼叫就被轉換為 <code>s.Reader.Read</code> 的呼叫。</p>
-<p>這樣一來，嵌入attribute <code>Reader</code> 的 <code>Read</code> 方法就被提升為 <code>S</code> 的方法，放入了類型 <code>S</code> 的方法集合。同理，<code>*MyInt</code> 的 <code>Add</code> 方法也被提升為 <code>S</code> 的方法而放入 <code>S</code> 的方法集合。從外部來看，這種嵌入attribute的方法的提升就給了我們一種struct類型 <code>S</code> “繼承”了 <code>io.Reader</code> 類型 <code>Read</code> 方法的實現，以及 <code>*MyInt</code> 類型 <code>Add</code> 方法的實現的錯覺。嵌入attribute的使用的確可以幫我們在 Go 中實現方法的“繼承”。</p>
+<p>這樣一來，嵌入attribute <code>Reader</code> 的 <code>Read</code> 方法就被提升為 <code>S</code> 的方法，放入了類型 <code>S</code> 的方法集合。同理，<code>*MyInt</code> 的 <code>Add</code> 方法也被提升為 <code>S</code> 的方法而放入 <code>S</code> 的方法集合。從外部來看，這種嵌入attribute的方法的提升就給了我們一種struct類型 <code>S</code> "繼承"了 <code>io.Reader</code> 類型 <code>Read</code> 方法的實現，以及 <code>*MyInt</code> 類型 <code>Add</code> 方法的實現的錯覺。嵌入attribute的使用的確可以幫我們在 Go 中實現方法的"繼承"。</p>
+<pre><code> Type Embedding（類型嵌入）記憶體佈局示意圖：
+
+ type S struct {
+     *MyInt          // 嵌入 pointer 類型
+     t               // 嵌入 struct 類型
+     io.Reader       // 嵌入 interface 類型
+     s string
+     n int
+ }
+
+ S 的記憶體結構：
+ ┌─────────────────────────────────────────────────┐
+ │                  S struct                        │
+ ├──────────────┬──────────────────────────────────┤
+ │  MyInt (*MyInt)  │  pointer ──▶ MyInt(17)       │
+ ├──────────────┼──────────────────────────────────┤
+ │  t (struct t)    │  ┌─────┬─────┐               │
+ │                  │  │ a:1 │ b:2 │  (內嵌展開)   │
+ │                  │  └─────┴─────┘               │
+ ├──────────────┼──────────────────────────────────┤
+ │  Reader          │  ┌──────┬──────┐             │
+ │  (io.Reader)     │  │ itab │ data │──▶ Reader   │
+ │                  │  └──────┴──────┘  實體       │
+ ├──────────────┼──────────────────────────────────┤
+ │  s (string)      │  ┌─────┬─────┐               │
+ │                  │  │ ptr │ len │──▶ "demo"     │
+ │                  │  └─────┴─────┘               │
+ ├──────────────┼──────────────────────────────────┤
+ │  n (int)         │  0                           │
+ └──────────────┴──────────────────────────────────┘
+
+ 方法查找機制（Method Resolution）：
+ ┌────────────────────────────────────────────┐
+ │  s.Read(sl)                                │
+ │    │                                       │
+ │    ▼                                       │
+ │  S 有 Read 嗎？ → 沒有                     │
+ │    │                                       │
+ │    ▼                                       │
+ │  檢查嵌入欄位 → Reader 有 Read() → 找到！  │
+ │    │                                       │
+ │    ▼                                       │
+ │  轉換為 s.Reader.Read(sl)                  │
+ └────────────────────────────────────────────┘
+</code></pre>
 <h3 id="多重繼承"><a class="header" href="#多重繼承">多重繼承</a></h3>
 <p>不過有一種情況需要注意，那就是當struct嵌入的多個接口類型的方法集合存在交集時，你要小心編譯器可能會出現的錯誤提示。</p>
 <p>Go 1.14 版本解決了嵌入接口類型的方法集合有交集的情況，僅限於interface類型中嵌入interface類型。這裡我們討論的是在struct類型中嵌入方法集合有交集的interface類型。</p>

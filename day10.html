@@ -199,6 +199,29 @@
 </code></pre>
 <p>這裡，我們用io.Writer接口替代了*os.File。這種設計遵循了interface分離的原則，因為io.Writer只包含一個Write方法，恰恰是Save函數所需要的。</p>
 <p>如此一來，新版的Save函數不僅可以向硬碟寫入數據，也能向網路儲存(NAS)寫入數據，並支持任何實現了Write方法的類型，這大大提升了其可擴充性。而且，這也使得測試變得簡單，只需使用bytes.NewBuffer創建一個*bytes.Buffer，傳入Save函數，完成測試後比對數據即可。</p>
+<pre><code> 水平組合：透過 Interface 實現解耦
+
+ 舊設計（緊耦合）：               新設計（透過 Interface 解耦）：
+ ┌──────────┐                   ┌──────────┐
+ │  Save()  │                   │  Save()  │
+ │          │                   │          │
+ │ *os.File │ ← 綁死特定類型    │ io.Writer│ ← Interface 抽象
+ └────┬─────┘                   └────┬─────┘
+      │                              │
+      ▼                              ▼
+ ┌──────────┐               ┌───────────────┐
+ │ 本地檔案  │               │  io.Writer    │
+ │ 只能寫檔案│               │  interface    │
+ └──────────┘               └───┬───┬───┬───┘
+                                │   │   │
+                    ┌───────────┘   │   └───────────┐
+                    ▼               ▼               ▼
+              ┌──────────┐  ┌────────────┐  ┌────────────┐
+              │ *os.File │  │ *net.Conn  │  │ *bytes.    │
+              │ (檔案)   │  │ (網路)     │  │  Buffer    │
+              └──────────┘  └────────────┘  │ (測試用)   │
+                                            └────────────┘
+</code></pre>
 <h3 id="interface的其他設計模式"><a class="header" href="#interface的其他設計模式">Interface的其他設計模式</a></h3>
 <p>Go語言中有幾種常見的接口設計模式：</p>
 <h4 id="工廠模式"><a class="header" href="#工廠模式">工廠模式</a></h4>
@@ -292,6 +315,32 @@ func main() {
 }
 </code></pre>
 <p>這裡的 logHandler 和 authHandler 是中間件，通過適配器函數類型（http.HandlerFunc）將普通函數轉為實現 http.Handler 的類型的object。</p>
+<pre><code> 中間件（Middleware）包裝鏈示意圖：
+
+ http.ListenAndServe(":8080", logHandler(authHandler(http.HandlerFunc(greetings))))
+
+ 請求處理流程（由外到內）：
+ ┌─────────────────────────────────────────────────────┐
+ │  logHandler                                          │
+ │  ┌───────────────────────────────────────────────┐  │
+ │  │  log.Printf("[%s] %q", ...)                   │  │
+ │  │                                               │  │
+ │  │  authHandler                                  │  │
+ │  │  ┌─────────────────────────────────────────┐  │  │
+ │  │  │  validateAuth(token)                    │  │  │
+ │  │  │                                         │  │  │
+ │  │  │  greetings (核心處理)                   │  │  │
+ │  │  │  ┌───────────────────────────────────┐  │  │  │
+ │  │  │  │  fmt.Fprintf(w, "Welcome!")       │  │  │  │
+ │  │  │  └───────────────────────────────────┘  │  │  │
+ │  │  └─────────────────────────────────────────┘  │  │
+ │  └───────────────────────────────────────────────┘  │
+ └─────────────────────────────────────────────────────┘
+
+ Request ──▶ logHandler ──▶ authHandler ──▶ greetings
+                                               │
+ Response ◀── logHandler ◀── authHandler ◀─────┘
+</code></pre>
 <h3 id="總結"><a class="header" href="#總結">總結</a></h3>
 <ul>
 <li>了解接口的本質和原則，不為了封裝而封裝。</li>

@@ -212,9 +212,61 @@ var t T
 i = t  // ok
 i = &amp;t // ok
 </code></pre>
-<p>空 <code>interface</code> 類型能夠接受任意類型變數值，使它成為 Go 在引入泛型之前唯一具備“泛型”能力的語法元素。包括 Go 標準庫在內的一些通用資料結構與算法的實現，都使用了空 <code>interface</code> <code>interface{}</code> 作為參數元素的類型，這樣我們就無需為每種支持的元素類型單獨編寫程式碼或方法。</p>
-<p>Go 語言還支持從 <code>interface</code> 類型變數“還原”其右值的類型與值信息，這個過程稱為“Type Assertion”。Type Assertion 通常使用以下語法形式：</p>
-<pre><code class="language-go">v, ok := i.(T)
+<p>空 <code>interface</code> 類型能夠接受任意類型變數值，使它成為 Go 在引入泛型之前唯一具備"泛型"能力的語法元素。</p>
+<pre><code> Interface 內部記憶體結構示意圖：
+
+ ═══════════════════════════════════════════════
+ 非空 Interface（iface）：
+ ┌─────────────────────────────────────────┐
+ │  type MyInterface interface {           │
+ │      M1(int) error                      │
+ │      M2(io.Writer, ...string)           │
+ │  }                                      │
+ │                                         │
+ │  var i MyInterface = someValue          │
+ │                                         │
+ │  iface 結構：                            │
+ │  ┌──────────┬──────────┐               │
+ │  │  tab     │  data    │               │
+ │  │  (*itab) │  (ptr)   │               │
+ │  └────┬─────┴────┬─────┘               │
+ │       │          │                      │
+ │       ▼          ▼                      │
+ │  ┌─────────┐  ┌──────────┐             │
+ │  │  itab   │  │ 實際數據  │             │
+ │  │ ┌─────┐ │  │ (具體值) │             │
+ │  │ │_type│ │  └──────────┘             │
+ │  │ ├─────┤ │                            │
+ │  │ │ M1  │─┼──▶ 具體類型的 M1 實作      │
+ │  │ ├─────┤ │                            │
+ │  │ │ M2  │─┼──▶ 具體類型的 M2 實作      │
+ │  │ └─────┘ │                            │
+ │  └─────────┘                            │
+ └─────────────────────────────────────────┘
+
+ ═══════════════════════════════════════════════
+ 空 Interface（eface）：
+ ┌─────────────────────────────────────────┐
+ │  var i interface{} = 15                 │
+ │                                         │
+ │  eface 結構：                            │
+ │  ┌──────────┬──────────┐               │
+ │  │  _type   │  data    │               │
+ │  │  (*_type)│  (ptr)   │               │
+ │  └────┬─────┴────┬─────┘               │
+ │       │          │                      │
+ │       ▼          ▼                      │
+ │  ┌─────────┐  ┌──────────┐             │
+ │  │ int 的  │  │    15    │             │
+ │  │ 類型描述│  │ (int值)  │             │
+ │  └─────────┘  └──────────┘             │
+ └─────────────────────────────────────────┘
+```包括 Go 標準庫在內的一些通用資料結構與算法的實現，都使用了空 `interface` `interface{}` 作為參數元素的類型，這樣我們就無需為每種支持的元素類型單獨編寫程式碼或方法。
+
+Go 語言還支持從 `interface` 類型變數“還原”其右值的類型與值信息，這個過程稱為“Type Assertion”。Type Assertion 通常使用以下語法形式：
+
+```go
+v, ok := i.(T)
 </code></pre>
 <p>其中 <code>i</code> 是某個 <code>interface</code> 類型變數。如果 <code>T</code> 是一個非 <code>interface</code> 類型且 <code>T</code> 是想要還原的類型，這句程式碼的含義是“斷言”儲存在 <code>interface</code> 類型變數 <code>i</code> 中的值的類型為 <code>T</code>。</p>
 <p>如果 <code>interface</code> 類型變數 <code>i</code> 之前被賦予的值確為 <code>T</code> 類型的值，這個語句執行後，左側 <code>comma, ok</code> 語句中的變數 <code>ok</code> 的值將為 <code>true</code>，變數 <code>v</code> 的類型為 <code>T</code>，其值為之前賦予給 <code>i</code> 的值。如果 <code>i</code> 之前被賦予的值不是 <code>T</code> 類型，這個語句執行後，變數 <code>ok</code> 的值為 <code>false</code>，變數 <code>v</code> 的類型仍然是 <code>T</code>，但其值是類型 <code>T</code> 的初始值。</p>

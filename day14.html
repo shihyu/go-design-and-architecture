@@ -195,6 +195,18 @@ doSomething()
 mu.Unlock() // 解鎖
 </code></pre>
 <p>這段程式碼展示了一個 Goroutine 如何獨占資源進行操作。當使用互斥鎖時，其他試圖執行 Lock 操作的 Goroutine 將會被阻塞，直到鎖被釋放。</p>
+<pre><code> Mutex（互斥鎖）運作示意圖：
+
+ 時間 ──────────────────────────────────────────────▶
+
+ Goroutine A: ──Lock()──[  臨界區操作  ]──Unlock()──
+                  │                          │
+ Goroutine B: ──Lock()──[阻塞等待...]────────┼──[臨界區]──Unlock()──
+                  │                          │
+ Goroutine C: ──Lock()──[阻塞等待...]────────┼───[等待]──[臨界區]──
+
+ 鎖狀態：      未鎖 → 鎖定 ──────────── → 釋放 → 鎖定 ───▶
+</code></pre>
 <p>讀寫鎖則允許多個讀指令同時進行，但寫指令會獨占鎖：</p>
 <pre><code class="language-go">var rwmu sync.RWMutex
 rwmu.RLock()   // 加讀鎖
@@ -205,6 +217,32 @@ changeSomething()
 rwmu.Unlock()  // 解寫鎖
 </code></pre>
 <p>這種鎖的設計允許多個讀者同時讀取數據而不被阻塞，只有當需要修改數據時，寫鎖才會阻止其他讀取或寫入操作，保證數據的一致性。</p>
+<pre><code> RWMutex（讀寫鎖）運作示意圖：
+
+ ═══ 多個 Reader 可以同時持有讀鎖 ═══
+
+ Reader A:  ──RLock()──[ 讀取 ]──RUnlock()──
+ Reader B:  ──RLock()──[ 讀取 ]──RUnlock()──    ← 同時讀取 ✓
+ Reader C:  ──RLock()──[ 讀取 ]──RUnlock()──
+
+ ═══ Writer 獨佔鎖，阻塞所有 Reader 和其他 Writer ═══
+
+ Reader A:  ──RLock()──[讀取]──RUnlock()──────────RLock()──[讀取]──
+ Writer X:  ──Lock()──[等待readers完成]──[ 寫入 ]──Unlock()──
+ Reader B:  ──────────────RLock()──[阻塞]────────────────[讀取]──
+
+ 時間 ──────────────────────────────────────────────────────▶
+
+ ┌─────────────────────────────────────────────────┐
+ │  讀鎖特性：                                      │
+ │  ● 多個 goroutine 可同時持有讀鎖                 │
+ │  ● 讀鎖期間，寫鎖請求會被阻塞                    │
+ │                                                 │
+ │  寫鎖特性：                                      │
+ │  ● 同一時間只有一個 goroutine 可持有寫鎖          │
+ │  ● 寫鎖期間，所有讀鎖和寫鎖請求都被阻塞           │
+ └─────────────────────────────────────────────────┘
+</code></pre>
 <h3 id="synccond條件變數"><a class="header" href="#synccond條件變數">sync.Cond：條件變數</a></h3>
 <p><code>sync.Cond</code> 是 Go 語言中實現條件變數的一種方式，主要用於管理那些需要等待某個特定條件成立的 Goroutines。這個概念可以類比於百米賽跑中運動員等待發令槍的情境。當條件變數所等待的條件被觸發時，原本處於等待狀態的 Goroutines 會接收到通知，繼續他們的任務。</p>
 <p>使用條件變數的好處在於，它能有效避免 Goroutines 進行無意義的連續輪詢，這種輪詢不僅效率低，還會浪費大量系統資源。以下是一個示例，展示如何使用 <code>sync.Cond</code> 達到與無緩衝 channel 相似的效果：</p>
@@ -270,16 +308,41 @@ a++
 <li><strong>LOAD</strong>：將變數從內存加載到 CPU 寄存器；</li>
 <li><strong>ADD</strong>：執行加法指令；</li>
 <li><strong>STORE</strong>：將計算結果存回記憶體。<br />
-這三個步驟在執行過程中都有可能被中斷。然而，原子操作可以保證像一個完整的事務那樣一次性完成，不會被中斷。原子操作的實現依賴於底層硬體的支持，提供了一種比作業系統層面更低級的同步技術。<code>atomic</code> Lib為開發者封裝了這些底層指令，使得實現複雜的併發同步控制變得更加便捷。</li>
+這三個步驟在執行過程中都有可能被中斷。然而，原子操作可以保證像一個完整的事務那樣一次性完成，不會被中斷。</li>
 </ul>
-<h3 id="總結"><a class="header" href="#總結">總結</a></h3>
-<ul>
-<li>sync 包提供了多種低級同步方法，包括互斥鎖、讀寫鎖和條件變數。</li>
-<li>使用互斥鎖和讀寫鎖時要注意避免複製變數，並記得及時解鎖。</li>
-<li>sync.Cond 是條件變數的實現，用於避免 Goroutine 的連續輪詢。</li>
-<li>atomic Lib提供了底層的原子操作支持，適用於實現高級併發同步技術。</li>
-</ul>
-<p>更多Go語言相關的文章，歡迎參閱我的部落格: <a href="https://kaichiachen.github.io/2024/03/20/golang/go_happ_path/">https://kaichiachen.github.io/2024/03/20/golang/go_happ_path/</a></p>
+<pre><code> 普通操作 vs 原子操作的 CPU 指令對比：
+
+ ═══ 普通 a++ 操作（可被中斷）═══
+
+ Goroutine A:  LOAD a=5 ──▶ ADD a=6 ──▶ STORE a=6
+                     ↑ 中斷點      ↑ 中斷點
+ Goroutine B:       LOAD a=5 ──▶ ADD a=6 ──▶ STORE a=6
+                                                   ↑
+                                          最終 a=6 (預期 a=7, 錯誤！)
+
+ ═══ 原子操作 atomic.AddInt64(&amp;a, 1)（不可被中斷）═══
+
+ Goroutine A:  ┌─ LOAD+ADD+STORE ─┐  (原子性，不可中斷)
+               │    a: 5 → 6      │
+               └──────────────────┘
+ Goroutine B:                       ┌─ LOAD+ADD+STORE ─┐
+                                    │    a: 6 → 7      │
+                                    └──────────────────┘
+                                           ↑
+                                  最終 a=7 (正確！)
+```原子操作的實現依賴於底層硬體的支持，提供了一種比作業系統層面更低級的同步技術。`atomic` Lib為開發者封裝了這些底層指令，使得實現複雜的併發同步控制變得更加便捷。
+
+### 總結
+
+* sync 包提供了多種低級同步方法，包括互斥鎖、讀寫鎖和條件變數。
+* 使用互斥鎖和讀寫鎖時要注意避免複製變數，並記得及時解鎖。
+* sync.Cond 是條件變數的實現，用於避免 Goroutine 的連續輪詢。
+* atomic Lib提供了底層的原子操作支持，適用於實現高級併發同步技術。
+
+更多Go語言相關的文章，歡迎參閱我的部落格: &lt;https://kaichiachen.github.io/2024/03/20/golang/go_happ_path/&gt;
+
+  
+</code></pre>
 
                     </main>
 

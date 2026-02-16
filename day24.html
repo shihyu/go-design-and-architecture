@@ -319,6 +319,36 @@ func main() {
 </ul>
 </li>
 </ol>
+<pre><code> Go Module 發布與使用流程圖：
+
+ ═══ 模組開發者 ═══                  ═══ 模組使用者 ═══
+
+ ① 開發模組                         ④ 引用模組
+ ┌──────────────────┐              ┌──────────────────┐
+ │ mymodule/        │              │ myapp/            │
+ │ ├── go.mod       │              │ ├── go.mod        │
+ │ ├── math.go      │              │ └── main.go       │
+ │ └── math_test.go │              │    import          │
+ └──────────────────┘              │    "github.com/    │
+                                   │     user/mymodule" │
+ ② 測試通過                        └──────────────────┘
+ go test ✓
+                                   ⑤ go get 下載
+ ③ 推送到 GitHub                          │
+ git tag v1.0.0                           ▼
+ git push origin v1.0.0           ┌──────────────────┐
+       │                          │  Go Module Proxy  │
+       ▼                          │  (快取 + 校驗)    │
+ ┌──────────────────┐             └──────────────────┘
+ │  GitHub Repo     │                     │
+ │  v1.0.0 tag      │◀════════════════════┘
+ └──────────────────┘        拉取模組
+
+ 版本號遵循語意化版本 (SemVer)：
+ v1.0.0 → v1.0.1 (patch: bug fix)
+ v1.0.0 → v1.1.0 (minor: 新功能，向下相容)
+ v1.0.0 → v2.0.0 (major: 破壞性變更)
+</code></pre>
 <h3 id="小結"><a class="header" href="#小結">小結</a></h3>
 <p>Go Module 的設計大大改善了 Go 語言的依賴管理，讓開發者能夠輕鬆地管理版本和依賴。通過上述步驟，你可以創建自己的 Go 模組，並將它貢獻到 GitHub 上，與其他開發者共享你的工作。希望這篇文章能夠幫助你更好地理解和使用 Go Module！</p>
 

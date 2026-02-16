@@ -227,6 +227,28 @@ func main() {
 <pre><code class="language-go">go run main.go
 </code></pre>
 <p>打開瀏覽器並輸入 <code>http://localhost:8080</code>，你會看到瀏覽器顯示「Hello, Go Web Server!」，這表示你的伺服器已經成功運作了！</p>
+<pre><code> Go Web Server 請求處理架構示意圖：
+
+ ┌──────────┐     HTTP Request     ┌────────────────────────────┐
+ │  Browser  │ ──────────────────▶ │   Go HTTP Server (:8080)   │
+ │  / curl   │                     │                            │
+ │           │ ◀────────────────── │  ┌──────────────────────┐  │
+ └──────────┘     HTTP Response    │  │  DefaultServeMux     │  │
+                                   │  │  (路由表)             │  │
+                                   │  │                      │  │
+                                   │  │  "/" ──▶ handler()   │  │
+                                   │  │  "/about"──▶ about() │  │
+                                   │  │  "/static/"──▶ File  │  │
+                                   │  └──────────────────────┘  │
+                                   │                            │
+                                   │  每個請求由獨立 goroutine  │
+                                   │  處理（高併發能力）         │
+                                   │                            │
+                                   │  ┌──┐ ┌──┐ ┌──┐ ┌──┐     │
+                                   │  │G1│ │G2│ │G3│ │G4│ ... │
+                                   │  └──┘ └──┘ └──┘ └──┘     │
+                                   └────────────────────────────┘
+</code></pre>
 <h2 id="5-加入更多功能"><a class="header" href="#5-加入更多功能">5. 加入更多功能</a></h2>
 <p>現在我們有了一個基本的 Web 伺服器，接下來我們可以嘗試加入更多功能，例如路由、靜態檔案處理或是資料庫連接等。</p>
 <h3 id="加入路由"><a class="header" href="#加入路由">加入路由</a></h3>
